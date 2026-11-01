@@ -1,0 +1,15 @@
+coluna,codigo,nome,unidade,escala_log,cobertura,paises_2023
+pib_pc_ppp,NY.GDP.PCAP.PP.KD,"PIB per capita, PPC",US$ internacionais de 2021,1,0.894,197
+expectativa_vida,SP.DYN.LE00.IN,Expectativa de vida,anos,0,1.0,217
+populacao,SP.POP.TOTL,População,habitantes,1,1.0,217
+mortalidade_infantil,SP.DYN.IMRT.IN,Mortalidade infantil,por mil nascidos vivos,1,0.903,196
+fecundidade,SP.DYN.TFRT.IN,Fecundidade,filhos por mulher,0,1.0,217
+acesso_eletricidade,EG.ELC.ACCS.ZS,Acesso à eletricidade,% da população,0,0.888,215
+uso_internet,IT.NET.USER.ZS,Uso de internet,% da população,0,0.818,181
+populacao_urbana,SP.URB.TOTL.IN.ZS,População urbana,% da população,0,1.0,217
+agropecuaria_pib,NV.AGR.TOTL.ZS,Agropecuária no PIB,% do PIB,0,0.845,194
+agua_potavel,SH.H2O.BASW.ZS,Água potável básica,% da população,0,0.686,203
+populacao_65_mais,SP.POP.65UP.TO.ZS,População com 65 anos ou mais,% da população,0,1.0,217
+mulheres_trabalho,SL.TLF.CACT.FE.ZS,Mulheres na força de trabalho,% das mulheres com 15 anos ou mais,0,0.861,184
+fecundidade_adolescente,SP.ADO.TFRT,Fecundidade adolescente,nascimentos por mil mulheres de 15 a 19 anos,0,1.0,217
+diferenca_vida_genero,SP.DYN.LE00.FE.IN menos SP.DYN.LE00.MA.IN,Diferença de expectativa de vida (mulheres menos homens),anos,0,1.0,217

@@ -1,0 +1,218 @@
+iso3,iso2,nome,regiao,renda,regiao4
+ABW,AW,Aruba,LCN,HIC,americas
+AFG,AF,Afghanistan,MEA,LIC,asia
+AGO,AO,Angola,SSF,LMC,africa
+ALB,AL,Albania,ECS,UMC,europe
+AND,AD,Andorra,ECS,HIC,europe
+ARE,AE,United Arab Emirates,MEA,HIC,asia
+ARG,AR,Argentina,LCN,UMC,americas
+ARM,AM,Armenia,ECS,UMC,europe
+ASM,AS,American Samoa,EAS,HIC,asia
+ATG,AG,Antigua and Barbuda,LCN,HIC,americas
+AUS,AU,Australia,EAS,HIC,asia
+AUT,AT,Austria,ECS,HIC,europe
+AZE,AZ,Azerbaijan,ECS,UMC,europe
+BDI,BI,Burundi,SSF,LIC,africa
+BEL,BE,Belgium,ECS,HIC,europe
+BEN,BJ,Benin,SSF,LMC,africa
+BFA,BF,Burkina Faso,SSF,LIC,africa
+BGD,BD,Bangladesh,SAS,LMC,asia
+BGR,BG,Bulgaria,ECS,HIC,europe
+BHR,BH,Bahrain,MEA,HIC,asia
+BHS,BS,"Bahamas, The",LCN,HIC,americas
+BIH,BA,Bosnia and Herzegovina,ECS,UMC,europe
+BLR,BY,Belarus,ECS,UMC,europe
+BLZ,BZ,Belize,LCN,UMC,americas
+BMU,BM,Bermuda,NAC,HIC,americas
+BOL,BO,Bolivia,LCN,LMC,americas
+BRA,BR,Brazil,LCN,UMC,americas
+BRB,BB,Barbados,LCN,HIC,americas
+BRN,BN,Brunei Darussalam,EAS,HIC,asia
+BTN,BT,Bhutan,SAS,LMC,asia
+BWA,BW,Botswana,SSF,UMC,africa
+CAF,CF,Central African Republic,SSF,LIC,africa
+CAN,CA,Canada,NAC,HIC,americas
+CHE,CH,Switzerland,ECS,HIC,europe
+CHI,JG,Channel Islands,ECS,HIC,europe
+CHL,CL,Chile,LCN,HIC,americas
+CHN,CN,China,EAS,UMC,asia
+CIV,CI,Côte d'Ivoire,SSF,LMC,africa
+CMR,CM,Cameroon,SSF,LMC,africa
+COD,CD,"Congo, Dem. Rep.",SSF,LIC,africa
+COG,CG,"Congo, Rep.",SSF,LMC,africa
+COL,CO,Colombia,LCN,UMC,americas
+COM,KM,Comoros,SSF,LMC,africa
+CPV,CV,Cabo Verde,SSF,UMC,africa
+CRI,CR,Costa Rica,LCN,HIC,americas
+CUB,CU,Cuba,LCN,UMC,americas
+CUW,CW,Curaçao,LCN,HIC,americas
+CYM,KY,Cayman Islands,LCN,HIC,americas
+CYP,CY,Cyprus,ECS,HIC,europe
+CZE,CZ,Czechia,ECS,HIC,europe
+DEU,DE,Germany,ECS,HIC,europe
+DJI,DJ,Djibouti,MEA,LMC,africa
+DMA,DM,Dominica,LCN,UMC,americas
+DNK,DK,Denmark,ECS,HIC,europe
+DOM,DO,Dominican Republic,LCN,UMC,americas
+DZA,DZ,Algeria,MEA,UMC,africa
+ECU,EC,Ecuador,LCN,UMC,americas
+EGY,EG,"Egypt, Arab Rep.",MEA,LMC,africa
+ERI,ER,Eritrea,SSF,LIC,africa
+ESP,ES,Spain,ECS,HIC,europe
+EST,EE,Estonia,ECS,HIC,europe
+ETH,ET,Ethiopia,SSF,LIC,africa
+FIN,FI,Finland,ECS,HIC,europe
+FJI,FJ,Fiji,EAS,UMC,asia
+FRA,FR,France,ECS,HIC,europe
+FRO,FO,Faroe Islands,ECS,HIC,europe
+FSM,FM,"Micronesia, Fed. Sts.",EAS,UMC,asia
+GAB,GA,Gabon,SSF,UMC,africa
+GBR,GB,United Kingdom,ECS,HIC,europe
+GEO,GE,Georgia,ECS,UMC,europe
+GHA,GH,Ghana,SSF,LMC,africa
+GIB,GI,Gibraltar,ECS,HIC,europe
+GIN,GN,Guinea,SSF,LMC,africa
+GMB,GM,"Gambia, The",SSF,LIC,africa
+GNB,GW,Guinea-Bissau,SSF,LIC,africa
+GNQ,GQ,Equatorial Guinea,SSF,UMC,africa
+GRC,GR,Greece,ECS,HIC,europe
+GRD,GD,Grenada,LCN,UMC,americas
+GRL,GL,Greenland,ECS,HIC,europe
+GTM,GT,Guatemala,LCN,UMC,americas
+GUM,GU,Guam,EAS,HIC,asia
+GUY,GY,Guyana,LCN,HIC,americas
+HKG,HK,"Hong Kong SAR, China",EAS,HIC,asia
+HND,HN,Honduras,LCN,LMC,americas
+HRV,HR,Croatia,ECS,HIC,europe
+HTI,HT,Haiti,LCN,LMC,americas
+HUN,HU,Hungary,ECS,HIC,europe
+IDN,ID,Indonesia,EAS,UMC,asia
+IMN,IM,Isle of Man,ECS,HIC,europe
+IND,IN,India,SAS,LMC,asia
+IRL,IE,Ireland,ECS,HIC,europe
+IRN,IR,"Iran, Islamic Rep.",MEA,UMC,asia
+IRQ,IQ,Iraq,MEA,UMC,asia
+ISL,IS,Iceland,ECS,HIC,europe
+ISR,IL,Israel,MEA,HIC,asia
+ITA,IT,Italy,ECS,HIC,europe
+JAM,JM,Jamaica,LCN,UMC,americas
+JOR,JO,Jordan,MEA,UMC,asia
+JPN,JP,Japan,EAS,HIC,asia
+KAZ,KZ,Kazakhstan,ECS,UMC,asia
+KEN,KE,Kenya,SSF,LMC,africa
+KGZ,KG,Kyrgyz Republic,ECS,LMC,asia
+KHM,KH,Cambodia,EAS,LMC,asia
+KIR,KI,Kiribati,EAS,LMC,asia
+KNA,KN,St. Kitts and Nevis,LCN,HIC,americas
+KOR,KR,"Korea, Rep.",EAS,HIC,asia
+KWT,KW,Kuwait,MEA,HIC,asia
+LAO,LA,Lao PDR,EAS,LMC,asia
+LBN,LB,Lebanon,MEA,LMC,asia
+LBR,LR,Liberia,SSF,LIC,africa
+LBY,LY,Libya,MEA,UMC,africa
+LCA,LC,St. Lucia,LCN,UMC,americas
+LIE,LI,Liechtenstein,ECS,HIC,europe
+LKA,LK,Sri Lanka,SAS,UMC,asia
+LSO,LS,Lesotho,SSF,LMC,africa
+LTU,LT,Lithuania,ECS,HIC,europe
+LUX,LU,Luxembourg,ECS,HIC,europe
+LVA,LV,Latvia,ECS,HIC,europe
+MAC,MO,"Macao SAR, China",EAS,HIC,asia
+MAF,MF,St. Martin (French part),LCN,HIC,americas
+MAR,MA,Morocco,MEA,LMC,africa
+MCO,MC,Monaco,ECS,HIC,europe
+MDA,MD,Moldova,ECS,UMC,europe
+MDG,MG,Madagascar,SSF,LIC,africa
+MDV,MV,Maldives,SAS,UMC,asia
+MEX,MX,Mexico,LCN,UMC,americas
+MHL,MH,Marshall Islands,EAS,UMC,asia
+MKD,MK,North Macedonia,ECS,UMC,europe
+MLI,ML,Mali,SSF,LIC,africa
+MLT,MT,Malta,MEA,HIC,europe
+MMR,MM,Myanmar,EAS,LMC,asia
+MNE,ME,Montenegro,ECS,UMC,europe
+MNG,MN,Mongolia,EAS,UMC,asia
+MNP,MP,Northern Mariana Islands,EAS,HIC,asia
+MOZ,MZ,Mozambique,SSF,LIC,africa
+MRT,MR,Mauritania,SSF,LMC,africa
+MUS,MU,Mauritius,SSF,UMC,africa
+MWI,MW,Malawi,SSF,LIC,africa
+MYS,MY,Malaysia,EAS,UMC,asia
+NAM,NA,Namibia,SSF,LMC,africa
+NCL,NC,New Caledonia,EAS,HIC,asia
+NER,NE,Niger,SSF,LIC,africa
+NGA,NG,Nigeria,SSF,LMC,africa
+NIC,NI,Nicaragua,LCN,LMC,americas
+NLD,NL,Netherlands,ECS,HIC,europe
+NOR,NO,Norway,ECS,HIC,europe
+NPL,NP,Nepal,SAS,LMC,asia
+NRU,NR,Naoero,EAS,HIC,asia
+NZL,NZ,New Zealand,EAS,HIC,asia
+OMN,OM,Oman,MEA,HIC,asia
+PAK,PK,Pakistan,MEA,LMC,asia
+PAN,PA,Panama,LCN,HIC,americas
+PER,PE,Peru,LCN,UMC,americas
+PHL,PH,Philippines,EAS,UMC,asia
+PLW,PW,Palau,EAS,HIC,asia
+PNG,PG,Papua New Guinea,EAS,LMC,asia
+POL,PL,Poland,ECS,HIC,europe
+PRI,PR,Puerto Rico (US),LCN,HIC,americas
+PRK,KP,"Korea, Dem. People's Rep.",EAS,LIC,asia
+PRT,PT,Portugal,ECS,HIC,europe
+PRY,PY,Paraguay,LCN,UMC,americas
+PSE,PS,West Bank and Gaza,MEA,LMC,asia
+PYF,PF,French Polynesia,EAS,HIC,asia
+QAT,QA,Qatar,MEA,HIC,asia
+ROU,RO,Romania,ECS,HIC,europe
+RUS,RU,Russian Federation,ECS,HIC,europe
+RWA,RW,Rwanda,SSF,LIC,africa
+SAU,SA,Saudi Arabia,MEA,HIC,asia
+SDN,SD,Sudan,SSF,LIC,africa
+SEN,SN,Senegal,SSF,LMC,africa
+SGP,SG,Singapore,EAS,HIC,asia
+SLB,SB,Solomon Islands,EAS,LMC,asia
+SLE,SL,Sierra Leone,SSF,LIC,africa
+SLV,SV,El Salvador,LCN,UMC,americas
+SMR,SM,San Marino,ECS,HIC,europe
+SOM,SO,"Somalia, Fed. Rep.",SSF,LIC,africa
+SRB,RS,Serbia,ECS,UMC,europe
+SSD,SS,South Sudan,SSF,LIC,africa
+STP,ST,São Tomé and Principe,SSF,LMC,africa
+SUR,SR,Suriname,LCN,UMC,americas
+SVK,SK,Slovak Republic,ECS,HIC,europe
+SVN,SI,Slovenia,ECS,HIC,europe
+SWE,SE,Sweden,ECS,HIC,europe
+SWZ,SZ,Eswatini,SSF,LMC,africa
+SXM,SX,Sint Maarten (Dutch part),LCN,HIC,americas
+SYC,SC,Seychelles,SSF,HIC,africa
+SYR,SY,Syrian Arab Republic,MEA,LIC,asia
+TCA,TC,Turks and Caicos Islands,LCN,HIC,americas
+TCD,TD,Chad,SSF,LIC,africa
+TGO,TG,Togo,SSF,LMC,africa
+THA,TH,Thailand,EAS,UMC,asia
+TJK,TJ,Tajikistan,ECS,LMC,asia
+TKM,TM,Turkmenistan,ECS,UMC,asia
+TLS,TL,Timor-Leste,EAS,LMC,asia
+TON,TO,Tonga,EAS,UMC,asia
+TTO,TT,Trinidad and Tobago,LCN,HIC,americas
+TUN,TN,Tunisia,MEA,LMC,africa
+TUR,TR,Türkiye,ECS,UMC,europe
+TUV,TV,Tuvalu,EAS,UMC,asia
+TZA,TZ,Tanzania,SSF,LMC,africa
+UGA,UG,Uganda,SSF,LIC,africa
+UKR,UA,Ukraine,ECS,UMC,europe
+URY,UY,Uruguay,LCN,HIC,americas
+USA,US,United States,NAC,HIC,americas
+UZB,UZ,Uzbekistan,ECS,LMC,asia
+VCT,VC,St. Vincent and the Grenadines,LCN,UMC,americas
+VEN,VE,"Venezuela, RB",LCN,LMC,americas
+VGB,VG,British Virgin Islands,LCN,HIC,americas
+VIR,VI,Virgin Islands (US),LCN,HIC,americas
+VNM,VN,Viet Nam,EAS,UMC,asia
+VUT,VU,Vanuatu,EAS,LMC,asia
+WSM,WS,Samoa,EAS,UMC,asia
+XKX,XK,Kosovo,ECS,UMC,europe
+YEM,YE,"Yemen, Rep.",MEA,LIC,asia
+ZAF,ZA,South Africa,SSF,UMC,africa
+ZMB,ZM,Zambia,SSF,LMC,africa
+ZWE,ZW,Zimbabwe,SSF,LMC,africa

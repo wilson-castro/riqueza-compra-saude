@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riqueza compra saúde? Condições de vida no mundo de 1990 a 2024</title>
+<meta name="description" content="Como mudaram a renda, a saúde, a demografia e as diferenças entre mulheres e homens em 217 países, com dados do Banco Mundial.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<a class="pular" href="#painel">Pular para o painel interativo</a>
+
+<header class="abertura">
+  <div class="abertura-texto">
+    <h1>Riqueza compra saúde?</h1>
+    <div class="abertura-pe">
+      <p class="linha-fina">A expectativa de vida ao nascer no mundo passou de 65 anos em 1990 para
+        73 anos em 2024. Esta página usa dados do Banco Mundial sobre 217 países para ver onde esse
+        ganho aconteceu e quanto ele acompanha a renda.</p>
+    </div>
+  </div>
+  <a class="convite" href="#historia">
+    <span class="convite-roda" aria-hidden="true"><i></i></span>
+    <span class="convite-texto">
+      <strong>Role para seguir a linha do tempo</strong>
+      <span>O gráfico muda a cada parte do texto. No fim, um painel deixa você escolher os
+        indicadores e os países.</span>
+    </span>
+  </a>
+</header>
+
+<main>
+  <!-- Parte guiada. O gráfico fica preso na tela e muda conforme o texto avança. -->
+  <section id="historia" class="historia" aria-label="História guiada">
+    <div class="historia-grafico">
+      <figure class="grafico-fixo">
+        <div class="cartao-grafico">
+        <div class="grafico-topo">
+          <div class="legenda-estatica" aria-hidden="true">
+            <span class="item"><i class="bola" style="--c:#00a9bd"></i>África</span>
+            <span class="item"><i class="bola" style="--c:#5aaf00"></i>Américas</span>
+            <span class="item"><i class="bola" style="--c:#ff5872"></i>Ásia</span>
+            <span class="item"><i class="bola" style="--c:#d1a800"></i>Europa</span>
+          </div>
+          <button id="repetir" class="botao-discreto" type="button" hidden>Repetir a animação</button>
+        </div>
+        <svg id="svgHistoria" role="img" aria-label="Gráfico de bolhas. Cada bolha é um país, e o tamanho mostra a população."></svg>
+        <div class="progresso" aria-hidden="true">
+          <span>1990</span>
+          <div class="progresso-trilho"><i id="barraProgresso"></i></div>
+          <span id="anoHistoria">1990</span>
+        </div>
+        <figcaption>Cada bolha é um país, com área proporcional à população. As cores seguem as
+          quatro regiões do Gapminder.</figcaption>
+        </div>
+      </figure>
+    </div>
+
+    <div class="historia-passos">
+      <div class="trilho-historia" aria-hidden="true"><i id="trilhoCheio"></i></div>
+      <article class="passo" data-passo="0">
+        <p class="marco">1990</p>
+        <h2>Como ler o gráfico</h2>
+        <p>Cada bolha é um país, e o tamanho dela mostra a população. O eixo horizontal é a renda por
+          pessoa, corrigida pela diferença de preços entre países. O eixo vertical é a expectativa de
+          vida ao nascer.</p>
+        <p>Em 1990, a maior parte dos países africanos, em turquesa, fica no canto de baixo à
+          esquerda. A expectativa de vida média na África Subsaariana era de 50 anos.</p>
+      </article>
+
+      <article class="passo" data-passo="1">
+        <p class="marco">De 1990 a 2024</p>
+        <h2>De 1990 a 2024</h2>
+        <p>Com o passar dos anos, quase todas as bolhas sobem e andam para a direita. A expectativa de
+          vida no mundo foi de 65,1 para 73,5 anos, e a renda média por pessoa quase dobrou.</p>
+        <p>A África Subsaariana ganhou 12,6 anos de vida no período. Mesmo assim, continua sendo a
+          região com a menor expectativa de vida.</p>
+      </article>
+
+      <article class="passo" data-passo="2">
+        <p class="marco">Caminho de 1990 a 2024</p>
+        <h2>China e Índia</h2>
+        <p>As duas maiores bolhas são a China e a Índia, que juntas têm pouco mais de um terço da
+          população do mundo. A linha atrás de cada uma mostra o caminho que o país fez ano a ano.</p>
+        <p>A renda por pessoa da China ficou 13,6 vezes maior, e a expectativa de vida foi de 68,2 para
+          78,0 anos. Na Índia, a expectativa de vida foi de 58,6 para 72,0 anos.</p>
+      </article>
+
+      <article class="passo" data-passo="3">
+        <p class="marco">2023</p>
+        <h2>Quem fica longe da linha</h2>
+        <p>A linha tracejada mostra a expectativa de vida esperada para cada nível de renda em 2023. A
+          correlação entre as duas medidas é de 0,86.</p>
+        <p>A Nigéria tem renda maior que a Etiópia e vive menos. A expectativa de vida é de 54,5 anos
+          na Nigéria e de 67,3 anos na Etiópia. A Nigéria fica 15 anos abaixo do que a linha prevê
+          para a sua renda.</p>
+      </article>
+
+      <article class="passo" data-passo="4">
+        <p class="marco">De 1990 a 2024</p>
+        <h2>Filhos por mulher</h2>
+        <p>Aqui o eixo vertical passa a mostrar a fecundidade, que é o número médio de filhos por
+          mulher. No mundo, ela caiu de 3,3 em 1990 para 2,2 em 2024.</p>
+        <p>Em Bangladesh, a queda foi de 4,5 para 2,1. A Coreia do Sul chegou a 0,75, um dos valores
+          mais baixos do mundo. A Nigéria ainda tem 4,4 filhos por mulher.</p>
+      </article>
+
+      <article class="passo" data-passo="5">
+        <p class="marco">2024</p>
+        <h2>Pessoas com 65 anos ou mais</h2>
+        <p>Com menos nascimentos e vidas mais longas, aumenta a parte da população com 65 anos ou mais.
+          No mundo, ela foi de 6,1% para 10,2% entre 1990 e 2024.</p>
+        <p>No Japão, essa parte chegou a 29,8%. Na China, foi de 5,4% para 14,7% no mesmo período.</p>
+      </article>
+
+      <article class="passo" data-passo="6">
+        <p class="marco">2023</p>
+        <h2>Mulheres e homens</h2>
+        <p>O eixo vertical mostra quantos anos as mulheres vivem a mais que os homens. Essa diferença
+          quase não acompanha a renda, e a correlação fica perto de zero.</p>
+        <p>A diferença é de 13,3 anos na Ucrânia, de 6,2 anos no Brasil e de 0,4 ano no Togo. Países
+          com renda parecida aparecem em alturas bem diferentes.</p>
+      </article>
+
+      <article class="passo" data-passo="7">
+        <p class="marco">2023</p>
+        <h2>Gravidez na adolescência</h2>
+        <p>Este indicador conta os nascimentos por mil mulheres de 15 a 19 anos. Entre os indicadores
+          ligados a gênero, é o único que cai de forma clara quando a renda sobe.</p>
+        <p>O Níger tem 145 nascimentos por mil, e a Coreia do Sul tem menos de 1. O Brasil tem 42,7,
+          quase o dobro do grupo de países de renda média-alta, que tem 24,1.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="capitulo" aria-labelledby="tCovid">
+    <div class="texto">
+      <h2 id="tCovid">COVID-19 e expectativa de vida</h2>
+      <p>Entre 2019 e 2021, a expectativa de vida caiu em 182 dos 217 países. A queda foi de 1,7 ano
+        no mundo, de 2,8 anos no Brasil e de 3,5 anos na Índia.</p>
+      <p>Em 2023, 186 países já tinham voltado ao valor de 2019 ou passado dele.</p>
+      <p>Cada linha é um país, na cor da sua região. O Brasil começa destacado. Digite o nome de
+        outros países para destacá-los também, ou clique numa linha. Os botões de região deixam só os
+        países daquela região em evidência.</p>
+    </div>
+    <figure class="figura">
+      <div class="controles-grafico">
+        <div class="legenda" id="legendaCovid"></div>
+        <div id="escolhaCovid"></div>
+      </div>
+      <svg id="svgCovid" role="img" aria-label="Expectativa de vida de cada país de 2010 a 2024, com Brasil, Índia e mundo em destaque."></svg>
+      <figcaption>Expectativa de vida ao nascer, em anos. A faixa marca 2020 e 2021. O eixo começa em
+        45 anos, e algumas quedas abaixo disso ficam cortadas, como as da República Centro-Africana,
+        do Sudão do Sul e da Somália. Ao destacar um desses países, o eixo desce para mostrar a linha
+        inteira.</figcaption>
+    </figure>
+  </section>
+
+  <section class="capitulo" aria-labelledby="tBrasil">
+    <div class="texto">
+      <h2 id="tBrasil">O Brasil comparado com outros países</h2>
+      <p>Cada linha é um indicador em 2023, e cada ponto é um país. O Brasil é o ponto grande
+        colorido. Os pontos cinza-escuros são os países do grupo escolhido, e o traço vertical marca
+        a mediana desse grupo.</p>
+      <p>Digite o nome de outros países para compará-los com o Brasil. À direita estão o valor de
+        cada país destacado e a posição dele, contada do maior valor para o menor.</p>
+    </div>
+    <figure class="figura">
+      <fieldset class="alternador">
+        <legend>Comparar o Brasil com</legend>
+        <label><input type="radio" name="paresBrasil" value="renda" checked> Países de renda média-alta</label>
+        <label><input type="radio" name="paresBrasil" value="regiao"> América Latina e Caribe</label>
+      </fieldset>
+      <div id="escolhaBrasil"></div>
+      <div class="legenda-estatica" id="legendaBrasil"></div>
+      <svg id="svgBrasil" role="img" aria-label="Posição do Brasil em cada indicador, comparado aos outros países em 2023."></svg>
+      <figcaption>PIB por pessoa e mortalidade infantil em escala log. A posição conta só os países com dado em 2023.</figcaption>
+    </figure>
+  </section>
+
+  <!-- Painel livre, com as mesmas visões coordenadas do protótipo. -->
+  <section id="painel" class="painel" aria-labelledby="tPainel" tabindex="-1">
+    <div class="texto">
+      <h2 id="tPainel">Explore os dados</h2>
+      <p>Escolha um indicador para cada eixo e use o botão Tocar para ver os anos passarem. Clique
+        numa bolha para acompanhar um país. Clique numa célula da matriz para levar aquele par de
+        indicadores para as bolhas.</p>
+    </div>
+
+    <div class="barra">
+    <div class="controles">
+      <label>Eixo vertical <select id="selY"></select></label>
+      <button id="trocar" class="botao-discreto" type="button" aria-label="Trocar os eixos">Trocar eixos</button>
+      <label>Eixo horizontal <select id="selX"></select></label>
+      <label>Cor <select id="selCor">
+        <option value="regiao">Região</option>
+        <option value="renda">Grupo de renda</option>
+      </select></label>
+    </div>
+    <div id="escolhaPainel"></div>
+
+    <div class="tempo">
+      <button id="play" class="botao-principal" type="button" aria-pressed="false">Tocar</button>
+      <button id="voltar" class="botao-discreto" type="button" aria-label="Ano anterior">−1</button>
+      <input id="tempo" type="range" min="1990" max="2024" step="0.01" value="1990" aria-label="Ano">
+      <button id="avancar" class="botao-discreto" type="button" aria-label="Próximo ano">+1</button>
+      <output id="anoTxt" for="tempo">1990</output>
+      <label class="em-linha">Velocidade
+        <select id="selVel">
+          <option value="1">1 ano por segundo</option>
+          <option value="2" selected>2 anos por segundo</option>
+          <option value="4">4 anos por segundo</option>
+        </select></label>
+      <label class="em-linha"><input id="chkRastro" type="checkbox" checked> Rastro</label>
+      <label class="em-linha"><input id="chkCurva" type="checkbox"> Linha de tendência</label>
+    </div>
+    </div>
+
+    <!-- Explicação dos dois indicadores escolhidos. Muda junto com os eixos. -->
+    <div class="sobre-indicadores" id="sobreIndicadores" aria-live="polite"></div>
+    <details class="todos-indicadores">
+      <summary>Ver o que mede cada um dos 13 indicadores</summary>
+      <dl id="listaIndicadores"></dl>
+    </details>
+
+    <div class="visoes">
+      <div class="visao visao-bolhas">
+        <h3 id="tituloBolhas"></h3>
+        <p class="nota" id="contagem"></p>
+        <div class="legenda" id="legenda"></div>
+        <svg id="svgBolhas" role="img" aria-labelledby="tituloBolhas"></svg>
+        <p class="nota">Clique numa bolha para acompanhar o país. Clique na legenda para destacar um
+          grupo. Arraste o ano do fundo, ou use as setas do teclado, para andar no tempo.</p>
+      </div>
+      <div class="visao">
+        <h3>Correlação entre os indicadores em <span id="anoMatriz"></span></h3>
+        <p class="nota">Verde-azulado quando os dois sobem juntos, laranja quando um sobe e o outro desce. PIB e
+          mortalidade infantil entram em log.</p>
+        <svg id="svgMatriz" role="group" aria-label="Matriz de correlação"></svg>
+        <div class="escala-div" aria-hidden="true"><span>−1</span><i></i><span>+1</span></div>
+      </div>
+      <div class="visao visao-larga">
+        <h3 id="tituloLinhas"></h3>
+        <p class="nota">Países acompanhados e o mundo. Clique no gráfico para levar as outras visões
+          àquele ano.</p>
+        <svg id="svgLinhas" role="img" aria-labelledby="tituloLinhas"></svg>
+      </div>
+    </div>
+
+    <details class="tabela">
+      <summary>Ver os dados em tabela</summary>
+      <table id="tabelaDados">
+        <caption id="legendaTabela"></caption>
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </details>
+  </section>
+</main>
+
+<footer class="rodape">
+  <div class="rodape-colunas">
+    <div>
+      <h2>Dados</h2>
+      <p>World Development Indicators, do Banco Mundial, versão de 08/10/2026. São 217 países e 14
+        indicadores, de 1990 a 2024. O PIB por pessoa está em dólares internacionais de 2021, que
+        corrigem a diferença de preços entre países.</p>
+      <p>Quando um país não tem o dado de um ano, ele não aparece no gráfico naquele ano. Os valores
+        que faltam não são estimados. A participação das mulheres na força de trabalho é uma estimativa de modelo da
+        Organização Internacional do Trabalho.</p>
+    </div>
+    <div>
+      <h2>Como foi feito</h2>
+      <p>Gráficos feitos com D3.js. A animação das bolhas segue o Gapminder Tools e o exemplo
+        "The Wealth &amp; Health of Nations", de Mike Bostock. As cores das regiões seguem o Gapminder Tools.
+        Os componentes, as cores da página e a fonte Roboto seguem o Material Design 3. A correlação é a de Pearson, com PIB e
+        mortalidade infantil em log.</p>
+    </div>
+  </div>
+</footer>
+
+<div class="tip" id="tip" role="tooltip"></div>
+<p class="erro" id="erro" role="alert"></p>
+
+<!-- O D3 7.9.0 fica numa cópia local para o site não depender de CDN. -->
+<script src="vendor/d3.min.js"></script>
+<script type="module" src="js/principal.js"></script>
+</body>
+</html>
