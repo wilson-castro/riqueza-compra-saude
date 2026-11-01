@@ -26,15 +26,15 @@ O site está publicado em https://wilson-castro.github.io/riqueza-compra-saude/.
 hospeda sites estáticos de graça a partir de um repositório, e esta pasta é o próprio repositório
 `wilson-castro/riqueza-compra-saude`. O Pages serve o ramo `main` a partir da raiz.
 
-Para publicar uma mudança, grave e envie os arquivos alterados. O site se atualiza em um ou dois
-minutos.
+Para publicar uma mudança, rode o script abaixo na pasta `exploracao/`. Ele refaz os dados, grava
+as mudanças e envia tudo para o GitHub. O site se atualiza em um ou dois minutos.
 
 ```bash
-cd exploracao/site
-git add .
-git commit -m "Descreva a mudança"
-git push
+cd exploracao
+bash publicar.sh
 ```
+
+Se quiser, escreva entre aspas o que mudou, como em `bash publicar.sh "Ajusta as cores"`.
 
 O arquivo `.nojekyll` avisa o GitHub Pages para servir os arquivos como estão, sem passar pelo
 Jekyll, o gerador de sites que ele usa por padrão.
