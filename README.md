@@ -52,8 +52,12 @@ Jekyll, o gerador de sites que ele usa por padrão.
 - `js/meupais.js` guarda o país que o leitor escolhe no alto da página. Esse país fica destacado em
   todos os gráficos, e a escolha fica salva no navegador.
 - `js/destaque.js` é a busca de países com chips, usada em vários gráficos.
-- `js/explorar.js` é o painel livre, com bolhas, matriz de correlação, linhas e tabela.
-- `js/base.js` lê os dados e guarda cores, formatos e contas comuns.
+- `js/explorar.js` é o painel livre, com bolhas, matriz de correlação, linhas, ranking e tabela.
+  Nas bolhas, o leitor escolhe o indicador de cada eixo, do tamanho e da cor. As linhas mostram o
+  valor ou a diferença para o mundo.
+- `js/base.js` lê os dados e guarda cores, formatos e contas comuns. As cores dos dados têm uma
+  versão para o tema claro e outra para o escuro. O site segue o tema do sistema do leitor, e as
+  cores da página para o tema escuro ficam no começo de `estilo.css`.
 - `dados/` tem os CSV que a página lê. Eles são gerados por `exploracao/gerar_dados_site.py` a
   partir dos dados completos em `exploracao/dados/`.
 - `vendor/d3.min.js` é uma cópia local do D3 7.9.0, para o site não depender de outro servidor.

@@ -5,7 +5,10 @@
 // Cores dos países destacados, numa ordem fixa. A paleta passou no teste de daltonismo para
 // vizinhos na ordem. Alguns matizes lembram os das regiões. Por isso a linha destacada é mais
 // grossa, tem contorno branco e leva o nome na ponta, enquanto as linhas das regiões ficam apagadas.
-export const PALETA_DESTAQUE = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#6250d6"];
+// No tema escuro, os mesmos matizes ganham tons próprios para o fundo escuro.
+export const PALETA_DESTAQUE = matchMedia("(prefers-color-scheme: dark)").matches
+  ? ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#9085e9"]
+  : ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#6250d6"];
 
 // Tira acentos e caixa, para "india" achar "Índia" e "sao tome" achar "São Tomé e Príncipe".
 const normalizar = t => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();

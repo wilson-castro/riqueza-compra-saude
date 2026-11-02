@@ -2,7 +2,7 @@
 // passo do texto diz qual estado o gráfico deve mostrar. Depois vêm o gráfico da COVID-19 e o
 // retrato do Brasil.
 
-import { ANO_MIN, ANO_MAX, REGIOES, REGIOES4, RENDA, CINZA, TINTA, TINTA_2, CURTO, pt, fmt, tip,
+import { HALO, ANO_MIN, ANO_MAX, REGIOES, REGIOES4, RENDA, CINZA, TINTA, TINTA_2, CURTO, pt, fmt, tip,
          reduzMovimento } from "./base.js";
 import { criarBolhas, modoCor, legendaResiduo } from "./bolhas.js";
 import { criarEscolhaPaises } from "./destaque.js";
@@ -249,7 +249,7 @@ function covid(D) {
     const rotulos = svg.append("g");
     for (const sr of series) {
       // Um contorno branco por baixo separa a linha destacada das linhas finas.
-      frente.append("path").attr("d", linha(serieDe(sr.iso3))).attr("fill", "none").attr("stroke", "#fff")
+      frente.append("path").attr("d", linha(serieDe(sr.iso3))).attr("fill", "none").attr("stroke", HALO)
         .attr("stroke-width", sr.largura + 3).attr("stroke-linejoin", "round");
       frente.append("path").attr("d", linha(serieDe(sr.iso3))).attr("fill", "none").attr("stroke", sr.cor)
         .attr("stroke-width", sr.largura).attr("stroke-dasharray", sr.traco ?? null).attr("stroke-linejoin", "round");

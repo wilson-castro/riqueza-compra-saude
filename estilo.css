@@ -22,6 +22,13 @@
   --md-outline-variant: #bec9c8;
   --md-error: #ba1a1a;
 
+  /* Cores de apoio dos gráficos. O halo é o contorno da cor do cartão que separa textos e marcas. */
+  --halo: #ffffff;
+  --grade: #e8eeed;
+  --ponto: #dde4e8;
+  --ponto-par: #8fa3ae;
+  --divergente-meio: #f2f2f2;
+
   /* Formas do M3. */
   --md-forma-xs: 4px;
   --md-forma-s: 8px;
@@ -39,6 +46,37 @@
   --margem: clamp(16px, 4vw, 56px);
   --curva-padrao: cubic-bezier(0.2, 0, 0, 1);
   color-scheme: light;
+}
+/* Tema escuro do M3, a partir do mesmo verde-azulado. Vale quando o sistema do leitor está no
+   modo escuro. Os cartões ficam um pouco mais claros que o fundo, como pede o M3. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --md-primary: #80d5d4;
+    --md-on-primary: #003737;
+    --md-primary-container: #004f4f;
+    --md-on-primary-container: #9cf1f0;
+    --md-secondary: #b0cccb;
+    --md-secondary-container: #324b4b;
+    --md-on-secondary-container: #cce8e7;
+    --md-tertiary-container: #2a4a6e;
+    --md-surface: #0e1514;
+    --md-surface-lowest: #1a2121;
+    --md-surface-low: #161d1d;
+    --md-surface-container: #252b2b;
+    --md-surface-high: #2f3636;
+    --md-surface-highest: #3a4141;
+    --md-on-surface: #dde4e3;
+    --md-on-surface-variant: #bec9c8;
+    --md-outline: #889392;
+    --md-outline-variant: #3f4948;
+    --md-error: #ffb4ab;
+    --halo: #1a2121;
+    --grade: #2b3333;
+    --ponto: #3a4446;
+    --ponto-par: #7f939c;
+    --divergente-meio: #3a4444;
+    color-scheme: dark;
+  }
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -323,11 +361,11 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 
 .legenda-estatica { display: flex; flex-wrap: wrap; gap: 4px 16px; font: 500 0.75rem/1rem var(--fonte); letter-spacing: 0.03125rem; color: var(--md-on-surface-variant); margin-bottom: 6px; }
 .legenda-estatica .item { white-space: nowrap; display: inline-flex; align-items: center; }
-.bola.par { --c: #8fa3ae; }
-.bola.outro { --c: #dde4e8; }
+.bola.par { --c: var(--ponto-par); }
+.bola.outro { --c: var(--ponto); }
 .traco-mediana { display: inline-block; width: 3px; height: 14px; border-radius: 2px; background: var(--md-on-surface); margin: 0 8px 0 4px; }
 .escala-div { display: flex; align-items: center; gap: 8px; font: 500 0.75rem var(--fonte); color: var(--md-on-surface-variant); margin: 4px 0 0 140px; max-width: 260px; }
-.escala-div i { flex: 1; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #fc6b38, #f2f2f2, #4b98aa); }
+.escala-div i { flex: 1; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #fc6b38, var(--divergente-meio), #4b98aa); }
 
 /* Explicação dos indicadores escolhidos, em cartões elevados. */
 .sobre-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 16px; margin-bottom: 12px; }
@@ -363,16 +401,16 @@ details.tabela thead th { font-weight: 500; color: var(--md-on-surface-variant);
 /* ---------- Elementos dos gráficos ---------- */
 svg { display: block; width: 100%; overflow: visible; user-select: none; font-family: var(--fonte); letter-spacing: 0; }
 .eixo text { fill: var(--md-on-surface-variant); font-size: 11.5px; font-variant-numeric: tabular-nums; }
-.grade line { stroke: #e8eeed; }
+.grade line { stroke: var(--grade); }
 .grade path { display: none; }
 .rotulo-eixo { fill: var(--md-on-surface-variant); font-size: 12px; font-weight: 500; }
 .ano-fundo { fill: var(--md-surface-highest); fill-opacity: 0.7; font-weight: 400; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 .bolha { cursor: pointer; }
 .curva { stroke: var(--md-on-surface); stroke-width: 1.6; stroke-dasharray: 5 5; stroke-linecap: round; opacity: 0.6; }
 .texto-r { fill: var(--md-on-surface-variant); font-size: 12.5px; font-weight: 500; }
-.rotulo-pais { fill: var(--md-on-surface); font-size: 12.5px; font-weight: 500; paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
-.ano-rastro { fill: var(--md-on-surface-variant); font-size: 10.5px; paint-order: stroke; stroke: #fff; stroke-width: 3px; }
-.rotulo-serie { fill: var(--md-on-surface); font-size: 12.5px; font-weight: 500; paint-order: stroke; stroke: #fff; stroke-width: 3px; }
+.rotulo-pais { fill: var(--md-on-surface); font-size: 12.5px; font-weight: 500; paint-order: stroke; stroke: var(--halo); stroke-width: 4px; stroke-linejoin: round; }
+.ano-rastro { fill: var(--md-on-surface-variant); font-size: 10.5px; paint-order: stroke; stroke: var(--halo); stroke-width: 3px; }
+.rotulo-serie { fill: var(--md-on-surface); font-size: 12.5px; font-weight: 500; paint-order: stroke; stroke: var(--halo); stroke-width: 3px; }
 .nota-grafico { fill: var(--md-on-surface-variant); font-size: 11.5px; }
 .faixa-covid { fill: var(--md-primary); fill-opacity: 0.06; }
 .marcador-ano { stroke: var(--md-primary); stroke-width: 1.5; stroke-dasharray: 3 4; stroke-linecap: round; }
@@ -381,11 +419,11 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .celula:focus { outline: none; }
 .valor-celula { font-size: 10px; font-variant-numeric: tabular-nums; pointer-events: none; }
 .rotulo-matriz { fill: var(--md-on-surface-variant); font-size: 11.5px; }
-.trilho { stroke: #e8eeed; stroke-width: 6; stroke-linecap: round; }
+.trilho { stroke: var(--grade); stroke-width: 6; stroke-linecap: round; }
 .rotulo-indicador { fill: var(--md-on-surface); font-size: 13px; font-weight: 500; }
-.ponto { fill: #dde4e8; fill-opacity: 0.8; }
-.ponto.par { fill: #8fa3ae; fill-opacity: 0.8; stroke: #fff; stroke-width: 1; }
-.destacado { stroke: #fff; stroke-width: 2.5; cursor: default; }
+.ponto { fill: var(--ponto); fill-opacity: 0.8; }
+.ponto.par { fill: var(--ponto-par); fill-opacity: 0.8; stroke: var(--halo); stroke-width: 1; }
+.destacado { stroke: var(--halo); stroke-width: 2.5; cursor: default; }
 .valor-destaque { fill: var(--md-on-surface); font-size: 12.5px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: pre; }
 .cabecalho-destaque { fill: var(--md-on-surface-variant); font-size: 12px; font-weight: 500; }
 .valor-destaque.sem-dado { fill: var(--md-on-surface-variant); font-weight: 400; }
@@ -438,7 +476,7 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .menu-eixo {
   position: absolute; z-index: 5; margin: 0; padding: 4px 0; list-style: none;
   max-height: 300px; overflow-y: auto; min-width: 220px;
-  background: var(--md-surface-container, #fff); color: var(--md-on-surface);
+  background: var(--md-surface-container); color: var(--md-on-surface);
   border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.12);
   font: 400 0.875rem/1.25rem var(--fonte);
 }
@@ -453,7 +491,7 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 
 /* Notas dentro do gráfico da história. */
 .nota line { stroke: var(--md-on-surface-variant); stroke-width: 1; }
-.nota-bolha { fill: var(--md-on-surface); font: 500 12px var(--fonte); paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
+.nota-bolha { fill: var(--md-on-surface); font: 500 12px var(--fonte); paint-order: stroke; stroke: var(--halo); stroke-width: 4px; stroke-linejoin: round; }
 
 /* Nome de país ou região no texto da história. A bolinha tem a cor da bolha no gráfico naquele
    passo, e o texto fica na cor normal, para continuar legível. */
@@ -463,3 +501,10 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 
 /* Botões com display próprio ignoram o atributo hidden sem esta regra. */
 [hidden] { display: none !important; }
+
+/* Ranking do painel. Com todos os países, a lista rola dentro do cartão. */
+.rolagem-ranking.todos { max-height: 560px; overflow-y: auto; }
+.nome-ranking { fill: var(--md-on-surface-variant); font: 400 12.5px var(--fonte); }
+.nome-ranking.marcado { fill: var(--md-on-surface); font-weight: 700; }
+.valor-ranking { fill: var(--md-on-surface-variant); font: 400 12px var(--fonte); white-space: pre; }
+.linha-ranking:hover .alvo { fill: color-mix(in srgb, var(--md-on-surface) 6%, transparent); }

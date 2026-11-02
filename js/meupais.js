@@ -5,7 +5,7 @@
 // Magenta, um matiz que não aparece nas regiões nem na escala da distância até a curva. No teste
 // de daltonismo ele fica perto do limite com o verde-água, então o país do leitor também ganha um
 // contorno mais grosso e o nome em negrito.
-export const COR_MEU_PAIS = "#d6007f";
+export const COR_MEU_PAIS = matchMedia("(prefers-color-scheme: dark)").matches ? "#ec4fa3" : "#d6007f";
 
 const CHAVE = "riqueza-compra-saude:meu-pais";
 const ouvintes = [];

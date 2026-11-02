@@ -49,9 +49,8 @@
           <div class="progresso-trilho"><i id="barraProgresso"></i></div>
           <span id="anoHistoria">1990</span>
         </div>
-        <figcaption>Cada bolha é um país, com área proporcional à população. A cor mostra a região,
-          menos nas duas partes sobre quem fica longe da linha. Nelas, a cor mostra quanto o país fica
-          acima ou abaixo da linha tracejada.</figcaption>
+        <figcaption>Cada bolha é um país, com área proporcional à população. A cor mostra a região ou,
+          em duas partes, a distância até a linha tracejada.</figcaption>
         </div>
       </figure>
     </div>
@@ -208,7 +207,9 @@
         <option value="regiao">Região</option>
         <option value="renda">Grupo de renda</option>
         <option value="residuo">Distância até a curva (só com PIB no eixo horizontal)</option>
+        <optgroup label="Indicador" id="corIndicadores"></optgroup>
       </select></label>
+      <label>Tamanho <select id="selTam"></select></label>
     </div>
     <div id="escolhaPainel"></div>
 
@@ -241,7 +242,7 @@
         <h3 id="tituloBolhas"></h3>
         <p class="nota" id="contagem"></p>
         <div class="legenda" id="legenda"></div>
-        <div class="legenda-estatica" id="legendaResiduo" hidden></div>
+        <div class="legenda-estatica" id="legendaContinua" hidden></div>
         <svg id="svgBolhas" role="group" aria-labelledby="tituloBolhas"></svg>
         <p class="nota">Clique numa bolha para acompanhar o país. Clique na legenda para destacar um
           grupo. Arraste o ano do fundo, ou use as setas do teclado, para andar no tempo.</p>
@@ -257,7 +258,25 @@
         <h3 id="tituloLinhas"></h3>
         <p class="nota">Países acompanhados e o mundo. Clique no gráfico para levar as outras visões
           àquele ano.</p>
+        <fieldset class="alternador">
+          <legend>Mostrar</legend>
+          <label><input type="radio" name="modoLinhas" value="valor" checked> Valor do indicador</label>
+          <label><input type="radio" name="modoLinhas" value="diferenca"> Diferença para o mundo</label>
+        </fieldset>
         <svg id="svgLinhas" role="img" aria-labelledby="tituloLinhas"></svg>
+      </div>
+      <div class="visao visao-larga">
+        <h3 id="tituloRanking"></h3>
+        <p class="nota">Países ordenados do maior para o menor valor do indicador do eixo vertical. À
+          direita está a posição que o país tinha em 1990. Clique numa barra para acompanhar o país.</p>
+        <fieldset class="alternador">
+          <legend>Mostrar</legend>
+          <label><input type="radio" name="modoRanking" value="resumo" checked> Os 10 primeiros, os 10 últimos e os países acompanhados</label>
+          <label><input type="radio" name="modoRanking" value="todos"> Todos os países</label>
+        </fieldset>
+        <div class="rolagem-ranking">
+          <svg id="svgRanking" role="img" aria-labelledby="tituloRanking"></svg>
+        </div>
       </div>
     </div>
 

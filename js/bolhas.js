@@ -2,15 +2,27 @@
 // of Nations", de Mike Bostock. A história e o painel livre usam o mesmo gráfico, cada um com o seu
 // estado. A área da bolha é proporcional à população.
 
-import { ANO_MIN, ANO_MAX, REGIOES, REGIOES4, RENDA, RESIDUO, RESIDUO_CORES, CINZA, TINTA, TINTA_2, CURTO, pt,
+import { ANO_MIN, ANO_MAX, REGIOES, REGIOES4, RENDA, RESIDUO, RESIDUO_CORES, RAMPA, RAMPA_CORES, CINZA, CONTORNO_BOLHA, TINTA, TINTA_2, CURTO, pt,
          fmt, fmtPop, fmtR, marcasLog, rotuloLog, tip } from "./base.js";
 import { meuPais, COR_MEU_PAIS } from "./meupais.js";
 
 // A cor pela distância até a curva só faz sentido quando o eixo horizontal é a renda, porque a
 // pergunta do site é se o país vive mais ou menos do que a renda dele prevê. Com outro eixo
 // horizontal, a cor volta a ser a da região.
+// A cor por indicador vem no formato "ind:<coluna>", como "ind:fecundidade".
 export const modoCor = estado =>
-  estado.cor === "residuo" && estado.x !== "pib_pc_ppp" ? "regiao" : estado.cor;
+  estado.cor === "residuo" && estado.x !== "pib_pc_ppp" ? "regiao"
+  : estado.cor?.startsWith("ind:") ? "indicador" : estado.cor;
+const colunaCor = estado => estado.cor.slice(4);
+const colunaTamanho = estado => estado.tamanho ?? "populacao";
+
+// Legenda da cor por indicador, em HTML, com o menor e o maior valor de 1990 a 2024.
+export function legendaIndicador(D, c) {
+  const ext = d3.extent(D.linhas, d => D.valido(d, c) ? d[c] : undefined);
+  return `<span class="escala-residuo"><span>${D.META[c].nome}: ${fmt(ext[0])}</span>` +
+    `<i style="background: linear-gradient(90deg, ${RAMPA_CORES.join(", ")})"></i>` +
+    `<span>${fmt(ext[1])} ${D.META[c].unidade}${D.ehLog(c) ? ", escala log" : ""}</span></span>`;
+}
 
 // Legenda da cor pela distância até a curva, em HTML. Com a expectativa de vida no eixo vertical,
 // o texto fala em viver mais ou menos. Com outros indicadores, fala em ficar acima ou abaixo.
@@ -127,13 +139,27 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
   });
 
   let estado = null, geo = null, eixosDesenhados = "", ultimos = new Map();
+  const chaveEixos = W => [estado.x, estado.y, colunaTamanho(estado), W].join("|");
   let sobre = null;
   const anoInteiro = () => Math.min(ANO_MAX, Math.floor(estado.t + 1e-9));
   const corLinha = iso3 => modoCor(estado) === "residuo" ? TINTA_2 : (REGIOES4[D.info.get(iso3).regiao4]?.cor ?? TINTA_2);
   const grupo = d => modoCor(estado) === "renda" ? d.renda : d.regiao4;
   let coefAtual = null;
+  // A escala de cor por indicador cobre todos os anos, para a cor não piscar quando o tempo anda.
+  const escalasCor = new Map();
+  function escalaCor(c) {
+    if (!escalasCor.has(c)) {
+      const ext = d3.extent(D.linhas, d => D.valido(d, c) ? d[c] : undefined);
+      escalasCor.set(c, (D.ehLog(c) ? d3.scaleLog() : d3.scaleLinear()).domain(ext).range([0, 1]).clamp(true));
+    }
+    return escalasCor.get(c);
+  }
   function cor(d) {
     const modo = modoCor(estado);
+    if (modo === "indicador") {
+      const c = colunaCor(estado), v = D.valorEm(d.iso3, c, estado.t);
+      return D.valido({ [c]: v }, c) ? RAMPA(escalaCor(c)(v)) : CINZA;
+    }
     if (modo === "residuo") {
       const r = residuo(coefAtual, d.vx, d.vy);
       return r == null ? CINZA : RESIDUO(Math.max(0, Math.min(1, (r / limiteResiduo() + 1) / 2)));
@@ -161,9 +187,11 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
     const m = { t: 14, r: 14, b: 50, l: 50 };
     svg.attr("height", H).attr("viewBox", `0 0 ${W} ${H}`);
     const x = escala(estado.x, [m.l, W - m.r]), y = escala(estado.y, [H - m.b, m.t]);
-    const maxPop = d3.max(D.linhas, d => d.populacao);
-    const r = d3.scaleSqrt().domain([0, maxPop]).range([0, Math.min(46, W / 16)]);
-    geo = { W, H, m, x, y, raio: p => Math.max(3, r(p)) };
+    // A área da bolha é proporcional ao indicador do tamanho. Valores negativos, como na diferença
+    // de vida entre mulheres e homens, ficam com o raio mínimo.
+    const maxTam = d3.max(D.linhas, d => d[colunaTamanho(estado)]);
+    const r = d3.scaleSqrt().domain([0, maxTam > 0 ? maxTam : 1]).range([0, Math.min(46, W / 16)]);
+    geo = { W, H, m, x, y, raio: p => Math.max(3, r(Math.max(0, p))) };
     const tr = s => dur ? s.transition().duration(dur) : s;
     const nx = Math.max(3, Math.round(W / 110)), ny = Math.max(3, Math.round(H / 70));
     tr(gGradeX.attr("transform", `translate(0,${m.t})`))
@@ -193,7 +221,7 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
       const anoEscala = d3.scaleLinear().domain([m.l, W - m.r]).range([ANO_MIN, ANO_MAX]).clamp(true);
       anoFundo.style("cursor", "ew-resize").call(d3.drag().on("drag", ev => aoArrastarAno(anoEscala(ev.x))));
     }
-    eixosDesenhados = estado.x + "|" + estado.y + "|" + W;
+    eixosDesenhados = chaveEixos(W);
   }
 
   // Reta de mínimos quadrados de y sobre x (em log quando o eixo é log), só com o ano inteiro.
@@ -277,8 +305,12 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
       .call(d3.axisBottom(f.sx).ticks(Math.max(3, Math.round(W / 110))).tickFormat(pt.format("+,.0f")).tickSize(0).tickPadding(8))
       .select(".domain").remove();
     filaZero.attr("x1", f.sx(0)).attr("x2", f.sx(0)).attr("y1", m.t).attr("y2", H - m.b);
-    filaEsq.attr("x", m.l + 4).attr("y", m.t + 12).text(vida ? "Vive menos do que a renda prevê" : "Abaixo da curva");
-    filaDir.attr("x", W - m.r - 4).attr("y", m.t + 12).text(vida ? "Vive mais do que a renda prevê" : "Acima da curva");
+    // Em tela estreita os rótulos longos se encontram no meio, então entram os curtos.
+    const curto = W < 600;
+    filaEsq.attr("x", m.l + 4).attr("y", m.t + 12)
+      .text(vida ? (curto ? "Vive menos" : "Vive menos do que a renda prevê") : "Abaixo da curva");
+    filaDir.attr("x", W - m.r - 4).attr("y", m.t + 12)
+      .text(vida ? (curto ? "Vive mais" : "Vive mais do que a renda prevê") : "Acima da curva");
     filaTitulo.attr("x", (m.l + W - m.r) / 2).attr("y", H - 6)
       .text(`Distância até a curva (${D.META[estado.y].unidade})`);
   }
@@ -297,7 +329,7 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
     const pts = [];
     for (const iso3 of D.linhaDe.keys()) {
       const vx = D.valorEm(iso3, estado.x, t), vy = D.valorEm(iso3, estado.y, t);
-      const vp = D.valorEm(iso3, "populacao", t);
+      const vp = D.valorEm(iso3, colunaTamanho(estado), t);
       if (vx != null && vy != null && vp != null) pts.push({ ...D.info.get(iso3), vx, vy, vp });
     }
     const sel = estado.selecionados;
@@ -326,7 +358,7 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
       upd => upd,
       sai => dur ? sai.transition().duration(dur / 2).attr("r", 0).remove() : sai.remove(),
     )
-      .attr("stroke", d => d.iso3 === meu ? COR_MEU_PAIS : sel.has(d.iso3) ? TINTA : "rgba(22, 29, 29, 0.35)")
+      .attr("stroke", d => d.iso3 === meu ? COR_MEU_PAIS : sel.has(d.iso3) ? TINTA : CONTORNO_BOLHA)
       .attr("stroke-width", d => d.iso3 === meu ? 3 : sel.has(d.iso3) ? 1.8 : 0.6)
       .on("mouseenter", (ev, d) => { sobre = d.iso3; desenhar(); })
       .on("mousemove", (ev, d) => {
@@ -334,7 +366,7 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
         tip.mostrar(ev, `<b>${d.pais}</b><span class="tip-sub">${REGIOES[d.regiao]?.nome ?? ""}, ${anoInteiro()}</span>` +
           `<dl><dt>${D.META[estado.x].nome}</dt><dd>${fmt(real?.[estado.x])}</dd>` +
           `<dt>${D.META[estado.y].nome}</dt><dd>${fmt(real?.[estado.y])}</dd>` +
-          `<dt>População</dt><dd>${fmtPop(real?.populacao)}</dd>` + linhaResiduo(real) + `</dl>`);
+          `<dt>População</dt><dd>${fmtPop(real?.populacao)}</dd>` + linhasExtras(real) + linhaResiduo(real) + `</dl>`);
       })
       .on("mouseleave", () => { sobre = null; tip.esconder(); desenhar(); })
       .on("click", (ev, d) => aoClicar(d.iso3))
@@ -376,12 +408,21 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
     // Notas curtas perto do país que explicam, com um traço fino até a bolha. A nota vai para o
     // lado do centro do gráfico, para não sair da área em tela estreita.
     const { W, H, m } = geo;
-    const notas = (estado.notas ?? []).map(n => {
+    const notas = (estado.notas ?? []).map((n, k) => {
       const d = pts.find(p => p.iso3 === n.iso3);
       if (!d) return null;
       const [px, py] = pos(d), rr = raioDe(d);
       const paraDireita = px < (m.l + W - m.r) / 2, paraBaixo = py < (m.t + H - m.b) / 2;
       const largura = n.texto.length * 6.4;
+      // Na fila, as notas ficam logo acima ou logo abaixo do país, alternando, para duas notas não
+      // se encontrarem no meio da faixa, onde as bolhas se juntam.
+      if (fila) {
+        const acima = k % 2 === 0;
+        const tx = paraDireita ? Math.min(px - rr, W - m.r - largura) : Math.max(px + rr, m.l + largura);
+        const ty = acima ? Math.max(m.t + 30, py - rr - 22) : Math.min(H - m.b - 16, py + rr + 22);
+        return { chave: n.iso3 + n.texto, texto: n.texto, px, py: acima ? py - rr : py + rr, tx, ty,
+                 ancora: paraDireita ? "start" : "end" };
+      }
       let tx = px + (paraDireita ? rr + 28 : -rr - 28);
       tx = paraDireita ? Math.min(tx, W - m.r - largura) : Math.max(tx, m.l + largura);
       const ty = Math.max(m.t + 14, Math.min(H - m.b - 6, py + (paraBaixo ? rr + 30 : -rr - 24)));
@@ -415,6 +456,12 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
     return { ano, visiveis: pts.length, ausentes: [...sel].filter(i => !pts.some(p => p.iso3 === i)) };
   }
 
+  // Linhas do tooltip para os indicadores do tamanho e da cor, quando não são a população.
+  function linhasExtras(real) {
+    const cols = [colunaTamanho(estado), modoCor(estado) === "indicador" ? colunaCor(estado) : null]
+      .filter(c => c && c !== "populacao" && c !== estado.x && c !== estado.y);
+    return [...new Set(cols)].map(c => `<dt>${D.META[c].nome}</dt><dd>${fmt(real?.[c])}</dd>`).join("");
+  }
   // Linha do tooltip que diz quanto o país fica acima ou abaixo da curva no ano inteiro.
   function linhaResiduo(real) {
     if (!coefAtual || !real) return "";
@@ -432,7 +479,7 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
     atualizar(novo, { dur = 0 } = {}) {
       estado = novo;
       const W = svgNo.clientWidth || 600;
-      if (!geo || eixosDesenhados !== estado.x + "|" + estado.y + "|" + W) montar(geo ? dur : 0);
+      if (!geo || eixosDesenhados !== chaveEixos(W)) montar(geo ? dur : 0);
       return desenhar(dur);
     },
     redimensionar() { if (estado) { montar(0); desenhar(0); } },

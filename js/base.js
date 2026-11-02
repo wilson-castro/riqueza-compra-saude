@@ -14,30 +14,50 @@ export const REGIOES = {
   MEA: { nome: "Oriente Médio e Norte da África" },
   NAC: { nome: "América do Norte" },
 };
+// O site segue o tema claro ou escuro do sistema. As cores dos dados têm uma versão para cada
+// fundo, porque um tom que se lê bem no branco pode sumir no fundo escuro. Se o leitor troca o
+// tema com a página aberta, ela recarrega para refazer os gráficos com as cores novas.
+const temaEscuro = matchMedia("(prefers-color-scheme: dark)");
+export const ESCURO = temaEscuro.matches;
+temaEscuro.addEventListener("change", () => location.reload());
+const tema = (claro, escuro) => ESCURO ? escuro : claro;
+
 // A cor das bolhas segue as quatro regiões do Gapminder, mas com uma paleta própria do site
-// (terracota, verde-água, violeta e ocre). A paleta passou no teste de daltonismo para todos os
-// pares, porque num gráfico de bolhas qualquer região pode ficar ao lado de qualquer outra.
+// (terracota, verde-água, violeta e ocre). As duas versões passaram no teste de daltonismo para
+// todos os pares, porque num gráfico de bolhas qualquer região pode ficar ao lado de qualquer outra.
+const corRegiao = tema(["#a83a2a", "#2aa198", "#6a55c8", "#c99a1a"], ["#c8483e", "#1f9990", "#8a78e0", "#a8961e"]);
 export const REGIOES4 = {
-  africa: { nome: "África", cor: "#a83a2a" },
-  americas: { nome: "Américas", cor: "#2aa198" },
-  asia: { nome: "Ásia", cor: "#6a55c8" },
-  europe: { nome: "Europa", cor: "#c99a1a" },
+  africa: { nome: "África", cor: corRegiao[0] },
+  americas: { nome: "Américas", cor: corRegiao[1] },
+  asia: { nome: "Ásia", cor: corRegiao[2] },
+  europe: { nome: "Europa", cor: corRegiao[3] },
 };
-// O grupo de renda tem ordem, então usa uma rampa de um só matiz, do claro ao escuro.
+// O grupo de renda tem ordem, então usa uma rampa de um só matiz. No fundo claro, mais renda é
+// mais escuro. No fundo escuro, mais renda é mais claro.
+const corRenda = tema(["#c6e3e9", "#8cc3cf", "#4b98aa", "#2b5f6c"], ["#2f6b78", "#4b98aa", "#86c3d0", "#c6e3e9"]);
 export const RENDA = {
-  LIC: { nome: "Renda baixa", cor: "#c6e3e9" },
-  LMC: { nome: "Renda média-baixa", cor: "#8cc3cf" },
-  UMC: { nome: "Renda média-alta", cor: "#4b98aa" },
-  HIC: { nome: "Renda alta", cor: "#2b5f6c" },
+  LIC: { nome: "Renda baixa", cor: corRenda[0] },
+  LMC: { nome: "Renda média-baixa", cor: corRenda[1] },
+  UMC: { nome: "Renda média-alta", cor: corRenda[2] },
+  HIC: { nome: "Renda alta", cor: corRenda[3] },
 };
-export const CINZA = "#d6dde2";
-export const TINTA = "#161d1d";
-export const TINTA_2 = "#3f4948";
-export const DIVERGENTE = d3.piecewise(d3.interpolateLab, ["#fc6b38", "#f2f2f2", "#4b98aa"]);
+export const CINZA = tema("#d6dde2", "#4a5456");
+export const TINTA = tema("#161d1d", "#dde4e3");
+export const TINTA_2 = tema("#3f4948", "#bec9c8");
+// Cor do contorno que separa marcas sobrepostas. É a cor do fundo do cartão.
+export const HALO = tema("#ffffff", "#1a2121");
+export const CONTORNO_BOLHA = tema("rgba(22, 29, 29, 0.35)", "rgba(221, 228, 227, 0.35)");
+// Célula da matriz sem correlação calculada.
+export const SEM_DADO = tema("#f2f2f2", "#2a3232");
+export const DIVERGENTE = d3.piecewise(d3.interpolateLab, ["#fc6b38", tema("#f2f2f2", "#3a4444"), "#4b98aa"]);
 // Cor da distância até a curva. Laranja fica abaixo do que a renda prevê, azul-petróleo fica
-// acima. O meio é um cinza médio, e não branco, para as bolhas perto da curva não sumirem no fundo.
-export const RESIDUO_CORES = ["#c4512b", "#c3c9cc", "#23808f"];
+// acima. O meio é um cinza médio, e não a cor do fundo, para as bolhas perto da curva não sumirem.
+export const RESIDUO_CORES = tema(["#c4512b", "#c3c9cc", "#23808f"], ["#d9643c", "#7d878b", "#3aa3b5"]);
 export const RESIDUO = d3.piecewise(d3.interpolateLab, RESIDUO_CORES);
+// Rampa de um só matiz para a cor por indicador, como pedem as regras de cor de 26/10. É o mesmo
+// matiz do grupo de renda e segue a mesma regra de claro e escuro.
+export const RAMPA_CORES = tema(["#cfe7ec", "#1f4f5a"], ["#2c6573", "#cfe7ec"]);
+export const RAMPA = d3.interpolateLab(...RAMPA_CORES);
 
 // Nomes curtos para rótulos onde o nome completo não cabe.
 export const CURTO = {

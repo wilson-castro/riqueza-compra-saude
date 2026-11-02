@@ -1,15 +1,19 @@
 // O painel livre do fim da página. O leitor escolhe os eixos, toca o tempo e acompanha países.
 // As três visões (bolhas, matriz e linhas) andam juntas pelo mesmo ano e pelos mesmos países.
 
-import { ANO_MIN, ANO_MAX, REGIOES4, RENDA, DESCRICAO, CINZA, TINTA, TINTA_2, DIVERGENTE, CURTO, pt, fmt, fmtPop,
-         fmtR, marcasLog, rotuloLog, tip } from "./base.js";
-import { criarBolhas, modoCor, legendaResiduo } from "./bolhas.js";
+import { SEM_DADO, ESCURO, ANO_MIN, ANO_MAX, REGIOES4, RENDA, DESCRICAO, CINZA, TINTA, TINTA_2, DIVERGENTE, CURTO, pt, fmt, fmtPop,
+         fmtR, marcasLog, rotuloLog, tip, reduzMovimento } from "./base.js";
+import { criarBolhas, modoCor, legendaResiduo, legendaIndicador } from "./bolhas.js";
 import { criarEscolhaPaises } from "./destaque.js";
 import { meuPais, COR_MEU_PAIS } from "./meupais.js";
 
+// Cinza das barras do ranking que não são de países acompanhados. Fica claro, para as barras
+// coloridas dos países acompanhados se destacarem.
+const CINZA_BARRA = ESCURO ? "#56615f" : "#c5ced3";
+
 export function iniciarPainel(D) {
   const estado = {
-    x: "pib_pc_ppp", y: "expectativa_vida", cor: "regiao", t: 1990,
+    x: "pib_pc_ppp", y: "expectativa_vida", cor: "regiao", tamanho: "populacao", t: 1990,
     selecionados: new Set(["BRA", "CHN", "IND", "NGA"]), foco: null,
     rastro: true, curva: false, mostrarR: true, velocidade: 2,
   };
@@ -45,6 +49,10 @@ export function iniciarPainel(D) {
     d3.select("#" + id).selectAll("option").data(D.eixos).join("option")
       .attr("value", d => d).text(d => D.META[d].nome);
   }
+  d3.select("#corIndicadores").selectAll("option").data(D.eixos).join("option")
+    .attr("value", d => "ind:" + d).text(d => D.META[d].nome);
+  d3.select("#selTam").selectAll("option").data(["populacao", ...D.eixos]).join("option")
+    .attr("value", d => d).text(d => D.META[d].nome);
   const escolha = criarEscolhaPaises(document.getElementById("escolhaPainel"), D, {
     obter: () => [...estado.selecionados],
     mudar: lista => { estado.selecionados = new Set(lista); tudo(); },
@@ -55,6 +63,7 @@ export function iniciarPainel(D) {
   $("selY").addEventListener("change", e => { estado.y = e.target.value; tudo(1000); });
   $("trocar").addEventListener("click", () => { [estado.x, estado.y] = [estado.y, estado.x]; tudo(1000); });
   $("selCor").addEventListener("change", e => { estado.cor = e.target.value; estado.foco = null; tudo(); });
+  $("selTam").addEventListener("change", e => { estado.tamanho = e.target.value; tudo(600); });
   $("selVel").addEventListener("change", e => { estado.velocidade = +e.target.value; });
   $("chkRastro").addEventListener("change", e => { estado.rastro = e.target.checked; desenharBolhas(); });
   $("chkCurva").addEventListener("change", e => { estado.curva = e.target.checked; desenharBolhas(); });
@@ -80,7 +89,7 @@ export function iniciarPainel(D) {
     desenharBolhas();
     marcadorLinhas();
     // A matriz e a tabela usam só anos inteiros, então mudam só quando o ano muda.
-    if (anoInteiro() !== anoDesenhado) { anoDesenhado = anoInteiro(); matriz(); tabela(); }
+    if (anoInteiro() !== anoDesenhado) { anoDesenhado = anoInteiro(); matriz(); tabela(); ranking(); }
   }
   function tocar() {
     if (estado.t >= ANO_MAX) estado.t = ANO_MIN;
@@ -115,17 +124,20 @@ export function iniciarPainel(D) {
     // Sem nenhum país no ano, o leitor precisa saber que é falta de dado e o que fazer.
     $("contagem").textContent = r.visiveis === 0
       ? `Nenhum país tem os dois dados em ${r.ano}. Avance o tempo para ver as bolhas.`
-      : `${r.visiveis} de ${D.info.size} países têm os dois dados em ${r.ano}.`
+      : `${r.visiveis} de ${D.info.size} países têm os dados ${estado.tamanho === "populacao" ? "dos dois eixos" : "dos eixos e do tamanho"} em ${r.ano}.`
         + (nomes.length ? ` Sem dado neste ano para ${nomes.join(", ")}.` : "");
     $("tituloBolhas").textContent = `${D.META[estado.y].nome} e ${D.META[estado.x].nome}`;
   }
 
   function legenda() {
-    // Na cor pela distância até a curva, a legenda é uma escala contínua, sem botões de grupo.
-    const residuo = modoCor(estado) === "residuo";
-    d3.select("#legendaResiduo").property("hidden", !residuo).html(residuo ? legendaResiduo(D, estado.y) : "");
-    d3.select("#legenda").property("hidden", residuo);
-    if (residuo) return;
+    // Na cor pela distância até a curva e na cor por indicador, a legenda é uma escala contínua,
+    // sem botões de grupo.
+    const modo = modoCor(estado);
+    const continua = modo === "residuo" ? legendaResiduo(D, estado.y)
+      : modo === "indicador" ? legendaIndicador(D, estado.cor.slice(4)) : null;
+    d3.select("#legendaContinua").property("hidden", !continua).html(continua ?? "");
+    d3.select("#legenda").property("hidden", !!continua);
+    if (continua) return;
     const itens = modoCor(estado) === "regiao"
       ? Object.entries(REGIOES4).map(([k, v]) => [k, v.nome, v.cor])
       : Object.entries(RENDA).map(([k, v]) => [k, v.nome, v.cor]);
@@ -162,7 +174,7 @@ export function iniciarPainel(D) {
       .on("click", (ev, c) => { estado.y = c.a; estado.x = c.b; tudo(1000); })
       .on("keydown", (ev, c) => { if (ev.key === "Enter") { estado.y = c.a; estado.x = c.b; tudo(1000); } })
       .call(g => g.select("rect").attr("width", lado - 3).attr("height", lado - 3).attr("rx", 6)
-        .attr("fill", c => c.r == null ? "#f2f2f2" : DIVERGENTE((c.r + 1) / 2))
+        .attr("fill", c => c.r == null ? SEM_DADO : DIVERGENTE((c.r + 1) / 2))
         .attr("stroke", c => par(c) ? TINTA : null).attr("stroke-width", c => par(c) ? 2 : null))
       .call(g => g.select("text").attr("x", (lado - 2) / 2).attr("y", (lado - 2) / 2)
         .attr("class", "valor-celula").attr("fill", c => c.r != null && Math.abs(c.r) > 0.6 ? "#fff" : TINTA)
@@ -180,11 +192,22 @@ export function iniciarPainel(D) {
   // ---------- Linhas ----------
   const svgL = d3.select("#svgLinhas");
   let geoL = null;
+  // Na diferença para o mundo, cada país vira o seu valor menos o do mundo no mesmo ano, e o eixo
+  // passa a ser linear, porque a diferença pode ser negativa.
+  let modoLinhas = "valor";
+  document.querySelectorAll("[name=modoLinhas]").forEach(r => r.addEventListener("change", e => {
+    modoLinhas = e.target.value;
+    linhas();
+  }));
   function linhas() {
     const W = svgL.node().clientWidth, H = 280, m = { t: 12, r: W < 560 ? 96 : 170, b: 28, l: 52 };
     svgL.attr("height", H).selectAll("*").remove();
     const c = estado.y;
-    const serie = pts => pts.filter(d => D.valido(d, c)).sort((a, b) => a.ano - b.ano);
+    const dif = modoLinhas === "diferenca";
+    const mundo = new Map(D.agregadoDe.get("WLD").filter(d => d[c] != null).map(d => [d.ano, d[c]]));
+    const serie = pts => pts.filter(d => D.valido(d, c) && (!dif || mundo.has(d.ano)))
+      .map(d => ({ ano: d.ano, v: dif ? d[c] - mundo.get(d.ano) : d[c] }))
+      .sort((a, b) => a.ano - b.ano);
     const series = [...estado.selecionados].map(iso3 => ({
       nome: D.info.get(iso3).pais, cor: corLinha(iso3), largura: 2.4, pts: serie([...D.linhaDe.get(iso3).values()]),
     }));
@@ -193,12 +216,14 @@ export function iniciarPainel(D) {
       series.push({ nome: D.info.get(meu).pais, cor: COR_MEU_PAIS, largura: 3, pts: serie([...D.linhaDe.get(meu).values()]) });
     }
     series.push({ nome: "Mundo", cor: TINTA, largura: 1.6, traco: "6 4", pts: serie(D.agregadoDe.get("WLD")) });
-    const todos = series.flatMap(s => s.pts.map(d => d[c]));
+    const todos = series.flatMap(s => s.pts.map(d => d.v));
+    const log = D.ehLog(c) && !dif;
     const x = d3.scaleLinear().domain([ANO_MIN, ANO_MAX]).range([m.l, W - m.r]);
     const ext = d3.extent(todos.length ? todos : [1, 2]);
-    const y = D.ehLog(c) ? d3.scaleLog().domain(ext).range([H - m.b, m.t])
-                         : d3.scaleLinear().domain(ext).nice().range([H - m.b, m.t]);
-    const eixoY = s => D.ehLog(c) ? s.tickValues(marcasLog(y.domain())).tickFormat(rotuloLog) : s.ticks(5).tickFormat(pt.format(","));
+    const y = log ? d3.scaleLog().domain(ext).range([H - m.b, m.t])
+                  : d3.scaleLinear().domain(ext).nice().range([H - m.b, m.t]);
+    const eixoY = s => log ? s.tickValues(marcasLog(y.domain())).tickFormat(rotuloLog)
+      : s.ticks(5).tickFormat(pt.format(dif ? "+," : ","));
     svgL.append("g").attr("class", "grade").attr("transform", `translate(${W - m.r},0)`)
       .call(eixoY(d3.axisLeft(y)).tickSize(W - m.l - m.r).tickFormat(""));
     svgL.append("g").attr("class", "eixo").attr("transform", `translate(0,${H - m.b})`)
@@ -207,12 +232,12 @@ export function iniciarPainel(D) {
     svgL.append("g").attr("class", "eixo").attr("transform", `translate(${m.l},0)`)
       .call(eixoY(d3.axisLeft(y)).tickSize(0).tickPadding(8)).select(".domain").remove();
     geoL = { x, marcador: svgL.append("line").attr("class", "marcador-ano").attr("y1", m.t).attr("y2", H - m.b) };
-    const linha = d3.line().x(d => x(d.ano)).y(d => y(d[c]));
+    const linha = d3.line().x(d => x(d.ano)).y(d => y(d.v));
     for (const s of series) {
       svgL.append("path").attr("d", linha(s.pts)).attr("fill", "none").attr("stroke", s.cor)
         .attr("stroke-width", s.largura).attr("stroke-dasharray", s.traco ?? null);
     }
-    const pontas = series.filter(s => s.pts.length).map(s => ({ s, y: y(s.pts.at(-1)[c]) })).sort((a, b) => a.y - b.y);
+    const pontas = series.filter(s => s.pts.length).map(s => ({ s, y: y(s.pts.at(-1).v) })).sort((a, b) => a.y - b.y);
     for (let i = 1; i < pontas.length; i++) pontas[i].y = Math.max(pontas[i].y, pontas[i - 1].y + 16);
     for (const p of pontas) {
       svgL.append("line").attr("x1", W - m.r + 6).attr("x2", W - m.r + 18).attr("y1", p.y).attr("y2", p.y)
@@ -226,17 +251,107 @@ export function iniciarPainel(D) {
         const ano = Math.round(x.invert(d3.pointer(ev)[0]));
         foco.attr("x1", x(ano)).attr("x2", x(ano)).attr("opacity", 0.6);
         tip.mostrar(ev, `<b>${ano}</b><dl>` + series.map(s =>
-          `<dt>${s.nome}</dt><dd>${fmt(s.pts.find(p => p.ano === ano)?.[c])}</dd>`).join("") +
+          `<dt>${s.nome}</dt><dd>${dif && s.pts.find(p => p.ano === ano)?.v > 0 ? "+" : ""}${fmt(s.pts.find(p => p.ano === ano)?.v)}</dd>`).join("") +
           "</dl><i>Clique para ir a este ano</i>");
       })
       // Clicar na linha do tempo leva todas as visões para aquele ano.
       .on("click", ev => { parar(); irPara(Math.round(x.invert(d3.pointer(ev)[0]))); })
       .on("mouseleave", () => { foco.attr("opacity", 0); tip.esconder(); });
-    $("tituloLinhas").textContent = `${D.META[c].nome} (${D.META[c].unidade}), de 1990 a 2024`;
+    $("tituloLinhas").textContent = dif
+      ? `${D.META[c].nome}, diferença para o mundo (${D.META[c].unidade}), de 1990 a 2024`
+      : `${D.META[c].nome} (${D.META[c].unidade}), de 1990 a 2024`;
     marcadorLinhas();
   }
   function marcadorLinhas() {
     if (geoL) geoL.marcador.attr("x1", geoL.x(estado.t)).attr("x2", geoL.x(estado.t));
+  }
+
+  // ---------- Ranking ----------
+  // Barras horizontais com a posição de cada país no indicador do eixo vertical, no ano do painel.
+  // As barras partem do zero e usam escala linear mesmo para o PIB, porque o comprimento da barra
+  // só pode ser comparado quando começa no zero.
+  const svgR = d3.select("#svgRanking");
+  let modoRanking = "resumo";
+  document.querySelectorAll("[name=modoRanking]").forEach(r => r.addEventListener("change", e => {
+    modoRanking = e.target.value;
+    ranking();
+  }));
+  function ordenar(c, ano) {
+    const vals = [...D.linhaDe.values()].map(mp => mp.get(ano)).filter(d => D.valido(d, c))
+      .sort((a, b) => d3.descending(a[c], b[c]));
+    return { vals, posicao: new Map(vals.map((d, i) => [d.iso3, i + 1])) };
+  }
+  function ranking() {
+    const c = estado.y, ano = anoInteiro();
+    const { vals } = ordenar(c, ano);
+    const em1990 = ordenar(c, ANO_MIN).posicao;
+    const meu = meuPais.obter();
+    const marcados = new Set([...estado.selecionados, meu].filter(Boolean));
+    const n = vals.length;
+    let linhas = vals.map((d, i) => ({ d, i }));
+    if (modoRanking === "resumo") linhas = linhas.filter(o => o.i < 10 || o.i >= n - 10 || marcados.has(o.d.iso3));
+    // Onde a lista pula posições, entra uma linha com reticências.
+    const itens = [];
+    linhas.forEach((o, k) => {
+      if (k && o.i !== linhas[k - 1].i + 1) itens.push({ chave: "pulo-" + o.i });
+      itens.push({ ...o, chave: o.d.iso3 });
+    });
+
+    svgR.node().parentNode.classList.toggle("todos", modoRanking === "todos");
+    const W = svgR.node().clientWidth, estreito = W < 560;
+    const alt = modoRanking === "resumo" ? 22 : 17;
+    const m = { t: 6, r: estreito ? 64 : 150, b: 6, l: estreito ? 132 : 200 };
+    svgR.attr("height", m.t + m.b + itens.length * alt);
+    const ext = d3.extent(vals, d => d[c]);
+    const x = d3.scaleLinear().domain([Math.min(0, ext[0] ?? 0), Math.max(0, ext[1] ?? 1)]).nice()
+      .range([m.l, W - m.r]);
+    const corBarra = iso3 => iso3 === meu ? COR_MEU_PAIS : estado.selecionados.has(iso3) ? corLinha(iso3) : CINZA_BARRA;
+    const nomeCurto = nome => estreito && nome.length > 17 ? nome.slice(0, 16) + "." : nome;
+    const dur = reduzMovimento() ? 0 : 350;
+
+    const g = svgR.selectAll("g.linha-ranking").data(itens, o => o.chave).join(
+      ent => {
+        const s = ent.append("g").attr("class", "linha-ranking").attr("opacity", 0)
+          .attr("transform", (o, k) => `translate(0,${m.t + k * alt})`);
+        s.append("rect").attr("class", "alvo").attr("fill", "transparent");
+        s.append("text").attr("class", "nome-ranking").attr("text-anchor", "end").attr("dy", "0.35em");
+        s.append("rect").attr("class", "barra-ranking").attr("rx", 2);
+        s.append("text").attr("class", "valor-ranking").attr("dy", "0.35em");
+        return s;
+      },
+      upd => upd,
+      sai => sai.remove(),
+    );
+    g.transition().duration(dur).attr("opacity", 1).attr("transform", (o, k) => `translate(0,${m.t + k * alt})`);
+    const meio = alt / 2;
+    g.select("rect.alvo").attr("x", 0).attr("width", W).attr("height", alt);
+    g.select("text.nome-ranking").attr("x", m.l - 8).attr("y", meio)
+      .classed("marcado", o => o.d && marcados.has(o.d.iso3))
+      .text(o => o.d ? `${o.i + 1}º ${nomeCurto(o.d.pais)}` : "…");
+    g.select("rect.barra-ranking").attr("y", 3).attr("height", alt - 6)
+      .attr("fill", o => o.d ? corBarra(o.d.iso3) : "none")
+      .transition().duration(dur)
+      .attr("x", o => o.d ? x(Math.min(0, o.d[c])) : 0)
+      .attr("width", o => o.d ? Math.abs(x(o.d[c]) - x(0)) : 0);
+    g.select("text.valor-ranking").attr("x", W - m.r + 8).attr("y", meio).text(o => {
+      if (!o.d) return "";
+      if (estreito) return fmt(o.d[c]);
+      const antes = em1990.get(o.d.iso3);
+      return `${fmt(o.d[c])}   ${antes ? `${antes}º em 1990` : "sem dado em 1990"}`;
+    });
+    g.style("cursor", o => o.d ? "pointer" : null)
+      .on("mousemove", (ev, o) => {
+        if (!o.d) return;
+        const antes = em1990.get(o.d.iso3);
+        tip.mostrar(ev, `<b>${o.d.pais}</b><span class="tip-sub">${D.META[c].nome}, ${ano}</span>` +
+          `<dl><dt>Valor</dt><dd>${fmt(o.d[c])} ${D.META[c].unidade}</dd>` +
+          `<dt>Posição</dt><dd>${o.i + 1}º de ${n}</dd>` +
+          `<dt>Em 1990</dt><dd>${antes ? antes + "º" : "sem dado"}</dd></dl>` +
+          `<i>Clique para ${estado.selecionados.has(o.d.iso3) ? "deixar de acompanhar" : "acompanhar"}</i>`);
+      })
+      .on("mouseleave", () => tip.esconder())
+      .on("click", (ev, o) => { if (o.d) { tip.esconder(); alternar(o.d.iso3); } });
+    $("tituloRanking").textContent = `${D.META[c].nome} em ${ano}: posição dos ${n} países com dado`;
   }
 
   // ---------- Tabela, para quem não lê o gráfico ----------
@@ -274,13 +389,14 @@ export function iniciarPainel(D) {
     $("selX").value = estado.x;
     $("selY").value = estado.y;
     $("selCor").value = estado.cor;
+    $("selTam").value = estado.tamanho;
     chips();
     legenda();
     desenharBolhas(dur);
     linhas();
     anoDesenhado = null;
     if (!dur) irPara(estado.t);
-    else { matriz(); tabela(); anoDesenhado = anoInteiro(); }
+    else { matriz(); tabela(); ranking(); anoDesenhado = anoInteiro(); }
   }
   addEventListener("resize", () => { bolhas.redimensionar(); tudo(); });
   meuPais.aoMudar(() => tudo());
