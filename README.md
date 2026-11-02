@@ -57,6 +57,7 @@ Jekyll, o gerador de sites que ele usa por padrão.
   mapa e o ranking.
   Nas bolhas, o leitor escolhe o indicador de cada eixo, do tamanho e da cor. As linhas mostram o
   valor ou a diferença para o mundo.
+- `js/tutorial.js` guia o leitor pelos controles e visões do painel, com foco e destaque a cada passo.
 - `js/base.js` lê os dados e guarda cores, formatos e contas comuns. As cores dos dados têm uma
   versão para o tema claro e outra para o escuro. O site segue o tema do sistema do leitor, e as
   cores da página para o tema escuro ficam no começo de `estilo.css`.

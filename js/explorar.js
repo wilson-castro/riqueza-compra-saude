@@ -6,6 +6,7 @@ import { SEM_DADO, ESCURO, ANO_MIN, ANO_MAX, REGIOES4, RENDA, DESCRICAO, CINZA, 
 import { criarBolhas, modoCor, legendaResiduo, legendaIndicador } from "./bolhas.js";
 import { RAMPA } from "./base.js";
 import { criarEscolhaPaises } from "./destaque.js";
+import { iniciarTutorial } from "./tutorial.js";
 import { meuPais, COR_MEU_PAIS } from "./meupais.js";
 
 // Cinza das barras do ranking que não são de países acompanhados. Fica claro, para as barras
@@ -45,6 +46,8 @@ export function iniciarPainel(D) {
     },
   });
 
+  iniciarTutorial(parar);
+
   // ---------- Controles ----------
   for (const id of ["selX", "selY"]) {
     d3.select("#" + id).selectAll("option").data(D.eixos).join("option")
@@ -74,6 +77,7 @@ export function iniciarPainel(D) {
   $("avancar").addEventListener("click", () => { parar(); irPara(Math.floor(estado.t) + 1); });
   // As setas e a barra de espaço controlam o tempo quando o foco está dentro do painel.
   $("painel").addEventListener("keydown", e => {
+    if ($("tutorialPainel").open) return;
     const alvo = e.target;
     if (alvo.tagName === "SELECT" || (alvo.tagName === "INPUT" && alvo.type !== "range") || alvo.tagName === "BUTTON" && e.key === " ") return;
     if (e.key === "ArrowLeft") { e.preventDefault(); parar(); irPara(Math.ceil(estado.t) - 1); }
@@ -98,7 +102,7 @@ export function iniciarPainel(D) {
   }
   function tocar() {
     if (estado.t >= ANO_MAX) estado.t = ANO_MIN;
-    $("play").textContent = "Pausar";
+    $("play").innerHTML = '<span aria-hidden="true">Ⅱ</span> <span>Pausar</span>';
     $("play").setAttribute("aria-pressed", "true");
     let antes = null;
     const passo = agora => {
@@ -113,7 +117,7 @@ export function iniciarPainel(D) {
   function parar() {
     cancelAnimationFrame(quadro);
     quadro = null;
-    $("play").textContent = "Tocar";
+    $("play").innerHTML = '<span aria-hidden="true">▶</span> <span>Tocar</span>';
     $("play").setAttribute("aria-pressed", "false");
   }
 
@@ -298,8 +302,14 @@ export function iniciarPainel(D) {
   const faixas = new Map();
   let geoC = null;
   function botoesEixos() {
+    const motivo = eixosC.length >= 8
+      ? "Já há 8 eixos, o máximo. Tire um indicador para escolher outro."
+      : eixosC.length <= 2 ? "São precisos pelo menos 2 eixos." : "Escolha de 2 a 8 indicadores.";
+    $("ajudaEixosCoord").textContent = motivo;
     d3.select("#eixosCoord").selectAll("button").data(D.eixos).join("button").attr("type", "button")
       .attr("class", "chip-eixo").text(c => CURTO[c])
+      .attr("aria-describedby", "ajudaEixosCoord")
+      .attr("title", c => (!eixosC.includes(c) && eixosC.length >= 8) || (eixosC.includes(c) && eixosC.length <= 2) ? motivo : null)
       .attr("aria-pressed", c => String(eixosC.includes(c)))
       .attr("disabled", c => (!eixosC.includes(c) && eixosC.length >= 8) || (eixosC.includes(c) && eixosC.length <= 2) ? "" : null)
       .on("click", (ev, c) => {
@@ -313,7 +323,8 @@ export function iniciarPainel(D) {
   function coordenadas() {
     botoesEixos();
     const W = Math.max(svgC.node().parentNode.clientWidth, eixosC.length * 110), H = 360;
-    const m = { t: 34, r: 64, b: 16, l: 64 };
+    // As margens laterais deixam espaço para os números do primeiro eixo e para o nome do último.
+    const m = { t: 34, r: 84, b: 16, l: 64 };
     svgC.attr("width", W).attr("height", H).style("width", W + "px").selectAll("*").remove();
     const x = d3.scalePoint().domain(eixosC).range([m.l, W - m.r]);
     const y = new Map(eixosC.map(c => {
@@ -328,10 +339,7 @@ export function iniciarPainel(D) {
       const s = y.get(c);
       g.call((D.ehLog(c) ? d3.axisLeft(s).tickValues(marcasLog(s.domain(), true)).tickFormat(rotuloLog)
                          : d3.axisLeft(s).ticks(5).tickFormat(pt.format(","))).tickSize(4));
-      // O nome do último eixo termina no eixo, para não passar da borda do gráfico.
-      const ultimo = c === eixosC.at(-1);
-      g.append("text").attr("class", "rotulo-eixo").attr("y", m.t - 16).attr("x", ultimo ? 6 : 0)
-        .attr("text-anchor", ultimo ? "end" : "middle").text(CURTO[c]);
+      g.append("text").attr("class", "rotulo-eixo").attr("y", m.t - 16).attr("text-anchor", "middle").text(CURTO[c]);
       const brush = d3.brushY().extent([[-14, m.t], [14, H - m.b]])
         .on("brush end", ev => {
           if (ev.selection) faixas.set(c, ev.selection.map(s.invert).sort((a, b) => a - b));

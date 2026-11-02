@@ -42,10 +42,11 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
     <div class="busca">
       <label for="${id}-entrada">${rotulo}</label>
       <input id="${id}-entrada" type="text" autocomplete="off" spellcheck="false"
-        placeholder="Digite o nome de um país" role="combobox" aria-autocomplete="list"
-        aria-expanded="false" aria-controls="${id}-lista">
+        placeholder="Buscar país" role="combobox" aria-autocomplete="list"
+        aria-expanded="false" aria-controls="${id}-lista" aria-describedby="${id}-ajuda">
       <ul id="${id}-lista" role="listbox" hidden></ul>
     </div>
+    <p class="ajuda ajuda-busca" id="${id}-ajuda">Digite um nome e escolha um país nas sugestões.</p>
     <div class="chips" aria-live="polite"></div>`;
   const entrada = alvo.querySelector("input");
   const lista = alvo.querySelector("ul");
@@ -128,8 +129,8 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
       .attr("class", "limpar").attr("type", "button").text("Limpar")
       .on("click", () => mudar([])).raise();
     entrada.disabled = !substituir && ids.length >= maximo;
-    entrada.placeholder = ids.length < maximo ? "Digite o nome de um país"
-      : substituir ? "Digite outro país para trocar" : `Até ${maximo} países`;
+    entrada.placeholder = substituir && ids.length >= maximo ? "Trocar país"
+      : ids.length < maximo ? "Buscar país" : `Até ${maximo} países`;
   }
   return { atualizar, cor: corDe };
 }

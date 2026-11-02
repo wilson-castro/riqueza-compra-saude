@@ -203,40 +203,69 @@
   <section id="painel" class="painel" aria-labelledby="tPainel" tabindex="-1">
     <div class="texto">
       <h2 id="tPainel">Explore os dados</h2>
+      <div class="convite-tutorial">
+        <button id="abrirTutorial" class="botao-discreto" type="button" aria-haspopup="dialog" aria-controls="tutorialPainel">Ver como usar o painel</button>
+        <span id="conviteTutorial" class="ajuda">Conheça os controles em sete passos.</span>
+      </div>
       <p>Escolha um indicador para cada eixo e use o botão Tocar para ver os anos passarem. Clique
         numa bolha para acompanhar um país. Clique numa célula da matriz para levar aquele par de indicadores para as bolhas. Um novo clique na mesma célula volta ao par anterior.</p>
     </div>
 
     <div class="barra">
-    <div class="controles">
-      <label>Eixo vertical <select id="selY"></select></label>
-      <button id="trocar" class="botao-discreto" type="button" aria-label="Trocar os eixos">Trocar eixos</button>
-      <label>Eixo horizontal <select id="selX"></select></label>
-      <label>Cor <select id="selCor">
-        <option value="regiao">Região</option>
-        <option value="renda">Grupo de renda</option>
-        <option value="residuo">Distância até a curva (só com PIB no eixo horizontal)</option>
-        <optgroup label="Indicador" id="corIndicadores"></optgroup>
-      </select></label>
-      <label>Tamanho <select id="selTam"></select></label>
-    </div>
-    <div id="escolhaPainel"></div>
-
-    <div class="tempo">
-      <button id="play" class="botao-principal" type="button" aria-pressed="false">Tocar</button>
-      <button id="voltar" class="botao-discreto" type="button" aria-label="Ano anterior">−1</button>
-      <input id="tempo" type="range" min="1990" max="2024" step="0.01" value="1990" aria-label="Ano">
-      <button id="avancar" class="botao-discreto" type="button" aria-label="Próximo ano">+1</button>
-      <output id="anoTxt" for="tempo">1990</output>
-      <label class="em-linha">Velocidade
-        <select id="selVel">
+      <fieldset class="grupo-painel" id="grupoEixos">
+        <legend>O que comparar</legend>
+        <label for="selY">Eixo vertical</label>
+        <select id="selY" aria-describedby="ajudaY"></select>
+        <p class="ajuda" id="ajudaY">Escolha o que a altura da bolha mostra.</p>
+        <label for="selX">Eixo horizontal</label>
+        <select id="selX" aria-describedby="ajudaX"></select>
+        <p class="ajuda" id="ajudaX">Escolha o que a posição para os lados mostra.</p>
+        <button id="trocar" class="botao-discreto" type="button" aria-describedby="ajudaTrocar">Trocar eixos</button>
+        <p class="ajuda" id="ajudaTrocar">Coloque um indicador no lugar do outro.</p>
+      </fieldset>
+      <fieldset class="grupo-painel" id="grupoDesenho">
+        <legend>Como desenhar as bolhas</legend>
+        <label for="selCor">Cor</label>
+        <select id="selCor" aria-describedby="ajudaCor">
+          <option value="regiao">Região</option>
+          <option value="renda">Grupo de renda</option>
+          <option value="residuo">Distância até a curva (só com PIB no eixo horizontal)</option>
+          <optgroup label="Indicador" id="corIndicadores"></optgroup>
+        </select>
+        <p class="ajuda" id="ajudaCor">Use cores para comparar grupos ou valores.</p>
+        <label for="selTam">Tamanho</label>
+        <select id="selTam" aria-describedby="ajudaTam"></select>
+        <p class="ajuda" id="ajudaTam">Valores maiores fazem bolhas maiores.</p>
+        <label class="em-linha"><input id="chkRastro" type="checkbox" checked aria-describedby="ajudaRastro"> Rastro</label>
+        <p class="ajuda" id="ajudaRastro">Mostre o caminho dos países acompanhados.</p>
+        <label class="em-linha"><input id="chkCurva" type="checkbox" aria-describedby="ajudaCurva"> Linha de tendência</label>
+        <p class="ajuda" id="ajudaCurva">Veja a relação geral entre os dois indicadores.</p>
+      </fieldset>
+      <fieldset class="grupo-painel" id="grupoPaises">
+        <legend>Países acompanhados</legend>
+        <div id="escolhaPainel"></div>
+      </fieldset>
+      <fieldset class="grupo-painel" id="grupoTempo">
+        <legend>Tempo</legend>
+        <div class="botoes-tempo">
+          <button id="play" class="botao-principal" type="button" aria-pressed="false" aria-describedby="ajudaPlay"><span aria-hidden="true">▶</span> <span>Tocar</span></button>
+          <button id="voltar" class="botao-discreto" type="button" aria-label="Ano anterior" aria-describedby="ajudaVoltar">−1</button>
+          <button id="avancar" class="botao-discreto" type="button" aria-label="Próximo ano" aria-describedby="ajudaAvancar">+1</button>
+        </div>
+        <p class="ajuda" id="ajudaPlay">Inicie ou pause a passagem dos anos.</p>
+        <p class="ajuda" id="ajudaVoltar">Volte um ano.</p>
+        <p class="ajuda" id="ajudaAvancar">Avance um ano.</p>
+        <label for="tempo">Ano <output id="anoTxt" for="tempo">1990</output></label>
+        <input id="tempo" type="range" min="1990" max="2024" step="0.01" value="1990" aria-describedby="ajudaAno">
+        <p class="ajuda" id="ajudaAno">Arraste para escolher o ano das visões.</p>
+        <label for="selVel">Velocidade</label>
+        <select id="selVel" aria-describedby="ajudaVel">
           <option value="1">1 ano por segundo</option>
           <option value="2" selected>2 anos por segundo</option>
           <option value="4">4 anos por segundo</option>
-        </select></label>
-      <label class="em-linha"><input id="chkRastro" type="checkbox" checked> Rastro</label>
-      <label class="em-linha"><input id="chkCurva" type="checkbox"> Linha de tendência</label>
-    </div>
+        </select>
+        <p class="ajuda" id="ajudaVel">Escolha quantos anos passam a cada segundo.</p>
+      </fieldset>
     </div>
 
     <!-- Explicação dos dois indicadores escolhidos. Muda junto com os eixos. -->
@@ -281,7 +310,8 @@
           mapa e o ranking. Clique fora da faixa para desfazer o filtro daquele eixo.</p>
         <fieldset class="escolha-eixos">
           <legend>Indicadores nos eixos, de 2 a 8</legend>
-          <div id="eixosCoord"></div>
+          <div id="eixosCoord" aria-describedby="ajudaEixosCoord"></div>
+          <p class="ajuda" id="ajudaEixosCoord" aria-live="polite"></p>
         </fieldset>
         <p class="nota" id="contagemCoord" aria-live="polite"></p>
         <div class="rolagem-coord">
@@ -346,6 +376,17 @@
     </div>
   </div>
 </footer>
+
+<dialog id="tutorialPainel" class="tutorial" role="dialog" aria-modal="true" aria-labelledby="tituloTutorial" aria-describedby="textoTutorial" tabindex="-1">
+  <p class="ajuda" id="passoTutorial" aria-live="polite"></p>
+  <h3 id="tituloTutorial"></h3>
+  <p id="textoTutorial"></p>
+  <div class="acoes-tutorial">
+    <button id="tutorialVoltar" class="botao-discreto" type="button">Voltar</button>
+    <button id="tutorialProximo" class="botao-principal" type="button">Próximo</button>
+    <button id="tutorialFechar" class="botao-discreto" type="button">Fechar</button>
+  </div>
+</dialog>
 
 <div class="tip" id="tip" role="tooltip"></div>
 <p class="erro" id="erro" role="alert"></p>
