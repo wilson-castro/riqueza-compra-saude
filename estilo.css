@@ -82,7 +82,7 @@
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {
-  margin: 0; background: var(--md-surface); color: var(--md-on-surface);
+  margin: 0; background: var(--md-surface-lowest); color: var(--md-on-surface);
   font: 400 1rem/1.5rem var(--fonte); letter-spacing: 0.03125rem;
   -webkit-font-smoothing: antialiased;
 }
@@ -130,12 +130,9 @@ select:focus, .escolha-paises input:focus { outline: none; border-color: var(--m
 input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width: 18px; height: 18px; }
 
 /* ---------- Abertura ---------- */
-.abertura { padding: var(--margem); }
-.abertura-texto {
-  min-height: calc(90vh - 2 * var(--margem)); display: flex; flex-direction: column; justify-content: flex-end;
-  background: var(--md-surface-lowest); border-radius: var(--md-forma-xl); box-shadow: var(--md-elev-1);
-  padding: clamp(28px, 6vw, 88px);
-}
+/* A abertura ocupa a primeira tela, sem caixa em volta, com o texto alinhado à esquerda. */
+.abertura { padding: 0 var(--margem); min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; }
+.abertura-texto { padding: 12vh 0 0; display: flex; flex-direction: column; justify-content: flex-end; flex: 1; }
 .abertura h1 {
   font-size: clamp(3rem, 8vw, 7rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1.05;
   margin-bottom: 2.5rem; max-width: 12ch; color: var(--md-on-surface);
@@ -143,17 +140,14 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 .abertura-pe { display: grid; grid-template-columns: minmax(0, 38rem); }
 .linha-fina { font-size: clamp(1.125rem, 1.8vw, 1.375rem); line-height: 1.5; margin: 0; color: var(--md-on-surface-variant); }
 
-/* Convite para rolar, no formato do botão de ação flutuante estendido do M3. */
+/* Convite para rolar, como um link simples no pé da primeira tela. */
 .convite {
-  position: relative; z-index: 1; display: flex; align-items: center; gap: 16px; width: fit-content;
-  max-width: min(36rem, calc(100% - 32px)); margin: -36px auto 0; padding: 14px 24px 14px 18px;
-  background: var(--md-primary-container); color: var(--md-on-primary-container);
-  border-radius: var(--md-forma-l); box-shadow: var(--md-elev-3); text-decoration: none;
+  display: flex; align-items: center; gap: 16px; width: fit-content; max-width: 36rem;
+  margin: 8vh 0 5vh; color: var(--md-on-surface-variant); text-decoration: none;
   font: 400 0.875rem/1.25rem var(--fonte); letter-spacing: 0.015625rem;
-  transition: box-shadow 0.2s var(--curva-padrao), background-color 0.2s;
 }
-.convite:hover { box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3), 0 6px 10px 4px rgba(0, 0, 0, 0.15);
-  background: color-mix(in srgb, var(--md-on-primary-container) 8%, var(--md-primary-container)); }
+.convite:hover strong { text-decoration: underline; text-underline-offset: 4px; }
+.convite strong { color: var(--md-primary); }
 .convite strong { display: block; font-weight: 500; font-size: 1rem; line-height: 1.5rem; }
 .convite-texto span { opacity: 0.85; }
 .convite-roda {
@@ -184,7 +178,7 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 .trilho-historia i { display: block; width: 100%; height: 0; border-radius: 999px; background: var(--md-primary); }
 .passo { position: relative; }
 .passo::before {
-  /* O centro do ponto fica no centro do trilho: o trilho vai de 9 a 13 px, e o cartão começa em 36 px. */
+  /* O centro do ponto fica no centro do trilho. O trilho vai de 9 a 13 px, e o texto começa em 36 px. */
   content: ""; position: absolute; left: -33px; box-sizing: border-box; top: 1.75rem; width: 16px; height: 16px; border-radius: 50%;
   background: var(--md-surface-lowest); border: 3px solid var(--md-outline);
   transition: background 0.4s, border-color 0.4s;
@@ -206,11 +200,7 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
   position: sticky; top: 0; height: 100vh; margin: 0; padding: 24px 0;
   display: flex; flex-direction: column; justify-content: center;
 }
-/* Cartões contornados do M3 para os gráficos. O fundo branco deixa as cores dos dados limpas. */
-.cartao-grafico, .figura, .visao {
-  background: var(--md-surface-lowest); border: 1px solid var(--md-outline-variant); border-radius: var(--md-forma-l);
-}
-.cartao-grafico { padding: 20px 24px 16px; display: flex; flex-direction: column; gap: 8px; max-height: 100%; }
+.cartao-grafico { display: flex; flex-direction: column; gap: 8px; max-height: 100%; }
 .grafico-topo { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .grafico-fixo figcaption, .figura figcaption { font: 400 0.8125rem/1.25rem var(--fonte); letter-spacing: 0.015625rem; color: var(--md-on-surface-variant); }
 /* Progresso discreto do tempo no gráfico da história, como o indicador linear do M3. */
@@ -219,14 +209,13 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 .progresso-trilho i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--md-primary); }
 #anoHistoria { min-width: 2.6em; text-align: right; color: var(--md-on-surface); }
 
-/* Cada parte do texto é um cartão elevado do M3. */
+/* Cada parte do texto fica solta na página. A parte ativa ganha opacidade cheia. */
 .passo {
-  margin: 0 0 78vh; padding: 20px 24px 8px; background: var(--md-surface-lowest);
-  border-radius: var(--md-forma-m); box-shadow: var(--md-elev-1); opacity: 0.45;
-  transition: opacity 0.5s var(--curva-padrao), box-shadow 0.5s var(--curva-padrao);
+  margin: 0 0 78vh; padding: 20px 0 8px; opacity: 0.35;
+  transition: opacity 0.5s var(--curva-padrao);
 }
 .passo:last-child { margin-bottom: 0; }
-.passo.ativo { opacity: 1; box-shadow: var(--md-elev-2); }
+.passo.ativo { opacity: 1; }
 .passo h2 { font-size: 1.5rem; line-height: 2rem; margin-bottom: 0.75rem; }
 .passo p { color: var(--md-on-surface-variant); }
 @media (prefers-reduced-motion: reduce) {
@@ -236,6 +225,9 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 
 /* ---------- Capítulos com texto e figura ---------- */
 .capitulo, .painel { padding: 14vh var(--margem) 4vh; }
+/* O painel fica numa faixa de fundo próprio, para marcar que ali o leitor explora sozinho. O halo
+   dos rótulos acompanha a cor da faixa. */
+.painel { background: var(--md-surface-low); --halo: var(--md-surface-low); padding-bottom: 12vh; margin-top: 14vh; }
 .capitulo {
   display: grid; grid-template-columns: minmax(16rem, 25rem) minmax(0, 1fr);
   gap: 2rem clamp(24px, 4vw, 56px); align-items: start;
@@ -243,7 +235,7 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 .texto { max-width: var(--medida); }
 .texto p { color: var(--md-on-surface-variant); }
 .texto h2, .rodape h2 { font-size: clamp(2rem, 3.4vw, 2.8125rem); line-height: 1.15; margin-bottom: 1.25rem; }
-.figura { margin: 0; min-width: 0; padding: 24px 28px 20px; }
+.figura { margin: 0; min-width: 0; }
 .figura figcaption { margin-top: 10px; }
 .controles-grafico { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; }
 .linha-pais { fill: none; stroke-linejoin: round; }
@@ -332,8 +324,8 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 /* ---------- Painel livre ---------- */
 .painel:focus { outline: none; }
 .painel .texto { margin-bottom: 2rem; }
-/* Barra de controles como cartão preenchido do M3. */
-.barra { background: var(--md-surface-container); border-radius: var(--md-forma-l); padding: 20px 24px; margin-bottom: 24px; }
+/* Barra de controles entre duas linhas finas, sem caixa. */
+.barra { padding: 20px 0; margin-bottom: 32px; border-top: 1px solid var(--md-outline-variant); border-bottom: 1px solid var(--md-outline-variant); }
 .controles, .tempo { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: end; }
 .controles label { display: flex; flex-direction: column; gap: 6px; font: 500 0.75rem/1rem var(--fonte); letter-spacing: 0.03125rem; color: var(--md-on-surface-variant); }
 .controles .botao-discreto { height: 48px; }
@@ -353,8 +345,9 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 #tempo:hover::-webkit-slider-thumb { box-shadow: 0 0 0 10px color-mix(in srgb, var(--md-primary) 8%, transparent); }
 #anoTxt { font: 400 2rem/2.5rem var(--fonte); font-variant-numeric: tabular-nums; min-width: 4.5rem; color: var(--md-on-surface); }
 
-.visoes { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 24px; }
-.visao { min-width: 0; padding: 24px 26px 18px; }
+/* As visões ficam direto na faixa do painel, separadas por uma linha fina no alto de cada uma. */
+.visoes { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 56px 48px; }
+.visao { min-width: 0; padding-top: 20px; border-top: 1px solid var(--md-outline-variant); }
 .visao-larga { grid-column: 1 / -1; }
 .visao h3 { font-size: 1.375rem; line-height: 1.75rem; margin-bottom: 4px; }
 .nota { font: 400 0.875rem/1.25rem var(--fonte); letter-spacing: 0.015625rem; color: var(--md-on-surface-variant); margin: 0 0 10px; max-width: 44rem; }
@@ -367,9 +360,9 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 .escala-div { display: flex; align-items: center; gap: 8px; font: 500 0.75rem var(--fonte); color: var(--md-on-surface-variant); margin: 4px 0 0 140px; max-width: 260px; }
 .escala-div i { flex: 1; height: 8px; border-radius: 999px; background: linear-gradient(90deg, #fc6b38, var(--divergente-meio), #4b98aa); }
 
-/* Explicação dos indicadores escolhidos, em cartões elevados. */
-.sobre-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 16px; margin-bottom: 12px; }
-.sobre { background: var(--md-surface-lowest); border-radius: var(--md-forma-m); box-shadow: var(--md-elev-1); padding: 18px 22px 8px; }
+/* Explicação dos indicadores escolhidos, em duas colunas de texto. */
+.sobre-indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 16px 48px; margin-bottom: 12px; }
+.sobre { padding: 0 0 8px; }
 .sobre h3 { font-size: 1rem; line-height: 1.5rem; font-weight: 500; letter-spacing: 0.009375rem; margin-bottom: 6px; }
 .sobre p { margin: 0 0 10px; font-size: 0.875rem; line-height: 1.25rem; color: var(--md-on-surface-variant); }
 .sobre-meta { color: var(--md-on-surface-variant); font-size: 0.75rem; line-height: 1rem; }
@@ -382,7 +375,7 @@ details summary:hover { background: color-mix(in srgb, var(--md-primary) 8%, tra
 .todos-indicadores dt { font-weight: 500; }
 .todos-indicadores dd { margin: 2px 0 0; color: var(--md-on-surface-variant); }
 
-details.tabela { margin-top: 24px; background: var(--md-surface-lowest); box-shadow: var(--md-elev-1); border-radius: var(--md-forma-m); padding: 8px 16px; }
+details.tabela { margin-top: 40px; }
 details.tabela table { border-collapse: collapse; width: 100%; max-width: 52rem; margin: 12px 0; font: 400 0.875rem/1.25rem var(--fonte); font-variant-numeric: tabular-nums; }
 details.tabela caption { text-align: left; color: var(--md-on-surface-variant); padding-bottom: 8px; }
 details.tabela th, details.tabela td { padding: 8px 12px; border-bottom: 1px solid var(--md-outline-variant); text-align: right; }
@@ -390,11 +383,8 @@ details.tabela th[scope=row], details.tabela thead th:first-child { text-align: 
 details.tabela thead th { font-weight: 500; color: var(--md-on-surface-variant); }
 
 /* ---------- Rodapé ---------- */
-.rodape { padding: 10vh var(--margem) 8vh; }
-.rodape-colunas {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 32px 64px;
-  background: var(--md-surface-lowest); border-radius: var(--md-forma-xl); box-shadow: var(--md-elev-1); padding: clamp(28px, 5vw, 64px);
-}
+.rodape { padding: 10vh var(--margem) 8vh; border-top: 1px solid var(--md-outline-variant); }
+.rodape-colunas { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 32px 64px; }
 .rodape h2 { font-size: 1.5rem; line-height: 2rem; margin-bottom: 0.75rem; }
 .rodape p { font-size: 0.875rem; line-height: 1.375rem; color: var(--md-on-surface-variant); max-width: var(--medida); }
 
@@ -449,19 +439,20 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
   .visoes, .capitulo { grid-template-columns: 1fr; }
 }
 @media (max-width: 820px) {
-  /* O gráfico fica preso no alto da tela e os cartões passam por cima dele. */
+  /* O gráfico fica preso no alto da tela e o texto de cada parte passa por cima dele, numa folha
+     com fundo próprio para continuar legível. */
   .historia { display: block; padding: 0 12px; }
-  .historia-grafico { position: sticky; top: 0; z-index: 1; background: var(--md-surface); padding-top: 8px; }
+  .historia-grafico { position: sticky; top: 0; z-index: 1; background: var(--md-surface-lowest); padding-top: 8px; }
   .grafico-fixo { position: static; height: 64vh; padding: 0; }
-  .cartao-grafico { padding: 12px 12px 10px; border-radius: var(--md-forma-m); }
+  .cartao-grafico { padding: 4px 0; }
   .historia-passos { position: relative; z-index: 2; padding: 30vh 0 30vh; }
-  .passo { padding: 16px 18px 6px; margin-bottom: 80vh; opacity: 0.95; box-shadow: var(--md-elev-2); }
+  .passo { padding: 16px 4px 6px; margin-bottom: 80vh; opacity: 1; background: var(--md-surface-lowest);
+           border-top: 2px solid var(--md-primary); }
   .passo h2 { font-size: 1.375rem; line-height: 1.75rem; }
   .trilho-historia, .passo::before { display: none; }
-  .convite { margin-top: -28px; }
   .legenda-estatica { gap: 2px 10px; }
   .escala-div { margin-left: 0; }
-  .figura, .visao, .barra { padding: 16px; border-radius: var(--md-forma-m); }
+  .barra { padding: 16px 0; }
   .alternador label { padding: 0 14px; }
 }
 

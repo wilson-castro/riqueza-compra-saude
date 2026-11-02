@@ -201,7 +201,8 @@ function covid(D) {
       .attr("class", d => d[0] ? null : "sem-bola")
       .style("--c", d => d[2]).text(d => d[1])
       .attr("aria-pressed", d => d[0] === foco)
-      .on("click", (e, d) => { foco = d[0]; desenhar(); });
+      // Clicar de novo na região escolhida volta a mostrar todas.
+      .on("click", (e, d) => { foco = foco === d[0] ? null : d[0]; desenhar(); });
     escolha.atualizar();
   }
 
@@ -295,10 +296,14 @@ function covid(D) {
         const v = iso3 => serieDe(iso3).find(p => p.ano === ano)?.[c];
         tip.mostrar(ev, `<b>${ano}</b><dl><dt>${nome}</dt><dd>${fmt(melhor.d[c])} anos</dd>` +
           series.map(sr => `<dt>${sr.nome}</dt><dd>${fmt(v(sr.iso3))} anos</dd>`).join("") +
-          "</dl><i>Clique para destacar este país</i>");
+          `</dl><i>Clique para ${destacados.includes(melhor.s.iso3) ? "tirar o destaque" : "destacar este país"}</i>`);
       })
+      // Clicar numa linha destacada tira o destaque, para o clique poder ser desfeito.
       .on("click", () => {
-        if (melhor && !destacados.includes(melhor.s.iso3)) destacados = [...destacados, melhor.s.iso3];
+        if (melhor) {
+          const iso3 = melhor.s.iso3;
+          destacados = destacados.includes(iso3) ? destacados.filter(i => i !== iso3) : [...destacados, iso3];
+        }
         tip.esconder();
         desenhar();
       })

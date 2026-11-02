@@ -150,6 +150,20 @@ export function iniciarPainel(D) {
 
   // ---------- Matriz de correlação ----------
   const svgM = d3.select("#svgMatriz");
+  // Clicar numa célula leva o par para as bolhas. Clicar de novo na célula escolhida devolve o par
+  // que estava antes, para o leitor poder desfazer a escolha.
+  let parAnterior = null;
+  function escolherPar(c, par) {
+    if (par(c) && parAnterior) {
+      [estado.x, estado.y] = parAnterior;
+      parAnterior = null;
+    } else if (!par(c)) {
+      parAnterior = [estado.x, estado.y];
+      estado.y = c.a; estado.x = c.b;
+    } else return;
+    estado.foco = null;
+    tudo(1000);
+  }
   function matriz() {
     const ano = anoInteiro(), E = D.eixos, n = E.length;
     const W = svgM.node().clientWidth;
@@ -167,12 +181,15 @@ export function iniciarPainel(D) {
       return g;
     })
       .attr("transform", c => `translate(${esq + c.j * lado},${(c.i - 1) * lado})`)
-      .attr("aria-label", c => `${D.META[c.a].nome} e ${D.META[c.b].nome}, r ${fmtR(c.r)}. Levar o par para as bolhas.`)
+      .attr("aria-pressed", c => String(par(c)))
+      .attr("aria-label", c => `${D.META[c.a].nome} e ${D.META[c.b].nome}, r ${fmtR(c.r)}. ` +
+        (par(c) ? (parAnterior ? "Voltar ao par anterior." : "Par que está nas bolhas.") : "Levar o par para as bolhas."))
       .on("mousemove", (ev, c) => tip.mostrar(ev, `<b>${CURTO[c.a]} e ${CURTO[c.b]}</b>` +
-        `<span class="tip-sub">r = ${fmtR(c.r)} em ${c.n} países (${ano})</span><i>Clique para ver nas bolhas</i>`))
+        `<span class="tip-sub">r = ${fmtR(c.r)} em ${c.n} países (${ano})</span>` +
+        `<i>${par(c) ? (parAnterior ? "Clique de novo para voltar ao par anterior" : "Este par já está nas bolhas") : "Clique para ver nas bolhas"}</i>`))
       .on("mouseleave", () => tip.esconder())
-      .on("click", (ev, c) => { estado.y = c.a; estado.x = c.b; tudo(1000); })
-      .on("keydown", (ev, c) => { if (ev.key === "Enter") { estado.y = c.a; estado.x = c.b; tudo(1000); } })
+      .on("click", (ev, c) => { tip.esconder(); escolherPar(c, par); })
+      .on("keydown", (ev, c) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); escolherPar(c, par); } })
       .call(g => g.select("rect").attr("width", lado - 3).attr("height", lado - 3).attr("rx", 6)
         .attr("fill", c => c.r == null ? SEM_DADO : DIVERGENTE((c.r + 1) / 2))
         .attr("stroke", c => par(c) ? TINTA : null).attr("stroke-width", c => par(c) ? 2 : null))

@@ -7,10 +7,16 @@
 // contorno mais grosso e o nome em negrito.
 export const COR_MEU_PAIS = matchMedia("(prefers-color-scheme: dark)").matches ? "#ec4fa3" : "#d6007f";
 
+// Na primeira visita o país é o Brasil. Se o leitor tira o Brasil sem escolher outro, a página
+// guarda uma marca vazia, para não trazer o Brasil de volta na visita seguinte.
 const CHAVE = "riqueza-compra-saude:meu-pais";
+const PADRAO = "BRA";
 const ouvintes = [];
-let atual = null;
-try { atual = localStorage.getItem(CHAVE); } catch { /* navegador sem localStorage */ }
+let atual = PADRAO;
+try {
+  const salvo = localStorage.getItem(CHAVE);
+  if (salvo !== null) atual = salvo || null;
+} catch { /* navegador sem localStorage */ }
 
 export const meuPais = {
   obter: () => atual,
@@ -18,7 +24,7 @@ export const meuPais = {
   validar(D) { if (atual && !D.info.has(atual)) this.definir(null); },
   definir(iso3) {
     atual = iso3 || null;
-    try { atual ? localStorage.setItem(CHAVE, atual) : localStorage.removeItem(CHAVE); } catch { /* sem localStorage */ }
+    try { localStorage.setItem(CHAVE, atual ?? ""); } catch { /* sem localStorage */ }
     for (const f of ouvintes) f(atual);
   },
   aoMudar(f) { ouvintes.push(f); },
