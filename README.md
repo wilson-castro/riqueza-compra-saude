@@ -52,7 +52,9 @@ Jekyll, o gerador de sites que ele usa por padrão.
 - `js/meupais.js` guarda o país que o leitor escolhe no alto da página. Esse país fica destacado em
   todos os gráficos, e a escolha fica salva no navegador.
 - `js/destaque.js` é a busca de países com chips, usada em vários gráficos.
-- `js/explorar.js` é o painel livre, com bolhas, matriz de correlação, linhas, mapa, ranking e tabela.
+- `js/explorar.js` é o painel livre, com bolhas, matriz de correlação, linhas, coordenadas paralelas,
+  mapa, ranking e tabela. O filtro feito nas coordenadas paralelas vale também para as bolhas, o
+  mapa e o ranking.
   Nas bolhas, o leitor escolhe o indicador de cada eixo, do tamanho e da cor. As linhas mostram o
   valor ou a diferença para o mundo.
 - `js/base.js` lê os dados e guarda cores, formatos e contas comuns. As cores dos dados têm uma

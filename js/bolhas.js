@@ -337,6 +337,8 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
     const realce = d => sel.has(d.iso3) || d.iso3 === sobre || d.iso3 === meu;
     // Com países em destaque ou um grupo em foco, o resto fica apagado, como no Gapminder.
     const opacidade = d => {
+      // Países fora do filtro das coordenadas paralelas quase somem.
+      if (estado.filtro && !estado.filtro.has(d.iso3)) return 0.06;
       if (estado.foco && grupo(d) !== estado.foco) return 0.1;
       // Na cor pela distância até a curva, a cor é a mensagem, então o resto apaga menos.
       if (sel.size && !realce(d) && !estado.foco) return modoCor(estado) === "residuo" ? 0.6 : 0.22;

@@ -264,6 +264,20 @@
         <svg id="svgLinhas" role="img" aria-labelledby="tituloLinhas"></svg>
       </div>
       <div class="visao visao-larga">
+        <h3 id="tituloCoord"></h3>
+        <p class="nota">Cada linha é um país, e cada eixo vertical é um indicador. Arraste sobre um eixo
+          para ficar só com os países naquela faixa de valores. O filtro vale também para as bolhas, o
+          mapa e o ranking. Clique fora da faixa para desfazer o filtro daquele eixo.</p>
+        <fieldset class="escolha-eixos">
+          <legend>Indicadores nos eixos, de 2 a 8</legend>
+          <div id="eixosCoord"></div>
+        </fieldset>
+        <p class="nota" id="contagemCoord" aria-live="polite"></p>
+        <div class="rolagem-coord">
+          <svg id="svgCoord" role="group" aria-labelledby="tituloCoord"></svg>
+        </div>
+      </div>
+      <div class="visao visao-larga">
         <h3 id="tituloMapa"></h3>
         <p class="nota" id="notaMapa">Cada país tem a cor do seu valor no indicador do eixo vertical. A hachura
           quer dizer sem dado naquele ano. Clique num país para acompanhá-lo.</p>

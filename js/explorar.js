@@ -87,10 +87,14 @@ export function iniciarPainel(D) {
     $("tempo").value = estado.t;
     $("tempo").setAttribute("aria-valuetext", String(anoInteiro()));
     $("anoTxt").textContent = anoInteiro();
+    const anoNovo = anoInteiro() !== anoDesenhado;
+    // O filtro depende dos valores do ano, então é refeito antes de desenhar as bolhas.
+    if (anoNovo) atualizarFiltro();
     desenharBolhas();
     marcadorLinhas();
-    // A matriz e a tabela usam só anos inteiros, então mudam só quando o ano muda.
-    if (anoInteiro() !== anoDesenhado) { anoDesenhado = anoInteiro(); matriz(); tabela(); ranking(); mapa(); }
+    // A matriz, a tabela, o ranking, o mapa e as coordenadas usam só anos inteiros, então mudam
+    // só quando o ano muda.
+    if (anoNovo) { anoDesenhado = anoInteiro(); matriz(); tabela(); ranking(); mapa(); linhasCoord(); }
   }
   function tocar() {
     if (estado.t >= ANO_MAX) estado.t = ANO_MIN;
@@ -284,6 +288,107 @@ export function iniciarPainel(D) {
     if (geoL) geoL.marcador.attr("x1", geoL.x(estado.t)).attr("x2", geoL.x(estado.t));
   }
 
+  // ---------- Coordenadas paralelas ----------
+  // Um eixo por indicador escolhido e uma linha por país, no ano do painel. Arrastar sobre um eixo
+  // cria uma faixa de filtro. Os países que passam em todas as faixas ficam em estado.filtro, que as
+  // bolhas, o mapa e o ranking também usam.
+  const svgC = d3.select("#svgCoord");
+  let eixosC = ["pib_pc_ppp", "expectativa_vida", "mortalidade_infantil", "fecundidade", "uso_internet",
+                "populacao_urbana", "populacao_65_mais", "fecundidade_adolescente"];
+  const faixas = new Map();
+  let geoC = null;
+  function botoesEixos() {
+    d3.select("#eixosCoord").selectAll("button").data(D.eixos).join("button").attr("type", "button")
+      .attr("class", "chip-eixo").text(c => CURTO[c])
+      .attr("aria-pressed", c => String(eixosC.includes(c)))
+      .attr("disabled", c => (!eixosC.includes(c) && eixosC.length >= 8) || (eixosC.includes(c) && eixosC.length <= 2) ? "" : null)
+      .on("click", (ev, c) => {
+        // A ordem dos eixos segue a lista de indicadores, para o mesmo par ficar sempre no mesmo lugar.
+        eixosC = eixosC.includes(c) ? eixosC.filter(e => e !== c) : D.eixos.filter(e => e === c || eixosC.includes(e));
+        faixas.delete(c);
+        coordenadas();
+        aplicarFiltro();
+      });
+  }
+  function coordenadas() {
+    botoesEixos();
+    const W = Math.max(svgC.node().parentNode.clientWidth, eixosC.length * 110), H = 360;
+    const m = { t: 34, r: 64, b: 16, l: 64 };
+    svgC.attr("width", W).attr("height", H).style("width", W + "px").selectAll("*").remove();
+    const x = d3.scalePoint().domain(eixosC).range([m.l, W - m.r]);
+    const y = new Map(eixosC.map(c => {
+      const ext = d3.extent(D.linhas, d => D.valido(d, c) ? d[c] : undefined);
+      return [c, (D.ehLog(c) ? d3.scaleLog() : d3.scaleLinear()).domain(ext).range([H - m.b, m.t]).nice()];
+    }));
+    const gLinhas = svgC.append("g").attr("class", "linhas-coord");
+    const gEixos = svgC.append("g");
+    geoC = { x, y, gLinhas };
+    for (const c of eixosC) {
+      const g = gEixos.append("g").attr("class", "eixo eixo-coord").attr("transform", `translate(${x(c)},0)`);
+      const s = y.get(c);
+      g.call((D.ehLog(c) ? d3.axisLeft(s).tickValues(marcasLog(s.domain(), true)).tickFormat(rotuloLog)
+                         : d3.axisLeft(s).ticks(5).tickFormat(pt.format(","))).tickSize(4));
+      // O nome do último eixo termina no eixo, para não passar da borda do gráfico.
+      const ultimo = c === eixosC.at(-1);
+      g.append("text").attr("class", "rotulo-eixo").attr("y", m.t - 16).attr("x", ultimo ? 6 : 0)
+        .attr("text-anchor", ultimo ? "end" : "middle").text(CURTO[c]);
+      const brush = d3.brushY().extent([[-14, m.t], [14, H - m.b]])
+        .on("brush end", ev => {
+          if (ev.selection) faixas.set(c, ev.selection.map(s.invert).sort((a, b) => a - b));
+          else faixas.delete(c);
+          if (ev.sourceEvent) aplicarFiltro();
+        });
+      const gb = g.append("g").attr("class", "pincel").call(brush);
+      // Ao redesenhar, a faixa que já existia volta para o eixo.
+      if (faixas.has(c)) gb.call(brush.move, faixas.get(c).map(s).sort((a, b) => a - b));
+    }
+    linhasCoord();
+  }
+  function passaFiltro(d) {
+    for (const [c, [a, b]] of faixas) if (!D.valido(d, c) || d[c] < a || d[c] > b) return false;
+    return true;
+  }
+  function linhasCoord() {
+    if (!geoC) return;
+    const ano = anoInteiro(), meu = meuPais.obter();
+    const { x, y, gLinhas } = geoC;
+    const doAno = [...D.linhaDe.values()].map(mp => mp.get(ano)).filter(Boolean);
+    const linha = d3.line().defined(p => p[1] != null).x(p => p[0]).y(p => p[1]);
+    const pontos = d => eixosC.map(c => [x(c), D.valido(d, c) ? y.get(c)(d[c]) : null]);
+    const destaque = d => d.iso3 === meu ? 2 : estado.selecionados.has(d.iso3) ? 1 : 0;
+    const filtrando = faixas.size > 0;
+    const ordem = doAno.slice().sort((a, b) => (passaFiltro(a) - passaFiltro(b)) || (destaque(a) - destaque(b)));
+    gLinhas.selectAll("path").data(ordem, d => d.iso3).join("path")
+      .attr("d", d => linha(pontos(d))).attr("fill", "none")
+      .attr("stroke", d => d.iso3 === meu ? COR_MEU_PAIS : filtrando && !passaFiltro(d) ? CINZA
+        : estado.selecionados.has(d.iso3) ? corLinha(d.iso3) : (REGIOES4[d.regiao4]?.cor ?? TINTA_2))
+      .attr("stroke-width", d => destaque(d) ? 2.6 : 1)
+      .attr("stroke-opacity", d => destaque(d) ? 1 : filtrando && !passaFiltro(d) ? 0.25 : 0.45)
+      .on("mousemove", (ev, d) => tip.mostrar(ev, `<b>${d.pais}</b><span class="tip-sub">${ano}</span><dl>` +
+        eixosC.map(c => `<dt>${CURTO[c]}</dt><dd>${fmt(d[c])}</dd>`).join("") + "</dl>" +
+        `<i>Clique para ${estado.selecionados.has(d.iso3) ? "deixar de acompanhar" : "acompanhar"}</i>`))
+      .on("mouseleave", () => tip.esconder())
+      .on("click", (ev, d) => { tip.esconder(); alternar(d.iso3); })
+      .order();
+    const n = filtrando ? doAno.filter(passaFiltro).length : null;
+    $("contagemCoord").textContent = filtrando
+      ? `${n} de ${doAno.length} países passam no filtro em ${ano}.` : "Nenhum filtro ativo.";
+    $("tituloCoord").textContent = `Vários indicadores ao mesmo tempo, em ${ano}`;
+  }
+  // Recalcula quem passa no filtro no ano do painel.
+  function atualizarFiltro() {
+    const ano = anoInteiro();
+    estado.filtro = faixas.size ? new Set([...D.linhaDe.values()].map(mp => mp.get(ano)).filter(d => d && passaFiltro(d)).map(d => d.iso3)) : null;
+  }
+  // Depois de mexer numa faixa, redesenha as visões que usam o filtro.
+  function aplicarFiltro() {
+    atualizarFiltro();
+    linhasCoord();
+    desenharBolhas();
+    mapa();
+    ranking();
+  }
+
   // ---------- Mapa ----------
   // Mapa coroplético do indicador do eixo vertical, no ano do painel. A cor usa a rampa de um só
   // matiz, com a escala cobrindo todos os anos, para a cor de um país só mudar quando o valor muda.
@@ -327,6 +432,7 @@ export function iniciarPainel(D) {
       .attr("stroke", f => f.id === meu ? COR_MEU_PAIS : estado.selecionados.has(f.id) ? TINTA : null)
       .classed("borda-mapa", f => !destaque(f))
       .attr("stroke-width", f => destaque(f) ? 2 : 0.5)
+      .attr("fill-opacity", f => estado.filtro && f.id && !estado.filtro.has(f.id) ? 0.2 : 1)
       .style("cursor", f => f.id ? "pointer" : null)
       .on("mousemove", (ev, f) => {
         if (!f.id) return;
@@ -368,7 +474,11 @@ export function iniciarPainel(D) {
     const marcados = new Set([...estado.selecionados, meu].filter(Boolean));
     const n = vals.length;
     let linhas = vals.map((d, i) => ({ d, i }));
-    if (modoRanking === "resumo") linhas = linhas.filter(o => o.i < 10 || o.i >= n - 10 || marcados.has(o.d.iso3));
+    // Com o filtro das coordenadas paralelas, só entram os países que passam nele. A posição
+    // continua sendo a entre todos os países.
+    if (estado.filtro) linhas = linhas.filter(o => estado.filtro.has(o.d.iso3));
+    const k = linhas.length;
+    if (modoRanking === "resumo") linhas = linhas.filter((o, j) => j < 10 || j >= k - 10 || marcados.has(o.d.iso3));
     // Onde a lista pula posições, entra uma linha com reticências.
     const itens = [];
     linhas.forEach((o, k) => {
@@ -473,9 +583,10 @@ export function iniciarPainel(D) {
     legenda();
     desenharBolhas(dur);
     linhas();
+    coordenadas();
     anoDesenhado = null;
     if (!dur) irPara(estado.t);
-    else { matriz(); tabela(); ranking(); mapa(); anoDesenhado = anoInteiro(); }
+    else { atualizarFiltro(); matriz(); tabela(); ranking(); mapa(); linhasCoord(); anoDesenhado = anoInteiro(); }
   }
   addEventListener("resize", () => { bolhas.redimensionar(); tudo(); });
   meuPais.aoMudar(() => tudo());
