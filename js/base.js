@@ -14,14 +14,14 @@ export const REGIOES = {
   MEA: { nome: "Oriente Médio e Norte da África" },
   NAC: { nome: "América do Norte" },
 };
-// A cor das bolhas segue as quatro regiões do Gapminder, com os mesmos matizes do Gapminder Tools
-// (turquesa, verde, rosa e amarelo). Os tons são um pouco mais escuros que os originais para as
-// bolhas não sumirem no fundo branco.
+// A cor das bolhas segue as quatro regiões do Gapminder, mas com uma paleta própria do site
+// (terracota, verde-água, violeta e ocre). A paleta passou no teste de daltonismo para todos os
+// pares, porque num gráfico de bolhas qualquer região pode ficar ao lado de qualquer outra.
 export const REGIOES4 = {
-  africa: { nome: "África", cor: "#00a9bd" },
-  americas: { nome: "Américas", cor: "#5aaf00" },
-  asia: { nome: "Ásia", cor: "#ff5872" },
-  europe: { nome: "Europa", cor: "#d1a800" },
+  africa: { nome: "África", cor: "#a83a2a" },
+  americas: { nome: "Américas", cor: "#2aa198" },
+  asia: { nome: "Ásia", cor: "#6a55c8" },
+  europe: { nome: "Europa", cor: "#c99a1a" },
 };
 // O grupo de renda tem ordem, então usa uma rampa de um só matiz, do claro ao escuro.
 export const RENDA = {
@@ -34,6 +34,10 @@ export const CINZA = "#d6dde2";
 export const TINTA = "#161d1d";
 export const TINTA_2 = "#3f4948";
 export const DIVERGENTE = d3.piecewise(d3.interpolateLab, ["#fc6b38", "#f2f2f2", "#4b98aa"]);
+// Cor da distância até a curva. Laranja fica abaixo do que a renda prevê, azul-petróleo fica
+// acima. O meio é um cinza médio, e não branco, para as bolhas perto da curva não sumirem no fundo.
+export const RESIDUO_CORES = ["#c4512b", "#c3c9cc", "#23808f"];
+export const RESIDUO = d3.piecewise(d3.interpolateLab, RESIDUO_CORES);
 
 // Nomes curtos para rótulos onde o nome completo não cabe.
 export const CURTO = {

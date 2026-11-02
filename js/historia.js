@@ -4,19 +4,33 @@
 
 import { ANO_MIN, ANO_MAX, REGIOES, REGIOES4, RENDA, CINZA, TINTA, TINTA_2, CURTO, pt, fmt, tip,
          reduzMovimento } from "./base.js";
-import { criarBolhas } from "./bolhas.js";
+import { criarBolhas, modoCor, legendaResiduo } from "./bolhas.js";
 import { criarEscolhaPaises } from "./destaque.js";
+import { meuPais, COR_MEU_PAIS } from "./meupais.js";
 
 // Estado do gráfico em cada passo. O índice segue a ordem dos elementos .passo no HTML.
+// As notas repetem dentro do gráfico um fato que já está no texto do passo.
+// Nos dois passos sobre quem fica longe da linha, a cor mostra a distância até a curva da
+// expectativa de vida, que é a pergunta do site. Nos outros passos, a cor é a da região. Com outros
+// indicadores, ficar acima da curva pode ser ruim, como na gravidez na adolescência, e a escala de
+// cor daria a ideia errada.
 const PASSOS = [
   { x: "pib_pc_ppp", y: "expectativa_vida", t: 1990, sel: [] },
   { x: "pib_pc_ppp", y: "expectativa_vida", t: 2024, de: 1990, sel: [] },
-  { x: "pib_pc_ppp", y: "expectativa_vida", t: 2024, de: 1990, sel: ["CHN", "IND"] },
-  { x: "pib_pc_ppp", y: "expectativa_vida", t: 2023, sel: ["NGA", "ETH"], curva: true, r: true },
-  { x: "pib_pc_ppp", y: "fecundidade", t: 2024, de: 1990, sel: ["KOR", "NGA", "BGD"] },
-  { x: "pib_pc_ppp", y: "populacao_65_mais", t: 2024, sel: ["JPN", "CHN"], foco: null },
-  { x: "pib_pc_ppp", y: "diferenca_vida_genero", t: 2023, sel: ["UKR", "TGO", "BRA"], r: true },
-  { x: "pib_pc_ppp", y: "fecundidade_adolescente", t: 2023, sel: ["BRA", "NER", "KOR"], curva: true, r: true },
+  { x: "pib_pc_ppp", y: "expectativa_vida", t: 2024, de: 1990, sel: ["CHN", "IND"],
+    notas: [{ iso3: "CHN", texto: "Renda 13,6 vezes maior" }, { iso3: "IND", texto: "De 58,6 para 72,0 anos" }] },
+  { x: "pib_pc_ppp", y: "expectativa_vida", t: 2023, sel: ["NGA", "ETH"], cor: "residuo", r: true,
+    notas: [{ iso3: "NGA", texto: "15 anos abaixo da linha" }, { iso3: "ETH", texto: "Renda menor, vida mais longa" }] },
+  { x: "pib_pc_ppp", y: "expectativa_vida", t: 2023, sel: ["NGA", "SLB", "BRA"], cor: "residuo", layout: "fila",
+    notas: [{ iso3: "NGA", texto: "15,3 anos abaixo" }, { iso3: "SLB", texto: "7,1 anos acima" }] },
+  { x: "pib_pc_ppp", y: "fecundidade", t: 2024, de: 1990, sel: ["KOR", "NGA", "BGD"],
+    notas: [{ iso3: "KOR", texto: "0,75 filho por mulher" }, { iso3: "BGD", texto: "De 4,5 para 2,1" }] },
+  { x: "pib_pc_ppp", y: "populacao_65_mais", t: 2024, sel: ["JPN", "CHN"], foco: null,
+    notas: [{ iso3: "JPN", texto: "29,8% com 65 anos ou mais" }] },
+  { x: "pib_pc_ppp", y: "diferenca_vida_genero", t: 2023, sel: ["UKR", "TGO", "BRA"], r: true,
+    notas: [{ iso3: "UKR", texto: "Mulheres vivem 13,3 anos a mais" }, { iso3: "TGO", texto: "0,4 ano" }] },
+  { x: "pib_pc_ppp", y: "fecundidade_adolescente", t: 2023, sel: ["BRA", "NER", "KOR"], curva: true, r: true,
+    notas: [{ iso3: "NER", texto: "145 por mil" }, { iso3: "BRA", texto: "42,7 por mil" }] },
 ];
 
 export function iniciarHistoria(D) {
@@ -24,6 +38,16 @@ export function iniciarHistoria(D) {
   const anoLegenda = document.getElementById("anoHistoria");
   const barra = document.getElementById("barraProgresso");
   const repetir = document.getElementById("repetir");
+  const legenda = document.getElementById("legendaHistoria");
+  const legenda4 = Object.values(REGIOES4)
+    .map(r => `<span class="item"><i class="bola" style="--c:${r.cor}"></i>${r.nome}</span>`).join("");
+  let legendaDesenhada = "";
+  function desenharLegenda() {
+    const chave = modoCor(estado) + "|" + estado.y;
+    if (chave === legendaDesenhada) return;
+    legendaDesenhada = chave;
+    legenda.innerHTML = modoCor(estado) === "residuo" ? legendaResiduo(D, estado.y) : legenda4;
+  }
   const estado = { x: "pib_pc_ppp", y: "expectativa_vida", t: 1990, cor: "regiao",
                    selecionados: new Set(), foco: null, rastro: true, curva: false, mostrarR: false };
   // A altura livre desconta as legendas e as margens do cartão.
@@ -33,7 +57,9 @@ export function iniciarHistoria(D) {
 
   let redesenho = null;
   function mostrar(dur = 0) {
+    desenharLegenda();
     grafico.atualizar(estado, { dur });
+    pintarRefs();
     // Durante uma transição o gráfico não desenha os rastros. Ao fim dela, um novo desenho os traz de volta.
     clearTimeout(redesenho);
     if (dur) redesenho = setTimeout(() => grafico.atualizar(estado), dur + 30);
@@ -44,14 +70,18 @@ export function iniciarHistoria(D) {
 
   // Leva o tempo de um ano a outro a 3 anos por segundo, cerca de 11 segundos de 1990 a 2024.
   // Quem pediu menos movimento no sistema vai direto ao ano final.
+  // As notas do passo só aparecem quando o tempo chega ao ano final, porque falam desse ano.
   function animar(de, ate) {
     cancelAnimationFrame(quadro);
-    if (reduzMovimento()) { estado.t = ate; mostrar(); return; }
+    const notas = PASSOS[passoAtual]?.notas ?? [];
+    if (reduzMovimento()) { estado.t = ate; estado.notas = notas; mostrar(); return; }
     estado.t = de;
+    estado.notas = [];
     let antes = null;
     const passo = agora => {
       if (antes != null) estado.t = Math.min(ate, estado.t + (agora - antes) / 1000 * 3);
       antes = agora;
+      if (estado.t >= ate) estado.notas = notas;
       mostrar();
       if (estado.t < ate) quadro = requestAnimationFrame(passo);
     };
@@ -65,8 +95,10 @@ export function iniciarHistoria(D) {
     cancelAnimationFrame(quadro);
     const mudaEixo = p.x !== estado.x || p.y !== estado.y;
     Object.assign(estado, { x: p.x, y: p.y, selecionados: new Set(p.sel), foco: p.foco ?? null,
-                            curva: !!p.curva, mostrarR: !!p.r });
+                            curva: !!p.curva, mostrarR: !!p.r, cor: p.cor ?? "regiao",
+                            layout: p.layout ?? "dispersao", notas: p.notas ?? [] });
     repetir.hidden = p.de == null;
+    if (p.de != null && (mudaEixo || estado.t < p.t)) estado.notas = [];
     // Com os mesmos eixos, o tempo segue de onde está, sem voltar ao começo. Assim, passar de
     // uma parte para a seguinte não reinicia a animação que já estava em andamento.
     if (!mudaEixo) {
@@ -79,6 +111,31 @@ export function iniciarHistoria(D) {
     }
   }
   repetir.addEventListener("click", () => { const p = PASSOS[passoAtual]; if (p?.de != null) animar(p.de, p.t); });
+
+  // Nomes de países e regiões no texto ganham a cor que têm no gráfico. Passar o mouse ou o foco
+  // do teclado sobre o nome destaca o país, ou deixa só a região em evidência.
+  const refs = [...document.querySelectorAll("#historia .ref")];
+  function pintarRefs() {
+    for (const r of refs) {
+      const c = r.dataset.iso3 ? grafico.corDe(r.dataset.iso3)
+        : modoCor(estado) === "regiao" ? REGIOES4[r.dataset.regiao]?.cor : null;
+      r.style.setProperty("--c", c ?? "transparent");
+    }
+  }
+  for (const r of refs) {
+    const entrar = () => {
+      if (r.dataset.iso3) grafico.destacar(r.dataset.iso3);
+      else { estado.foco = r.dataset.regiao; mostrar(); }
+    };
+    const sair = () => {
+      if (r.dataset.iso3) grafico.destacar(null);
+      else { estado.foco = PASSOS[passoAtual]?.foco ?? null; mostrar(); }
+    };
+    r.addEventListener("mouseenter", entrar);
+    r.addEventListener("focus", entrar);
+    r.addEventListener("mouseleave", sair);
+    r.addEventListener("blur", sair);
+  }
 
   // O passo ativo é o que cruza a faixa do meio da tela.
   const passos = [...document.querySelectorAll("#historia .passo")];
@@ -112,6 +169,7 @@ export function iniciarHistoria(D) {
   encherTrilho();
   mostrar();
   addEventListener("resize", () => grafico.redimensionar());
+  meuPais.aoMudar(() => mostrar());
 
   covid(D);
   brasil(D);
@@ -132,8 +190,10 @@ function covid(D) {
   const todas = [...D.linhaDe.keys()].map(iso3 => ({ iso3, regiao: D.info.get(iso3).regiao4, pts: serieDe(iso3) }));
   const escolha = criarEscolhaPaises(document.getElementById("escolhaCovid"), D, {
     obter: () => destacados, mudar: lista => { destacados = lista; desenhar(); },
+    cor: iso3 => iso3 === meuPais.obter() ? COR_MEU_PAIS : null,
   });
-  const corDe = iso3 => escolha.cor(iso3);
+  const corDe = iso3 => iso3 === meuPais.obter() ? COR_MEU_PAIS : escolha.cor(iso3);
+  meuPais.aoMudar(() => desenhar());
 
   function controles() {
     const itens = [[null, "Todas as regiões", null], ...Object.entries(REGIOES4).map(([k, v]) => [k, v.nome, v.cor])];
@@ -153,7 +213,10 @@ function covid(D) {
     const x = d3.scaleLinear().domain([A0, ANO_MAX]).range([m.l, W - m.r]);
     // O eixo começa em 45 anos e as poucas quedas abaixo disso ficam cortadas. Se um país
     // destacado cai abaixo de 45, o eixo desce até ele, para a linha destacada aparecer inteira.
-    const minDestaque = d3.min(destacados, iso3 => d3.min(serieDe(iso3), d => d[c])) ?? 45;
+    const meu = meuPais.obter();
+    // O país do leitor entra como mais uma linha destacada, sem ocupar uma vaga da lista.
+    const comMeu = meu && !destacados.includes(meu) ? [...destacados, meu] : destacados;
+    const minDestaque = d3.min(comMeu, iso3 => d3.min(serieDe(iso3), d => d[c])) ?? 45;
     const y = d3.scaleLinear().domain([Math.min(45, Math.floor(minDestaque / 5) * 5),
       d3.max(todas, s => d3.max(s.pts, d => d[c]))]).nice().range([H - m.b, m.t]);
     svg.append("defs").append("clipPath").attr("id", "corteCovid").append("rect")
@@ -179,7 +242,7 @@ function covid(D) {
       .attr("stroke-opacity", d => !visivel(d) ? 0.05 : foco ? 0.6 : 0.2)
       .attr("stroke-width", d => foco && visivel(d) ? 1.4 : 1);
 
-    const series = destacados.map(iso3 => ({ iso3, nome: D.info.get(iso3).pais, cor: corDe(iso3), largura: 2.6 }));
+    const series = comMeu.map(iso3 => ({ iso3, nome: D.info.get(iso3).pais, cor: corDe(iso3), largura: iso3 === meu ? 3 : 2.6 }));
     series.push({ iso3: "WLD", nome: "Mundo", cor: TINTA, largura: 2, traco: "6 4" });
     // Tudo o que é linha fica dentro do recorte da área do gráfico, inclusive o destaque do mouse.
     const frente = svg.append("g").attr("clip-path", "url(#corteCovid)");
@@ -261,29 +324,34 @@ function brasil(D) {
   }));
   const escolha = criarEscolhaPaises(document.getElementById("escolhaBrasil"), D, {
     obter: () => destacados, mudar: lista => { destacados = lista; desenhar(); }, maximo: 5,
-    rotulo: "Comparar outros países",
+    rotulo: "Comparar outros países", cor: iso3 => iso3 === meuPais.obter() ? COR_MEU_PAIS : null,
   });
+  meuPais.aoMudar(() => desenhar());
   const dica = (ev, d, c) => tip.mostrar(ev, `<b>${d.pais}</b><span class="tip-sub">${CURTO[c]}, ${ANO}</span>` +
     `<dl><dt>Valor</dt><dd>${fmt(d[c])} ${D.META[c].unidade}</dd></dl>`);
 
   function desenhar() {
     escolha.atualizar();
+    // O país do leitor entra como mais uma coluna de comparação, se ainda não estiver na lista.
+    const meu = meuPais.obter();
+    const lista = meu && !destacados.includes(meu) ? [...destacados, meu] : destacados;
+    const corDe = iso3 => iso3 === meu ? COR_MEU_PAIS : escolha.cor(iso3);
     const W = svg.node().clientWidth;
     const estreito = W < 620;
     // A coluna da direita tem um valor por país destacado, então cresce com a lista.
-    const larguraValor = destacados.length > 1 ? 104 : 150;
-    const comCabecalho = destacados.length > 1 && !estreito;
-    const linhaH = 46, m = { t: comCabecalho ? 30 : 8, r: estreito ? 12 : 14 + destacados.length * larguraValor, b: 8, l: estreito ? 12 : 190 };
+    const larguraValor = lista.length > 1 ? 104 : 150;
+    const comCabecalho = lista.length > 1 && !estreito;
+    const linhaH = 46, m = { t: comCabecalho ? 30 : 8, r: estreito ? 12 : 14 + lista.length * larguraValor, b: 8, l: estreito ? 12 : 190 };
     const cols = D.eixos;
     const extra = estreito ? 16 : 0;
     const H = m.t + m.b + cols.length * (linhaH + extra);
     svg.attr("height", H).selectAll("*").remove();
     const doAno = [...D.linhaDe.values()].map(mp => mp.get(ANO)).filter(Boolean);
     const filtro = GRUPOS[grupo].filtro;
-    const escolhidos = new Set(destacados);
+    const escolhidos = new Set(lista);
     // Com mais de um país, cada coluna de valores ganha o nome do país no alto.
     if (comCabecalho) {
-      destacados.forEach((iso3, k) => {
+      lista.forEach((iso3, k) => {
         const nome = D.info.get(iso3).pais;
         svg.append("text").attr("class", "cabecalho-destaque").attr("x", W - m.r + 14 + k * larguraValor).attr("y", 14)
           .text(nome.length > 13 ? nome.slice(0, 12) + "." : nome)
@@ -314,10 +382,10 @@ function brasil(D) {
         g.append("line").attr("class", "mediana").attr("x1", x(mediana)).attr("x2", x(mediana))
           .attr("y1", meio - 14).attr("y2", meio + 14);
       }
-      destacados.forEach((iso3, k) => {
+      lista.forEach((iso3, k) => {
         const d = D.linhaDe.get(iso3).get(ANO);
-        const cor = escolha.cor(iso3);
-        const xv = estreito ? W - m.r - (destacados.length - 1 - k) * 74 : W - m.r + 14 + k * larguraValor;
+        const cor = corDe(iso3);
+        const xv = estreito ? W - m.r - (lista.length - 1 - k) * 74 : W - m.r + 14 + k * larguraValor;
         if (!D.valido(d, c)) {
           g.append("text").attr("class", "valor-destaque sem-dado").attr("x", xv).attr("y", estreito ? y0 - 4 : meio)
             .attr("dy", estreito ? 0 : "0.35em").attr("text-anchor", estreito ? "end" : "start").text("sem dado");
@@ -326,10 +394,10 @@ function brasil(D) {
         g.append("circle").attr("class", "destacado").attr("fill", cor).attr("cx", x(d[c])).attr("cy", meio).attr("r", 7)
           .on("mousemove", ev => dica(ev, d, c)).on("mouseleave", () => tip.esconder());
         const posicao = vals.filter(v => v[c] > d[c]).length + 1;
-        const texto = destacados.length > 1 || estreito ? `${fmt(d[c])} (${posicao}º)` : `${fmt(d[c])}  (${posicao}º de ${vals.length})`;
+        const texto = lista.length > 1 || estreito ? `${fmt(d[c])} (${posicao}º)` : `${fmt(d[c])}  (${posicao}º de ${vals.length})`;
         const gv = g.append("g").attr("transform", `translate(${xv},${estreito ? y0 - 4 : meio})`);
-        if (destacados.length > 1 && !estreito) gv.append("circle").attr("r", 4).attr("cx", 4).attr("fill", cor);
-        gv.append("text").attr("class", "valor-destaque").attr("x", destacados.length > 1 && !estreito ? 12 : 0)
+        if (lista.length > 1 && !estreito) gv.append("circle").attr("r", 4).attr("cx", 4).attr("fill", cor);
+        gv.append("text").attr("class", "valor-destaque").attr("x", lista.length > 1 && !estreito ? 12 : 0)
           .attr("dy", estreito ? 0 : "0.35em").attr("text-anchor", estreito ? "end" : "start").text(texto);
       });
     });

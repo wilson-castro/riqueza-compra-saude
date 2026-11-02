@@ -3,7 +3,8 @@
 // painel livre.
 
 // Cores dos países destacados, numa ordem fixa. A paleta passou no teste de daltonismo para
-// vizinhos na ordem. Nenhum matiz repete os das quatro regiões, para o destaque não parecer uma região.
+// vizinhos na ordem. Alguns matizes lembram os das regiões. Por isso a linha destacada é mais
+// grossa, tem contorno branco e leva o nome na ponta, enquanto as linhas das regiões ficam apagadas.
 export const PALETA_DESTAQUE = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#6250d6"];
 
 // Tira acentos e caixa, para "india" achar "Índia" e "sao tome" achar "São Tomé e Príncipe".
@@ -11,12 +12,13 @@ const normalizar = t => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
 
 // Monta a busca dentro de `alvo`. `obter` devolve a lista atual de países escolhidos e `mudar`
 // recebe a nova lista. Os chips são desenhados de novo a cada mudança, pela função `atualizar`.
-// Sem a opção `cor`, cada país ganha uma cor da paleta de destaque quando é escolhido e fica com
-// ela até sair da lista, mesmo que outros países entrem ou saiam.
+// Sem a opção `cor`, ou quando ela devolve null, o país ganha uma cor da paleta de destaque quando
+// é escolhido e fica com ela até sair da lista, mesmo que outros países entrem ou saiam.
 export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar país", maximo = 6, cor = null }) {
   const vaga = new Map();
   function corDe(iso3) {
-    if (cor) return cor(iso3);
+    const fixa = cor?.(iso3);
+    if (fixa) return fixa;
     if (!vaga.has(iso3)) {
       const usadas = new Set(obter().filter(i => vaga.has(i)).map(i => vaga.get(i)));
       let k = 0;
@@ -113,7 +115,8 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
       .attr("class", "limpar").attr("type", "button").text("Limpar")
       .on("click", () => mudar([])).raise();
     entrada.disabled = ids.length >= maximo;
-    entrada.placeholder = ids.length >= maximo ? `Até ${maximo} países` : "Digite o nome de um país";
+    entrada.placeholder = ids.length < maximo ? "Digite o nome de um país"
+      : maximo === 1 ? "Tire o atual para trocar" : `Até ${maximo} países`;
   }
   return { atualizar, cor: corDe };
 }

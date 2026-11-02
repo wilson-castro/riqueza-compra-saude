@@ -20,6 +20,7 @@
       <p class="linha-fina">A expectativa de vida ao nascer no mundo passou de 65 anos em 1990 para
         73 anos em 2024. Esta página usa dados do Banco Mundial sobre 217 países para ver onde esse
         ganho aconteceu e quanto ele acompanha a renda.</p>
+      <div id="escolhaMeuPais" class="meu-pais"></div>
     </div>
   </div>
   <a class="convite" href="#historia">
@@ -39,12 +40,7 @@
       <figure class="grafico-fixo">
         <div class="cartao-grafico">
         <div class="grafico-topo">
-          <div class="legenda-estatica" aria-hidden="true">
-            <span class="item"><i class="bola" style="--c:#00a9bd"></i>África</span>
-            <span class="item"><i class="bola" style="--c:#5aaf00"></i>Américas</span>
-            <span class="item"><i class="bola" style="--c:#ff5872"></i>Ásia</span>
-            <span class="item"><i class="bola" style="--c:#d1a800"></i>Europa</span>
-          </div>
+          <div class="legenda-estatica" id="legendaHistoria" aria-hidden="true"></div>
           <button id="repetir" class="botao-discreto" type="button" hidden>Repetir a animação</button>
         </div>
         <svg id="svgHistoria" role="img" aria-label="Gráfico de bolhas. Cada bolha é um país, e o tamanho mostra a população."></svg>
@@ -53,8 +49,9 @@
           <div class="progresso-trilho"><i id="barraProgresso"></i></div>
           <span id="anoHistoria">1990</span>
         </div>
-        <figcaption>Cada bolha é um país, com área proporcional à população. As cores seguem as
-          quatro regiões do Gapminder.</figcaption>
+        <figcaption>Cada bolha é um país, com área proporcional à população. A cor mostra a região,
+          menos nas duas partes sobre quem fica longe da linha. Nelas, a cor mostra quanto o país fica
+          acima ou abaixo da linha tracejada.</figcaption>
         </div>
       </figure>
     </div>
@@ -67,7 +64,7 @@
         <p>Cada bolha é um país, e o tamanho dela mostra a população. O eixo horizontal é a renda por
           pessoa, corrigida pela diferença de preços entre países. O eixo vertical é a expectativa de
           vida ao nascer.</p>
-        <p>Em 1990, a maior parte dos países africanos, em turquesa, fica no canto de baixo à
+        <p>Em 1990, a maior parte dos <span class="ref" data-regiao="africa" tabindex="0">países africanos</span>, em terracota, fica no canto de baixo à
           esquerda. A expectativa de vida média na África Subsaariana era de 50 anos.</p>
       </article>
 
@@ -83,7 +80,7 @@
       <article class="passo" data-passo="2">
         <p class="marco">Caminho de 1990 a 2024</p>
         <h2>China e Índia</h2>
-        <p>As duas maiores bolhas são a China e a Índia, que juntas têm pouco mais de um terço da
+        <p>As duas maiores bolhas são a <span class="ref" data-iso3="CHN" tabindex="0">China</span> e a <span class="ref" data-iso3="IND" tabindex="0">Índia</span>, que juntas têm pouco mais de um terço da
           população do mundo. A linha atrás de cada uma mostra o caminho que o país fez ano a ano.</p>
         <p>A renda por pessoa da China ficou 13,6 vezes maior, e a expectativa de vida foi de 68,2 para
           78,0 anos. Na Índia, a expectativa de vida foi de 58,6 para 72,0 anos.</p>
@@ -93,44 +90,56 @@
         <p class="marco">2023</p>
         <h2>Quem fica longe da linha</h2>
         <p>A linha tracejada mostra a expectativa de vida esperada para cada nível de renda em 2023. A
-          correlação entre as duas medidas é de 0,86.</p>
-        <p>A Nigéria tem renda maior que a Etiópia e vive menos. A expectativa de vida é de 54,5 anos
+          correlação entre as duas medidas é de 0,86. Agora a cor mostra a distância até essa linha.
+          Os países em azul-petróleo vivem mais do que a renda prevê, e os em laranja vivem menos.</p>
+        <p>A <span class="ref" data-iso3="NGA" tabindex="0">Nigéria</span> tem renda maior que a <span class="ref" data-iso3="ETH" tabindex="0">Etiópia</span> e vive menos. A expectativa de vida é de 54,5 anos
           na Nigéria e de 67,3 anos na Etiópia. A Nigéria fica 15 anos abaixo do que a linha prevê
           para a sua renda.</p>
       </article>
 
       <article class="passo" data-passo="4">
+        <p class="marco">2023</p>
+        <h2>Uma fila pela distância até a linha</h2>
+        <p>Agora cada país sai do lugar e entra numa fila. A posição na fila é a distância até a linha
+          tracejada. À esquerda ficam os países que vivem menos do que a renda prevê, e à direita os
+          que vivem mais.</p>
+        <p>Dos 197 países com os dois dados em 2023, 106 ficam acima da linha e 91 abaixo. A <span class="ref" data-iso3="NGA" tabindex="0">Nigéria</span> é
+          o mais distante, 15,3 anos abaixo. Do outro lado, as <span class="ref" data-iso3="SLB" tabindex="0">Ilhas Salomão</span> ficam 7,1 anos acima. O
+          <span class="ref" data-iso3="BRA" tabindex="0">Brasil</span> fica perto do meio, 1,4 ano acima.</p>
+      </article>
+
+      <article class="passo" data-passo="5">
         <p class="marco">De 1990 a 2024</p>
         <h2>Filhos por mulher</h2>
         <p>Aqui o eixo vertical passa a mostrar a fecundidade, que é o número médio de filhos por
           mulher. No mundo, ela caiu de 3,3 em 1990 para 2,2 em 2024.</p>
-        <p>Em Bangladesh, a queda foi de 4,5 para 2,1. A Coreia do Sul chegou a 0,75, um dos valores
-          mais baixos do mundo. A Nigéria ainda tem 4,4 filhos por mulher.</p>
+        <p>Em <span class="ref" data-iso3="BGD" tabindex="0">Bangladesh</span>, a queda foi de 4,5 para 2,1. A <span class="ref" data-iso3="KOR" tabindex="0">Coreia do Sul</span> chegou a 0,75, um dos valores
+          mais baixos do mundo. A <span class="ref" data-iso3="NGA" tabindex="0">Nigéria</span> ainda tem 4,4 filhos por mulher.</p>
       </article>
 
-      <article class="passo" data-passo="5">
+      <article class="passo" data-passo="6">
         <p class="marco">2024</p>
         <h2>Pessoas com 65 anos ou mais</h2>
         <p>Com menos nascimentos e vidas mais longas, aumenta a parte da população com 65 anos ou mais.
           No mundo, ela foi de 6,1% para 10,2% entre 1990 e 2024.</p>
-        <p>No Japão, essa parte chegou a 29,8%. Na China, foi de 5,4% para 14,7% no mesmo período.</p>
-      </article>
-
-      <article class="passo" data-passo="6">
-        <p class="marco">2023</p>
-        <h2>Mulheres e homens</h2>
-        <p>O eixo vertical mostra quantos anos as mulheres vivem a mais que os homens. Essa diferença
-          quase não acompanha a renda, e a correlação fica perto de zero.</p>
-        <p>A diferença é de 13,3 anos na Ucrânia, de 6,2 anos no Brasil e de 0,4 ano no Togo. Países
-          com renda parecida aparecem em alturas bem diferentes.</p>
+        <p>No <span class="ref" data-iso3="JPN" tabindex="0">Japão</span>, essa parte chegou a 29,8%. Na <span class="ref" data-iso3="CHN" tabindex="0">China</span>, foi de 5,4% para 14,7% no mesmo período.</p>
       </article>
 
       <article class="passo" data-passo="7">
         <p class="marco">2023</p>
+        <h2>Mulheres e homens</h2>
+        <p>O eixo vertical mostra quantos anos as mulheres vivem a mais que os homens. Essa diferença
+          quase não acompanha a renda, e a correlação fica perto de zero.</p>
+        <p>A diferença é de 13,3 anos na <span class="ref" data-iso3="UKR" tabindex="0">Ucrânia</span>, de 6,2 anos no <span class="ref" data-iso3="BRA" tabindex="0">Brasil</span> e de 0,4 ano no <span class="ref" data-iso3="TGO" tabindex="0">Togo</span>. Países
+          com renda parecida aparecem em alturas bem diferentes.</p>
+      </article>
+
+      <article class="passo" data-passo="8">
+        <p class="marco">2023</p>
         <h2>Gravidez na adolescência</h2>
         <p>Este indicador conta os nascimentos por mil mulheres de 15 a 19 anos. Entre os indicadores
           ligados a gênero, é o único que cai de forma clara quando a renda sobe.</p>
-        <p>O Níger tem 145 nascimentos por mil, e a Coreia do Sul tem menos de 1. O Brasil tem 42,7,
+        <p>O <span class="ref" data-iso3="NER" tabindex="0">Níger</span> tem 145 nascimentos por mil, e a <span class="ref" data-iso3="KOR" tabindex="0">Coreia do Sul</span> tem menos de 1. O <span class="ref" data-iso3="BRA" tabindex="0">Brasil</span> tem 42,7,
           quase o dobro do grupo de países de renda média-alta, que tem 24,1.</p>
       </article>
     </div>
@@ -198,6 +207,7 @@
       <label>Cor <select id="selCor">
         <option value="regiao">Região</option>
         <option value="renda">Grupo de renda</option>
+        <option value="residuo">Distância até a curva (só com PIB no eixo horizontal)</option>
       </select></label>
     </div>
     <div id="escolhaPainel"></div>
@@ -231,7 +241,8 @@
         <h3 id="tituloBolhas"></h3>
         <p class="nota" id="contagem"></p>
         <div class="legenda" id="legenda"></div>
-        <svg id="svgBolhas" role="img" aria-labelledby="tituloBolhas"></svg>
+        <div class="legenda-estatica" id="legendaResiduo" hidden></div>
+        <svg id="svgBolhas" role="group" aria-labelledby="tituloBolhas"></svg>
         <p class="nota">Clique numa bolha para acompanhar o país. Clique na legenda para destacar um
           grupo. Arraste o ano do fundo, ou use as setas do teclado, para andar no tempo.</p>
       </div>
@@ -275,9 +286,14 @@
     <div>
       <h2>Como foi feito</h2>
       <p>Gráficos feitos com D3.js. A animação das bolhas segue o Gapminder Tools e o exemplo
-        "The Wealth &amp; Health of Nations", de Mike Bostock. As cores das regiões seguem o Gapminder Tools.
+        "The Wealth &amp; Health of Nations", de Mike Bostock. As quatro regiões seguem o Gapminder Tools, com cores próprias.
         Os componentes, as cores da página e a fonte Roboto seguem o Material Design 3. A correlação é a de Pearson, com PIB e
         mortalidade infantil em log.</p>
+      <p>Dois sites serviram de inspiração. O <a href="https://www.gapminder.org/tools/">Gapminder Tools</a>
+        inspirou o gráfico de bolhas. O <a href="https://datatopics.worldbank.org/sdgatlas/">Atlas of
+        Sustainable Development Goals 2023</a>, do Banco Mundial, inspirou a forma de contar a história,
+        com o gráfico parado enquanto o texto rola, notas dentro do gráfico e um país que o leitor
+        acompanha em todas as seções. O código deste site é próprio.</p>
     </div>
   </div>
 </footer>

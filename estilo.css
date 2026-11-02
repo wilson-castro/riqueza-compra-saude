@@ -426,3 +426,40 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
   .figura, .visao, .barra { padding: 16px; border-radius: var(--md-forma-m); }
   .alternador label { padding: 0 14px; }
 }
+
+/* Escala da cor pela distância até a curva, usada na história e no painel. */
+.escala-residuo { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.escala-residuo i { width: 120px; height: 8px; border-radius: 999px; }
+
+/* Título de eixo que abre a lista de indicadores no painel. */
+.visao-bolhas { position: relative; }
+.rotulo-clicavel { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+.rotulo-clicavel:hover, .rotulo-clicavel:focus-visible { fill: var(--md-primary); outline: none; }
+.menu-eixo {
+  position: absolute; z-index: 5; margin: 0; padding: 4px 0; list-style: none;
+  max-height: 300px; overflow-y: auto; min-width: 220px;
+  background: var(--md-surface-container, #fff); color: var(--md-on-surface);
+  border-radius: 8px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.12);
+  font: 400 0.875rem/1.25rem var(--fonte);
+}
+.menu-eixo:focus { outline: none; }
+.menu-eixo li { padding: 6px 14px; cursor: pointer; }
+.menu-eixo li.ativa { background: color-mix(in srgb, var(--md-on-surface) 10%, transparent); }
+.menu-eixo li[aria-selected=true] { font-weight: 500; color: var(--md-primary); }
+
+/* Escolha do país do leitor, na abertura. */
+.meu-pais { margin-top: 1.5rem; max-width: 26rem; }
+.rotulo-pais.rotulo-meu-pais { font-weight: 700; }
+
+/* Notas dentro do gráfico da história. */
+.nota line { stroke: var(--md-on-surface-variant); stroke-width: 1; }
+.nota-bolha { fill: var(--md-on-surface); font: 500 12px var(--fonte); paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
+
+/* Nome de país ou região no texto da história. A bolinha tem a cor da bolha no gráfico naquele
+   passo, e o texto fica na cor normal, para continuar legível. */
+.ref { border-bottom: 2px solid var(--c, transparent); cursor: default; white-space: nowrap; }
+.ref::before { content: ""; display: inline-block; width: 0.6em; height: 0.6em; border-radius: 50%; background: var(--c, transparent); margin-right: 0.3em; vertical-align: 0.05em; }
+.ref:hover, .ref:focus-visible { background: color-mix(in srgb, var(--c, transparent) 14%, transparent); outline: none; }
+
+/* Botões com display próprio ignoram o atributo hidden sem esta regra. */
+[hidden] { display: none !important; }

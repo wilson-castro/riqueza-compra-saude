@@ -44,8 +44,14 @@ Jekyll, o gerador de sites que ele usa por padrão.
 - `index.html` tem o texto da história e a estrutura da página.
 - `estilo.css` tem cores, tipos e o layout, incluindo o de celular.
 - `js/historia.js` define o que o gráfico mostra em cada passo da história (a lista `PASSOS`), além
-  dos gráficos da COVID-19 e do Brasil.
-- `js/bolhas.js` é o gráfico de bolhas usado na história e no painel.
+  dos gráficos da COVID-19 e do Brasil. Cada passo diz os eixos, o ano, os países em destaque, o
+  modo de cor, se as bolhas ficam espalhadas ou em fila e as notas que aparecem dentro do gráfico.
+- `js/bolhas.js` é o gráfico de bolhas usado na história e no painel. Ele pinta as bolhas pela
+  região, pelo grupo de renda ou pela distância até a curva de tendência, e sabe reorganizar as
+  bolhas numa fila ordenada por essa distância.
+- `js/meupais.js` guarda o país que o leitor escolhe no alto da página. Esse país fica destacado em
+  todos os gráficos, e a escolha fica salva no navegador.
+- `js/destaque.js` é a busca de países com chips, usada em vários gráficos.
 - `js/explorar.js` é o painel livre, com bolhas, matriz de correlação, linhas e tabela.
 - `js/base.js` lê os dados e guarda cores, formatos e contas comuns.
 - `dados/` tem os CSV que a página lê. Eles são gerados por `exploracao/gerar_dados_site.py` a

@@ -3,8 +3,9 @@
 
 import { ANO_MIN, ANO_MAX, REGIOES4, RENDA, DESCRICAO, CINZA, TINTA, TINTA_2, DIVERGENTE, CURTO, pt, fmt, fmtPop,
          fmtR, marcasLog, rotuloLog, tip } from "./base.js";
-import { criarBolhas } from "./bolhas.js";
+import { criarBolhas, modoCor, legendaResiduo } from "./bolhas.js";
 import { criarEscolhaPaises } from "./destaque.js";
+import { meuPais, COR_MEU_PAIS } from "./meupais.js";
 
 export function iniciarPainel(D) {
   const estado = {
@@ -18,9 +19,10 @@ export function iniciarPainel(D) {
   // A cor de um país acompanhado é a da sua região. Quando dois países da mesma região estão na
   // lista, o segundo fica num tom mais escuro, para as linhas não se confundirem.
   function corLinha(iso3) {
+    if (iso3 === meuPais.obter()) return COR_MEU_PAIS;
     const regiao = D.info.get(iso3).regiao4;
     const anteriores = [...estado.selecionados].slice(0, [...estado.selecionados].indexOf(iso3))
-      .filter(i => D.info.get(i).regiao4 === regiao).length;
+      .filter(i => i !== meuPais.obter() && D.info.get(i).regiao4 === regiao).length;
     const base = REGIOES4[regiao]?.cor ?? TINTA_2;
     return anteriores ? d3.color(base).darker(anteriores * 0.9).formatHex() : base;
   }
@@ -28,6 +30,14 @@ export function iniciarPainel(D) {
   const bolhas = criarBolhas($("svgBolhas"), D, {
     aoClicar: alternar,
     aoArrastarAno: t => { parar(); irPara(t); },
+    // Se o leitor escolhe para um eixo o indicador que já está no outro, os dois trocam de lugar.
+    aoEscolherEixo: (qual, c) => {
+      const outro = qual === "x" ? "y" : "x";
+      if (estado[outro] === c) estado[outro] = estado[qual];
+      estado[qual] = c;
+      estado.foco = null;
+      tudo(1000);
+    },
   });
 
   // ---------- Controles ----------
@@ -41,7 +51,7 @@ export function iniciarPainel(D) {
     rotulo: "Acompanhar países", cor: iso3 => corLinha(iso3),
   });
 
-  $("selX").addEventListener("change", e => { estado.x = e.target.value; tudo(1000); });
+  $("selX").addEventListener("change", e => { estado.x = e.target.value; estado.foco = null; tudo(1000); });
   $("selY").addEventListener("change", e => { estado.y = e.target.value; tudo(1000); });
   $("trocar").addEventListener("click", () => { [estado.x, estado.y] = [estado.y, estado.x]; tudo(1000); });
   $("selCor").addEventListener("change", e => { estado.cor = e.target.value; estado.foco = null; tudo(); });
@@ -111,7 +121,12 @@ export function iniciarPainel(D) {
   }
 
   function legenda() {
-    const itens = estado.cor === "regiao"
+    // Na cor pela distância até a curva, a legenda é uma escala contínua, sem botões de grupo.
+    const residuo = modoCor(estado) === "residuo";
+    d3.select("#legendaResiduo").property("hidden", !residuo).html(residuo ? legendaResiduo(D, estado.y) : "");
+    d3.select("#legenda").property("hidden", residuo);
+    if (residuo) return;
+    const itens = modoCor(estado) === "regiao"
       ? Object.entries(REGIOES4).map(([k, v]) => [k, v.nome, v.cor])
       : Object.entries(RENDA).map(([k, v]) => [k, v.nome, v.cor]);
     d3.select("#legenda").selectAll("button").data(itens).join("button").attr("type", "button")
@@ -173,6 +188,10 @@ export function iniciarPainel(D) {
     const series = [...estado.selecionados].map(iso3 => ({
       nome: D.info.get(iso3).pais, cor: corLinha(iso3), largura: 2.4, pts: serie([...D.linhaDe.get(iso3).values()]),
     }));
+    const meu = meuPais.obter();
+    if (meu && !estado.selecionados.has(meu)) {
+      series.push({ nome: D.info.get(meu).pais, cor: COR_MEU_PAIS, largura: 3, pts: serie([...D.linhaDe.get(meu).values()]) });
+    }
     series.push({ nome: "Mundo", cor: TINTA, largura: 1.6, traco: "6 4", pts: serie(D.agregadoDe.get("WLD")) });
     const todos = series.flatMap(s => s.pts.map(d => d[c]));
     const x = d3.scaleLinear().domain([ANO_MIN, ANO_MAX]).range([m.l, W - m.r]);
@@ -264,5 +283,6 @@ export function iniciarPainel(D) {
     else { matriz(); tabela(); anoDesenhado = anoInteiro(); }
   }
   addEventListener("resize", () => { bolhas.redimensionar(); tudo(); });
+  meuPais.aoMudar(() => tudo());
   tudo();
 }
