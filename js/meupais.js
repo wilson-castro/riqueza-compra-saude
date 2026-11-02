@@ -18,10 +18,21 @@ try {
   if (salvo !== null) atual = salvo || null;
 } catch { /* navegador sem localStorage */ }
 
+// Um país sem nenhum valor de PIB por pessoa nunca aparece no gráfico de bolhas, que é o centro da
+// história e do painel. Por isso ele não pode ser o país do leitor. A função devolve o motivo, para
+// a busca e o mapa mostrarem ao leitor por que o país está desabilitado.
+export function motivoIndisponivel(D, iso3) {
+  if (!D.info.has(iso3)) return "Sem dados do Banco Mundial";
+  const serie = D.linhaDe.get(iso3);
+  return [...serie.values()].some(d => D.valido(d, "pib_pc_ppp")) ? null
+    : "Sem PIB por pessoa, não aparece no gráfico de bolhas";
+}
+
 export const meuPais = {
   obter: () => atual,
-  // Um código que não existe nos dados, como o de uma versão antiga do site, é descartado.
-  validar(D) { if (atual && !D.info.has(atual)) this.definir(null); },
+  // Um código que não existe nos dados, como o de uma versão antiga do site, é descartado, assim
+  // como um país que não pode mais ser escolhido.
+  validar(D) { if (atual && motivoIndisponivel(D, atual)) this.definir(null); },
   definir(iso3) {
     atual = iso3 || null;
     try { localStorage.setItem(CHAVE, atual ?? ""); } catch { /* sem localStorage */ }

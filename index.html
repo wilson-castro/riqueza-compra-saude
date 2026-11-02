@@ -20,8 +20,19 @@
       <p class="linha-fina">A expectativa de vida ao nascer no mundo passou de 65 anos em 1990 para
         73 anos em 2024. Esta página usa dados do Banco Mundial sobre 217 países para ver onde esse
         ganho aconteceu e quanto ele acompanha a renda.</p>
-      <div id="escolhaMeuPais" class="meu-pais"></div>
     </div>
+    <section class="meu-pais" aria-labelledby="tMeuPais">
+      <h2 id="tMeuPais">Escolha um país para acompanhar</h2>
+      <p class="nota">Clique no mapa ou busque pelo nome. O país escolhido fica destacado em todos os
+        gráficos da página. A cor do mapa mostra a expectativa de vida em 2023.</p>
+      <div id="escolhaMeuPais"></div>
+      <div class="legenda-estatica" id="legendaMeuPais"></div>
+      <svg id="mapaMeuPais" role="img" aria-label="Mapa do mundo para escolher o país. Use a busca acima para escolher pelo teclado."></svg>
+      <details class="indisponiveis">
+        <summary id="resumoIndisponiveis">Por que alguns países não podem ser escolhidos</summary>
+        <p id="listaIndisponiveis"></p>
+      </details>
+    </section>
   </div>
   <a class="convite" href="#historia">
     <span class="convite-roda" aria-hidden="true"><i></i></span>

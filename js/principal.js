@@ -4,7 +4,8 @@ import { carregar } from "./base.js";
 import { iniciarHistoria } from "./historia.js";
 import { iniciarPainel } from "./explorar.js";
 import { criarEscolhaPaises } from "./destaque.js";
-import { meuPais, COR_MEU_PAIS } from "./meupais.js";
+import { meuPais, COR_MEU_PAIS, motivoIndisponivel } from "./meupais.js";
+import { criarMapaMeuPais } from "./mapaMeuPais.js";
 
 const avisar = msg => { document.getElementById("erro").textContent = msg; };
 
@@ -17,8 +18,19 @@ if (typeof d3 === "undefined") {
       const escolha = criarEscolhaPaises(document.getElementById("escolhaMeuPais"), D, {
         obter: () => meuPais.obter() ? [meuPais.obter()] : [],
         mudar: lista => meuPais.definir(lista[0] ?? null),
-        rotulo: "Seu país, para acompanhar em todos os gráficos", maximo: 1, cor: () => COR_MEU_PAIS,
+        rotulo: "Buscar país", maximo: 1, cor: () => COR_MEU_PAIS,
+        substituir: true, indisponivel: iso3 => motivoIndisponivel(D, iso3),
       });
+      criarMapaMeuPais(D, document.getElementById("mapaMeuPais"), document.getElementById("legendaMeuPais"));
+      // A lista dos países que não podem ser escolhidos sai dos dados, para não ficar desatualizada.
+      const fora = [...D.info.values()].filter(p => motivoIndisponivel(D, p.iso3))
+        .map(p => p.pais).sort((a, b) => a.localeCompare(b, "pt-BR"));
+      document.getElementById("resumoIndisponiveis").textContent =
+        `Dá para escolher ${D.info.size - fora.length} dos ${D.info.size} países. Por que ${fora.length} não podem`;
+      document.getElementById("listaIndisponiveis").textContent =
+        `Estes países não têm nenhum valor de PIB por pessoa nos dados do Banco Mundial, então não aparecem ` +
+        `no gráfico de bolhas: ${fora.join(", ")}. Eles continuam no gráfico da COVID-19, no ranking e na tabela. ` +
+        "No mapa, territórios sem código no Banco Mundial, como Taiwan e o Saara Ocidental, também ficam com hachura.";
       meuPais.aoMudar(() => escolha.atualizar());
       escolha.atualizar();
       iniciarHistoria(D);

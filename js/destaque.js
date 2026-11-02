@@ -14,10 +14,13 @@ export const PALETA_DESTAQUE = matchMedia("(prefers-color-scheme: dark)").matche
 const normalizar = t => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 // Monta a busca dentro de `alvo`. `obter` devolve a lista atual de países escolhidos e `mudar`
-// recebe a nova lista. Os chips são desenhados de novo a cada mudança, pela função `atualizar`.
+// recebe a nova lista. Com `substituir`, escolher um país quando a lista está cheia troca o último,
+// em vez de travar o campo. `indisponivel` devolve o motivo de um país não poder ser escolhido, ou
+// null. Esses países aparecem na lista de sugestões, desabilitados e com o motivo. Os chips são desenhados de novo a cada mudança, pela função `atualizar`.
 // Sem a opção `cor`, ou quando ela devolve null, o país ganha uma cor da paleta de destaque quando
 // é escolhido e fica com ela até sair da lista, mesmo que outros países entrem ou saiam.
-export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar país", maximo = 6, cor = null }) {
+export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar país", maximo = 6, cor = null,
+                                               substituir = false, indisponivel = () => null }) {
   const vaga = new Map();
   function corDe(iso3) {
     const fixa = cor?.(iso3);
@@ -60,8 +63,9 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
     const escolhidos = new Set(obter());
     // Primeiro os nomes que começam com o termo, depois os que só o contêm.
     sugestoes = termo ? paises.filter(p => !escolhidos.has(p.iso3) && p.chave.includes(termo))
-      .sort((a, b) => d3.descending(a.chave.startsWith(termo), b.chave.startsWith(termo))).slice(0, 8) : [];
-    ativa = sugestoes.length ? 0 : -1;
+      .sort((a, b) => d3.descending(a.chave.startsWith(termo), b.chave.startsWith(termo))).slice(0, 8)
+      .map(p => ({ ...p, motivo: indisponivel(p.iso3) })) : [];
+    ativa = sugestoes.findIndex(p => !p.motivo);
     desenharLista(termo);
   }
   function desenharLista(termo) {
@@ -71,15 +75,19 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
     d3.select(lista).selectAll("li").data(sugestoes.length ? sugestoes : [null]).join("li")
       .attr("id", (d, i) => `${id}-op-${i}`)
       .attr("role", d => d ? "option" : null)
-      .attr("class", (d, i) => d ? (i === ativa ? "ativa" : null) : "vazia")
+      .attr("class", (d, i) => !d ? "vazia" : d.motivo ? "indisponivel" : i === ativa ? "ativa" : null)
       .attr("aria-selected", (d, i) => d ? String(i === ativa) : null)
-      .text(d => d ? d.pais : "Nenhum país com esse nome")
-      .on("mousedown", (ev, d) => { ev.preventDefault(); if (d) escolher(d.iso3); });
+      .attr("aria-disabled", d => d?.motivo ? "true" : null)
+      .html(d => !d ? "Nenhum país com esse nome"
+        : d.motivo ? `${d.pais}<span class="motivo">${d.motivo}</span>` : d.pais)
+      .on("mousedown", (ev, d) => { ev.preventDefault(); if (d && !d.motivo) escolher(d.iso3); });
     if (ativa >= 0) entrada.setAttribute("aria-activedescendant", `${id}-op-${ativa}`);
   }
   function escolher(iso3) {
     const atual = obter();
+    if (indisponivel(iso3)) return;
     if (!atual.includes(iso3) && atual.length < maximo) mudar([...atual, iso3]);
+    else if (!atual.includes(iso3) && substituir) mudar([...atual.slice(0, maximo - 1), iso3]);
     entrada.value = "";
     fechar();
     entrada.focus();
@@ -89,9 +97,11 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
   entrada.addEventListener("blur", fechar);
   entrada.addEventListener("keydown", ev => {
     if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
-      if (!sugestoes.length) return;
+      // As setas pulam os países desabilitados.
+      if (!sugestoes.some(p => !p.motivo)) return;
       ev.preventDefault();
-      ativa = (ativa + (ev.key === "ArrowDown" ? 1 : -1) + sugestoes.length) % sugestoes.length;
+      do ativa = (ativa + (ev.key === "ArrowDown" ? 1 : -1) + sugestoes.length) % sugestoes.length;
+      while (sugestoes[ativa].motivo);
       desenharLista(normalizar(entrada.value.trim()));
     } else if (ev.key === "Enter" && ativa >= 0) {
       ev.preventDefault();
@@ -117,9 +127,9 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
     chips.selectAll("button.limpar").data(ids.length > 1 ? [1] : []).join("button")
       .attr("class", "limpar").attr("type", "button").text("Limpar")
       .on("click", () => mudar([])).raise();
-    entrada.disabled = ids.length >= maximo;
+    entrada.disabled = !substituir && ids.length >= maximo;
     entrada.placeholder = ids.length < maximo ? "Digite o nome de um país"
-      : maximo === 1 ? "Tire o atual para trocar" : `Até ${maximo} países`;
+      : substituir ? "Digite outro país para trocar" : `Até ${maximo} países`;
   }
   return { atualizar, cor: corDe };
 }

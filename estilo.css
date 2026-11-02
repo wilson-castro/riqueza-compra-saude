@@ -131,8 +131,8 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 
 /* ---------- Abertura ---------- */
 /* A abertura ocupa a primeira tela, sem caixa em volta, com o texto alinhado à esquerda. */
-.abertura { padding: 0 var(--margem); min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end; }
-.abertura-texto { padding: 12vh 0 0; display: flex; flex-direction: column; justify-content: flex-end; flex: 1; }
+.abertura { padding: 0 var(--margem); display: flex; flex-direction: column; }
+.abertura-texto { padding: 12vh 0 0; display: flex; flex-direction: column; }
 .abertura h1 {
   font-size: clamp(3rem, 8vw, 7rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1.05;
   margin-bottom: 2.5rem; max-width: 12ch; color: var(--md-on-surface);
@@ -211,7 +211,7 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 
 /* Cada parte do texto fica solta na página. A parte ativa ganha opacidade cheia. */
 .passo {
-  margin: 0 0 78vh; padding: 20px 0 8px; opacity: 0.35;
+  margin: 0 0 78vh; padding: 20px 0 8px; opacity: 0.8;
   transition: opacity 0.5s var(--curva-padrao);
 }
 .passo:last-child { margin-bottom: 0; }
@@ -246,7 +246,7 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 .legenda button {
   height: 32px; padding: 0 16px 0 12px; display: inline-flex; align-items: center;
   font: 500 0.875rem/1.25rem var(--fonte); letter-spacing: 0.00625rem; color: var(--md-on-surface-variant);
-  background: transparent; border: 1px solid var(--md-outline-variant); border-radius: var(--md-forma-s); cursor: pointer;
+  background: transparent; border: 1px solid var(--md-outline); border-radius: var(--md-forma-s); cursor: pointer;
   transition: background-color 0.2s;
 }
 .legenda button:hover:not([disabled]) { background: color-mix(in srgb, var(--md-on-surface-variant) 8%, transparent); }
@@ -267,7 +267,7 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; min-height: 32px; }
 .chip {
   height: 32px; display: inline-flex; align-items: center; gap: 8px; padding: 0 4px 0 12px;
-  border: 1px solid var(--md-outline-variant); border-radius: var(--md-forma-s); background: var(--md-surface-lowest);
+  border: 1px solid var(--md-outline); border-radius: var(--md-forma-s); background: var(--md-surface-lowest);
   font: 500 0.875rem/1.25rem var(--fonte); letter-spacing: 0.00625rem; color: var(--md-on-surface-variant);
 }
 .chip::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
@@ -477,7 +477,16 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .menu-eixo li[aria-selected=true] { font-weight: 500; color: var(--md-primary); }
 
 /* Escolha do país do leitor, na abertura. */
-.meu-pais { margin-top: 1.5rem; max-width: 26rem; }
+/* Escolha do país do leitor, na abertura, com a busca em cima e o mapa embaixo. */
+.meu-pais { margin-top: 6vh; padding-top: 28px; border-top: 1px solid var(--md-outline-variant); }
+.meu-pais h2 { font-size: clamp(1.5rem, 2.4vw, 2rem); line-height: 1.25; margin-bottom: 0.5rem; }
+.meu-pais .escolha-paises { margin: 16px 0 12px; }
+#mapaMeuPais { margin-top: 8px; }
+.pais-escolha { stroke: var(--halo); stroke-width: 0.5; cursor: pointer; }
+.pais-escolha:not(.indisponivel):hover { stroke: var(--md-on-surface); stroke-width: 1.5; }
+.pais-escolha.indisponivel { cursor: not-allowed; }
+.indisponiveis { margin-top: 8px; font-size: 0.875rem; line-height: 1.25rem; }
+.indisponiveis p { color: var(--md-on-surface-variant); max-width: 52rem; margin: 4px 12px 0; }
 .rotulo-pais.rotulo-meu-pais { font-weight: 700; }
 
 /* Notas dentro do gráfico da história. */
@@ -513,7 +522,7 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .escolha-eixos legend { font: 500 0.875rem/1.25rem var(--fonte); color: var(--md-on-surface-variant); padding: 0; margin-bottom: 8px; }
 #eixosCoord { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip-eixo {
-  height: 32px; padding: 0 14px; border: 1px solid var(--md-outline-variant); border-radius: var(--md-forma-s);
+  height: 32px; padding: 0 14px; border: 1px solid var(--md-outline); border-radius: var(--md-forma-s);
   background: transparent; color: var(--md-on-surface-variant); cursor: pointer;
   font: 500 0.875rem/1.25rem var(--fonte);
 }
@@ -525,3 +534,16 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .eixo-coord .domain { stroke: var(--md-outline); }
 .eixo-coord line { stroke: var(--md-outline); }
 .pincel .selection { fill: var(--md-primary); fill-opacity: 0.15; stroke: var(--md-primary); stroke-width: 1.5; }
+
+/* Contraste. O placeholder usa a cor do texto secundário sem transparência, porque o padrão do
+   navegador fica abaixo de 4,5 para 1. Os chips usam a borda --md-outline, que passa de 3 para 1. */
+::placeholder { color: var(--md-on-surface-variant); opacity: 1; }
+
+/* Campo de busca de países em formato de pílula, com a borda --md-outline para passar no contraste
+   de 3 para 1 exigido para a borda de um campo. */
+.escolha-paises input { border-radius: 999px; height: 44px; }
+.escolha-paises ul { border-radius: var(--md-forma-m); }
+.escolha-paises li.indisponivel { cursor: not-allowed; color: var(--md-on-surface-variant); height: auto; min-height: 48px;
+  flex-direction: column; align-items: flex-start; justify-content: center; padding-top: 6px; padding-bottom: 6px; }
+.escolha-paises li.indisponivel:hover { background: none; }
+.escolha-paises .motivo { font-size: 0.75rem; line-height: 1rem; }
