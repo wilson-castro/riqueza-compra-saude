@@ -499,3 +499,10 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .nome-ranking.marcado { fill: var(--md-on-surface); font-weight: 700; }
 .valor-ranking { fill: var(--md-on-surface-variant); font: 400 12px var(--fonte); white-space: pre; }
 .linha-ranking:hover .alvo { fill: color-mix(in srgb, var(--md-on-surface) 6%, transparent); }
+
+/* Mapa do painel. A borda fina tem a cor da faixa, para separar os países vizinhos. */
+.borda-mapa { stroke: var(--halo); }
+.pais-mapa:hover { stroke: var(--md-on-surface); stroke-width: 1.5; }
+.hachura-fundo { fill: var(--halo); }
+.hachura-linha { stroke: var(--ponto-par); stroke-width: 1.4; }
+.bola.sem-dado-mapa { background: repeating-linear-gradient(45deg, var(--ponto-par) 0 1.5px, transparent 1.5px 4px); }

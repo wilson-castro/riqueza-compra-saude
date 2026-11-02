@@ -52,7 +52,7 @@ Jekyll, o gerador de sites que ele usa por padrão.
 - `js/meupais.js` guarda o país que o leitor escolhe no alto da página. Esse país fica destacado em
   todos os gráficos, e a escolha fica salva no navegador.
 - `js/destaque.js` é a busca de países com chips, usada em vários gráficos.
-- `js/explorar.js` é o painel livre, com bolhas, matriz de correlação, linhas, ranking e tabela.
+- `js/explorar.js` é o painel livre, com bolhas, matriz de correlação, linhas, mapa, ranking e tabela.
   Nas bolhas, o leitor escolhe o indicador de cada eixo, do tamanho e da cor. As linhas mostram o
   valor ou a diferença para o mundo.
 - `js/base.js` lê os dados e guarda cores, formatos e contas comuns. As cores dos dados têm uma
@@ -60,6 +60,9 @@ Jekyll, o gerador de sites que ele usa por padrão.
   cores da página para o tema escuro ficam no começo de `estilo.css`.
 - `dados/` tem os CSV que a página lê. Eles são gerados por `exploracao/gerar_dados_site.py` a
   partir dos dados completos em `exploracao/dados/`.
+- `dados/mundo.json` tem o contorno dos países para o mapa. Ele vem do Natural Earth, um conjunto
+  de mapas de domínio público, e é gerado por `exploracao/gerar_mapa_site.py`. O começo desse
+  script explica como baixar o arquivo de origem.
 - `vendor/d3.min.js` é uma cópia local do D3 7.9.0, para o site não depender de outro servidor.
 
 O visual segue o Material Design 3. A fonte Roboto vem do Google Fonts. Sem internet, a página usa as fontes do

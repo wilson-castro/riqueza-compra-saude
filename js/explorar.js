@@ -4,6 +4,7 @@
 import { SEM_DADO, ESCURO, ANO_MIN, ANO_MAX, REGIOES4, RENDA, DESCRICAO, CINZA, TINTA, TINTA_2, DIVERGENTE, CURTO, pt, fmt, fmtPop,
          fmtR, marcasLog, rotuloLog, tip, reduzMovimento } from "./base.js";
 import { criarBolhas, modoCor, legendaResiduo, legendaIndicador } from "./bolhas.js";
+import { RAMPA } from "./base.js";
 import { criarEscolhaPaises } from "./destaque.js";
 import { meuPais, COR_MEU_PAIS } from "./meupais.js";
 
@@ -89,7 +90,7 @@ export function iniciarPainel(D) {
     desenharBolhas();
     marcadorLinhas();
     // A matriz e a tabela usam só anos inteiros, então mudam só quando o ano muda.
-    if (anoInteiro() !== anoDesenhado) { anoDesenhado = anoInteiro(); matriz(); tabela(); ranking(); }
+    if (anoInteiro() !== anoDesenhado) { anoDesenhado = anoInteiro(); matriz(); tabela(); ranking(); mapa(); }
   }
   function tocar() {
     if (estado.t >= ANO_MAX) estado.t = ANO_MIN;
@@ -283,6 +284,67 @@ export function iniciarPainel(D) {
     if (geoL) geoL.marcador.attr("x1", geoL.x(estado.t)).attr("x2", geoL.x(estado.t));
   }
 
+  // ---------- Mapa ----------
+  // Mapa coroplético do indicador do eixo vertical, no ano do painel. A cor usa a rampa de um só
+  // matiz, com a escala cobrindo todos os anos, para a cor de um país só mudar quando o valor muda.
+  // O contorno vem de dados/mundo.json, feito por exploracao/gerar_mapa_site.py.
+  const svgMapa = d3.select("#svgMapa");
+  // Sem dado vira hachura, e não um cinza liso, para não se confundir com o tom mais claro da rampa.
+  const hachura = svgMapa.append("defs").append("pattern").attr("id", "semDadoMapa")
+    .attr("width", 5).attr("height", 5).attr("patternUnits", "userSpaceOnUse").attr("patternTransform", "rotate(45)");
+  hachura.append("rect").attr("width", 5).attr("height", 5).attr("class", "hachura-fundo");
+  hachura.append("line").attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", 5).attr("class", "hachura-linha");
+  let mundo = null;
+  d3.json("dados/mundo.json").then(g => { mundo = g; mapa(); })
+    .catch(() => { $("notaMapa").textContent = "O contorno dos países não carregou, então o mapa não pode ser desenhado."; });
+  const escalasMapa = new Map();
+  function escalaMapa(c) {
+    if (!escalasMapa.has(c)) {
+      const ext = d3.extent(D.linhas, d => D.valido(d, c) ? d[c] : undefined);
+      escalasMapa.set(c, (D.ehLog(c) ? d3.scaleLog() : d3.scaleLinear()).domain(ext).range([0, 1]).clamp(true));
+    }
+    return escalasMapa.get(c);
+  }
+  function mapa() {
+    const c = estado.y, ano = anoInteiro();
+    $("tituloMapa").textContent = `${D.META[c].nome} em ${ano}, no mapa`;
+    $("legendaMapa").innerHTML = legendaIndicador(D, c) +
+      `<span class="item"><i class="bola sem-dado-mapa"></i>Sem dado</span>`;
+    if (!mundo) return;
+    const W = svgMapa.node().clientWidth, H = Math.round(W * 0.48);
+    const projecao = d3.geoEqualEarth().fitSize([W, H], mundo);
+    const caminho = d3.geoPath(projecao);
+    svgMapa.attr("height", H);
+    const meu = meuPais.obter();
+    const valor = iso3 => { const d = iso3 && D.linhaDe.get(iso3)?.get(ano); return D.valido(d, c) ? d[c] : null; };
+    const { posicao, vals } = ordenar(c, ano);
+    // Países acompanhados ficam por cima, para o contorno grosso não ser coberto pelos vizinhos.
+    const destaque = f => f.id === meu ? 2 : estado.selecionados.has(f.id) ? 1 : 0;
+    const formas = mundo.features.slice().sort((a, b) => destaque(a) - destaque(b));
+    svgMapa.selectAll("path.pais-mapa").data(formas, (f, i) => f.id ?? "sem-" + i).join("path")
+      .attr("class", "pais-mapa").attr("d", caminho)
+      .attr("fill", f => { const v = valor(f.id); return v == null ? "url(#semDadoMapa)" : RAMPA(escalaMapa(c)(v)); })
+      .attr("stroke", f => f.id === meu ? COR_MEU_PAIS : estado.selecionados.has(f.id) ? TINTA : null)
+      .classed("borda-mapa", f => !destaque(f))
+      .attr("stroke-width", f => destaque(f) ? 2 : 0.5)
+      .style("cursor", f => f.id ? "pointer" : null)
+      .on("mousemove", (ev, f) => {
+        if (!f.id) return;
+        const v = valor(f.id);
+        tip.mostrar(ev, `<b>${D.info.get(f.id).pais}</b><span class="tip-sub">${D.META[c].nome}, ${ano}</span>` +
+          `<dl><dt>Valor</dt><dd>${v == null ? "sem dado" : fmt(v) + " " + D.META[c].unidade}</dd>` +
+          (v == null ? "" : `<dt>Posição</dt><dd>${posicao.get(f.id)}º de ${vals.length}</dd>`) + "</dl>" +
+          `<i>Clique para ${estado.selecionados.has(f.id) ? "deixar de acompanhar" : "acompanhar"}</i>`);
+      })
+      .on("mouseleave", () => tip.esconder())
+      .on("click", (ev, f) => { if (f.id) { tip.esconder(); alternar(f.id); } })
+      .order();
+    const fora = D.info.size - new Set(mundo.features.map(f => f.id).filter(Boolean)).size;
+    $("notaMapa").textContent = "Cada país tem a cor do seu valor no indicador do eixo vertical. A hachura quer " +
+      `dizer sem dado naquele ano. Clique num país para acompanhá-lo. ${fora} países e territórios pequenos demais ` +
+      "para a escala do mapa, como Mônaco e muitas ilhas, aparecem só no ranking e na tabela.";
+  }
+
   // ---------- Ranking ----------
   // Barras horizontais com a posição de cada país no indicador do eixo vertical, no ano do painel.
   // As barras partem do zero e usam escala linear mesmo para o PIB, porque o comprimento da barra
@@ -413,7 +475,7 @@ export function iniciarPainel(D) {
     linhas();
     anoDesenhado = null;
     if (!dur) irPara(estado.t);
-    else { matriz(); tabela(); ranking(); anoDesenhado = anoInteiro(); }
+    else { matriz(); tabela(); ranking(); mapa(); anoDesenhado = anoInteiro(); }
   }
   addEventListener("resize", () => { bolhas.redimensionar(); tudo(); });
   meuPais.aoMudar(() => tudo());
