@@ -6,6 +6,9 @@ import { iniciarPainel } from "./explorar.js";
 import { criarEscolhaPaises } from "./destaque.js";
 import { meuPais, COR_MEU_PAIS, motivoIndisponivel } from "./meupais.js";
 import { criarMapaMeuPais } from "./mapaMeuPais.js";
+import { criarSeletorTema, restaurarRolagem } from "./tema.js";
+
+criarSeletorTema(document.getElementById("seletorTema"));
 
 const avisar = msg => { document.getElementById("erro").textContent = msg; };
 
@@ -19,7 +22,7 @@ if (typeof d3 === "undefined") {
         obter: () => meuPais.obter() ? [meuPais.obter()] : [],
         mudar: lista => meuPais.definir(lista[0] ?? null),
         rotulo: "Buscar país", maximo: 1, cor: () => COR_MEU_PAIS,
-        substituir: true, indisponivel: iso3 => motivoIndisponivel(D, iso3),
+        substituir: true, indisponivel: iso3 => motivoIndisponivel(D, iso3), compacto: true,
       });
       criarMapaMeuPais(D, document.getElementById("mapaMeuPais"), document.getElementById("legendaMeuPais"));
       // A lista dos países que não podem ser escolhidos sai dos dados, para não ficar desatualizada.
@@ -35,6 +38,7 @@ if (typeof d3 === "undefined") {
       escolha.atualizar();
       iniciarHistoria(D);
       iniciarPainel(D);
+      restaurarRolagem();
     })
     .catch(e => avisar("Os dados não carregaram. Abra a página por um servidor, não direto do arquivo. " + e));
 }

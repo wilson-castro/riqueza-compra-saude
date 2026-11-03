@@ -5,6 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Riqueza compra saúde? Condições de vida no mundo de 1990 a 2024</title>
 <meta name="description" content="Como mudaram a renda, a saúde, a demografia e as diferenças entre mulheres e homens em 217 países, com dados do Banco Mundial.">
+<!-- Aplica o tema antes de a página aparecer, para não piscar com o tema errado. A mesma regra está
+     em js/tema.js. -->
+<script>
+  (function () {
+    var e = "sistema";
+    try { e = localStorage.getItem("riqueza-compra-saude:tema") || "sistema"; } catch (x) {}
+    var escuro = e === "escuro" || (e === "sistema" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-tema", escuro ? "escuro" : "claro");
+    document.write('<meta name="theme-color" content="' + (escuro ? "#1a2121" : "#ffffff") + '">');
+  })();
+</script>
+<link rel="canonical" href="https://wilson-castro.github.io/riqueza-compra-saude/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="Riqueza compra saúde?">
+<meta property="og:description" content="Renda, saúde e demografia em 217 países de 1990 a 2024, com gráficos interativos e dados do Banco Mundial.">
+<meta property="og:url" content="https://wilson-castro.github.io/riqueza-compra-saude/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Riqueza compra saúde?">
+<meta name="twitter:description" content="Renda, saúde e demografia em 217 países de 1990 a 2024, com gráficos interativos e dados do Banco Mundial.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Riqueza compra saúde? Condições de vida no mundo de 1990 a 2024",
+  "description": "Recorte de 14 indicadores dos World Development Indicators do Banco Mundial para 217 países, de 1990 a 2024, usado nos gráficos interativos do site.",
+  "url": "https://wilson-castro.github.io/riqueza-compra-saude/",
+  "creator": { "@type": "Person", "name": "Wilson Costa de Castro" },
+  "isBasedOn": "https://datacatalog.worldbank.org/search/dataset/0037712/World-Development-Indicators",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "temporalCoverage": "1990/2024",
+  "spatialCoverage": "Mundo",
+  "inLanguage": "pt-BR"
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -12,8 +48,11 @@
 </head>
 <body>
 <a class="pular" href="#painel">Pular para o painel interativo</a>
+<noscript><p class="aviso-sem-js">Os gráficos desta página precisam de JavaScript. Ative o JavaScript
+  no navegador para ver a história e o painel.</p></noscript>
 
 <header class="abertura">
+  <div class="seletor-tema" id="seletorTema"></div>
   <div class="abertura-texto">
     <h1>Riqueza compra saúde?</h1>
     <div class="abertura-pe">
@@ -23,8 +62,7 @@
     </div>
     <section class="meu-pais" aria-labelledby="tMeuPais">
       <h2 id="tMeuPais">Escolha um país para acompanhar</h2>
-      <p class="nota">Clique no mapa ou busque pelo nome. O país escolhido fica destacado em todos os
-        gráficos da página. A cor do mapa mostra a expectativa de vida em 2023.</p>
+      <p class="nota">Clique no mapa ou busque pelo nome. O país fica destacado em todos os gráficos.</p>
       <div id="escolhaMeuPais"></div>
       <div class="legenda-estatica" id="legendaMeuPais"></div>
       <svg id="mapaMeuPais" role="img" aria-label="Mapa do mundo para escolher o país. Use a busca acima para escolher pelo teclado."></svg>
@@ -52,6 +90,8 @@
         <div class="cartao-grafico">
         <div class="grafico-topo">
           <div class="legenda-estatica" id="legendaHistoria" aria-hidden="true"></div>
+          <span class="rotulo-tamanho" aria-hidden="true">População</span>
+          <svg id="tamanhoHistoria" class="legenda-tamanho" role="img" aria-label="Tamanho das bolhas para 10 milhões, 100 milhões e 500 milhões de habitantes."></svg>
           <button id="repetir" class="botao-discreto" type="button" hidden>Repetir a animação</button>
         </div>
         <svg id="svgHistoria" role="img" aria-label="Gráfico de bolhas. Cada bolha é um país, e o tamanho mostra a população."></svg>
@@ -62,6 +102,10 @@
         </div>
         <figcaption>Cada bolha é um país, com área proporcional à população. A cor mostra a região ou,
           em duas partes, a distância até a linha tracejada.</figcaption>
+        <details class="sobre-grafico">
+          <summary>Sobre este gráfico</summary>
+          <dl id="sobreHistoria"></dl>
+        </details>
         </div>
       </figure>
     </div>
@@ -379,7 +423,7 @@
 
 <dialog id="tutorialPainel" class="tutorial" role="dialog" aria-modal="true" aria-labelledby="tituloTutorial" aria-describedby="textoTutorial" tabindex="-1">
   <p class="ajuda" id="passoTutorial" aria-live="polite"></p>
-  <h3 id="tituloTutorial"></h3>
+  <h2 id="tituloTutorial"></h2>
   <p id="textoTutorial"></p>
   <div class="acoes-tutorial">
     <button id="tutorialVoltar" class="botao-discreto" type="button">Voltar</button>

@@ -47,36 +47,35 @@
   --curva-padrao: cubic-bezier(0.2, 0, 0, 1);
   color-scheme: light;
 }
-/* Tema escuro do M3, a partir do mesmo verde-azulado. Vale quando o sistema do leitor está no
-   modo escuro. Os cartões ficam um pouco mais claros que o fundo, como pede o M3. */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --md-primary: #80d5d4;
-    --md-on-primary: #003737;
-    --md-primary-container: #004f4f;
-    --md-on-primary-container: #9cf1f0;
-    --md-secondary: #b0cccb;
-    --md-secondary-container: #324b4b;
-    --md-on-secondary-container: #cce8e7;
-    --md-tertiary-container: #2a4a6e;
-    --md-surface: #0e1514;
-    --md-surface-lowest: #1a2121;
-    --md-surface-low: #161d1d;
-    --md-surface-container: #252b2b;
-    --md-surface-high: #2f3636;
-    --md-surface-highest: #3a4141;
-    --md-on-surface: #dde4e3;
-    --md-on-surface-variant: #bec9c8;
-    --md-outline: #889392;
-    --md-outline-variant: #3f4948;
-    --md-error: #ffb4ab;
-    --halo: #1a2121;
-    --grade: #2b3333;
-    --ponto: #3a4446;
-    --ponto-par: #7f939c;
-    --divergente-meio: #3a4444;
-    color-scheme: dark;
-  }
+/* Tema escuro do M3, a partir do mesmo verde-azulado. O script do head de index.html põe
+   data-tema="escuro" no html quando o leitor escolhe o tema escuro, ou quando escolhe "Do sistema"
+   e o sistema está no modo escuro. */
+:root[data-tema="escuro"] {
+  --md-primary: #80d5d4;
+  --md-on-primary: #003737;
+  --md-primary-container: #004f4f;
+  --md-on-primary-container: #9cf1f0;
+  --md-secondary: #b0cccb;
+  --md-secondary-container: #324b4b;
+  --md-on-secondary-container: #cce8e7;
+  --md-tertiary-container: #2a4a6e;
+  --md-surface: #0e1514;
+  --md-surface-lowest: #1a2121;
+  --md-surface-low: #161d1d;
+  --md-surface-container: #252b2b;
+  --md-surface-high: #2f3636;
+  --md-surface-highest: #3a4141;
+  --md-on-surface: #dde4e3;
+  --md-on-surface-variant: #bec9c8;
+  --md-outline: #889392;
+  --md-outline-variant: #3f4948;
+  --md-error: #ffb4ab;
+  --halo: #1a2121;
+  --grade: #2b3333;
+  --ponto: #3a4446;
+  --ponto-par: #7f939c;
+  --divergente-meio: #3a4444;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -572,7 +571,7 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .tutorial { position: fixed; inset: auto 16px 16px; margin: 0 auto; width: min(38rem, calc(100% - 32px)); max-height: 48dvh; overflow-y: auto;
   padding: 20px; border: 2px solid var(--md-outline); border-radius: var(--md-forma-m); background: var(--md-surface-container); color: var(--md-on-surface); }
 .tutorial::backdrop { background: transparent; }
-.tutorial h3 { font-size: 1.25rem; margin-bottom: 8px; }
+.tutorial h2 { font-size: 1.25rem; margin-bottom: 8px; }
 .tutorial .ajuda { margin-bottom: 4px; }
 .acoes-tutorial { display: flex; flex-wrap: wrap; gap: 8px; }
 .acoes-tutorial button:disabled { color: var(--md-on-surface-variant); background: var(--md-surface-container); border: 1px dashed var(--md-outline); cursor: not-allowed; }
@@ -593,3 +592,31 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 
 /* Ícone e texto do botão Tocar. */
 #play { gap: 8px; }
+
+/* Seletor de tema, no alto da abertura. Cada opção tem 44 px de altura, o tamanho mínimo de alvo
+   recomendado para toque. */
+.seletor-tema { display: flex; align-items: center; justify-content: flex-end; gap: 4px; padding-top: 16px; }
+.rotulo-tema { font: 500 0.875rem/1.25rem var(--fonte); color: var(--md-on-surface-variant); margin-right: 8px; }
+.seletor-tema button {
+  min-height: 44px; padding: 0 16px; border: 1px solid var(--md-outline); background: transparent; cursor: pointer;
+  color: var(--md-on-surface); font: 500 0.875rem/1.25rem var(--fonte); border-radius: 999px;
+}
+.seletor-tema button:hover { background: color-mix(in srgb, var(--md-on-surface) 8%, transparent); }
+.seletor-tema button[aria-pressed=true] { background: var(--md-secondary-container); color: var(--md-on-secondary-container); border-color: transparent; }
+.aviso-sem-js { margin: 0; padding: 16px var(--margem); background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+
+/* Texto que só os leitores de tela leem. */
+.so-leitor { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.meu-pais .escolha-paises { flex-wrap: nowrap; }
+@media (max-width: 600px) { .meu-pais .escolha-paises { flex-wrap: wrap; } }
+
+/* Legenda de tamanho e metadados do gráfico da história. */
+.legenda-tamanho { overflow: visible; }
+.legenda-tamanho circle { fill: none; stroke: var(--md-on-surface-variant); stroke-width: 1; }
+.legenda-tamanho text { fill: var(--md-on-surface-variant); font: 500 11px var(--fonte); }
+.sobre-grafico { font: 400 0.8125rem/1.25rem var(--fonte); color: var(--md-on-surface-variant); }
+.sobre-grafico summary { padding: 6px 10px; }
+.sobre-grafico dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 6px 0 0; max-height: 30vh; overflow-y: auto; }
+.sobre-grafico dt { font-weight: 500; color: var(--md-on-surface); }
+.sobre-grafico dd { margin: 0; }
+.rotulo-tamanho { font: 500 0.75rem/1rem var(--fonte); color: var(--md-on-surface-variant); margin-left: auto; }

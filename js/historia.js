@@ -56,9 +56,50 @@ export function iniciarHistoria(D) {
   let quadro = null, passoAtual = -1;
 
   let redesenho = null;
+  // Legenda de tamanho com três círculos de referência, na mesma escala de raio das bolhas.
+  const svgTamanho = d3.select("#tamanhoHistoria");
+  function legendaTamanho() {
+    const refs = [[1e7, "10 mi"], [1e8, "100 mi"], [5e8, "500 mi"]];
+    const rMax = grafico.raio(5e8);
+    if (!rMax) return;
+    const H = 2 * rMax + 4;
+    let x = 0;
+    const pos = refs.map(([v, rot]) => { const r = grafico.raio(v); const p = { r, rot, cx: x + r }; x += 2 * r + 34; return p; });
+    svgTamanho.attr("width", x).attr("height", H).attr("viewBox", `0 0 ${x} ${H}`).style("width", x + "px");
+    const g = svgTamanho.selectAll("g").data(pos).join(ent => {
+      const s = ent.append("g");
+      s.append("circle"); s.append("text");
+      return s;
+    });
+    g.select("circle").attr("cx", p => p.cx).attr("cy", p => H - 2 - p.r).attr("r", p => p.r);
+    g.select("text").attr("x", p => p.cx + p.r + 4).attr("y", H - 4).text(p => p.rot);
+  }
+  // Metadados do gráfico, que mudam a cada passo e a cada ano.
+  const sobre = document.getElementById("sobreHistoria");
+  let sobreDesenhado = "";
+  function atualizarSobre(r) {
+    const eixo = c => `${D.META[c].nome}, em ${D.META[c].unidade}. Escala ${D.ehLog(c) ? "logarítmica, em que cada marca vale dez vezes a anterior" : "linear"}.`;
+    const corTexto = modoCor(estado) === "residuo"
+      ? "Distância até a linha tracejada, que é a reta de tendência do ano. Laranja fica abaixo e azul-petróleo fica acima."
+      : "Região do país, em quatro grupos.";
+    const linhas = [
+      ["Fonte", "World Development Indicators, do Banco Mundial, versão de 08/10/2026."],
+      ["Ano", String(r.ano)],
+      ["Países no gráfico", `${r.visiveis} de ${D.info.size}. Quem não tem os dois dados no ano fica de fora.`],
+      ["Eixo horizontal", eixo(estado.x)],
+      ["Eixo vertical", eixo(estado.y)],
+      ["Tamanho", "População. A área da bolha é proporcional ao número de habitantes."],
+      ["Cor", corTexto],
+    ];
+    const html = linhas.map(([t, d]) => `<dt>${t}</dt><dd>${d}</dd>`).join("");
+    if (html !== sobreDesenhado) { sobreDesenhado = html; sobre.innerHTML = html; }
+  }
+
   function mostrar(dur = 0) {
     desenharLegenda();
-    grafico.atualizar(estado, { dur });
+    const r = grafico.atualizar(estado, { dur });
+    atualizarSobre(r);
+    legendaTamanho();
     pintarRefs();
     // Durante uma transição o gráfico não desenha os rastros. Ao fim dela, um novo desenho os traz de volta.
     clearTimeout(redesenho);

@@ -14,12 +14,10 @@ export const REGIOES = {
   MEA: { nome: "Oriente Médio e Norte da África" },
   NAC: { nome: "América do Norte" },
 };
-// O site segue o tema claro ou escuro do sistema. As cores dos dados têm uma versão para cada
-// fundo, porque um tom que se lê bem no branco pode sumir no fundo escuro. Se o leitor troca o
-// tema com a página aberta, ela recarrega para refazer os gráficos com as cores novas.
-const temaEscuro = matchMedia("(prefers-color-scheme: dark)");
-export const ESCURO = temaEscuro.matches;
-temaEscuro.addEventListener("change", () => location.reload());
+// As cores dos dados têm uma versão para cada tema, porque um tom que se lê bem no branco pode
+// sumir no fundo escuro. A escolha do tema fica em js/tema.js.
+import { ESCURO } from "./tema.js";
+export { ESCURO };
 const tema = (claro, escuro) => ESCURO ? escuro : claro;
 
 // A cor das bolhas segue as quatro regiões do Gapminder, mas com uma paleta própria do site

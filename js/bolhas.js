@@ -487,6 +487,8 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
     redimensionar() { if (estado) { montar(0); desenhar(0); } },
     // Cor atual da bolha de um país, para o texto usar a mesma cor.
     corDe(iso3) { const d = ultimos.get(iso3); return d ? cor(d) : null; },
+    // Raio em pixels de um valor do indicador do tamanho, para a legenda de tamanho usar a mesma escala.
+    raio(v) { return geo ? geo.raio(v) : 0; },
     // Destaca um país como se o mouse estivesse sobre ele. Serve para as palavras do texto.
     destacar(iso3) { sobre = iso3; if (estado) desenhar(); },
   };

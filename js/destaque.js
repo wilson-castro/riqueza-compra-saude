@@ -2,11 +2,13 @@
 // chips dos países já escolhidos. É usada no gráfico da COVID-19, na comparação do Brasil e no
 // painel livre.
 
+import { ESCURO } from "./tema.js";
+
 // Cores dos países destacados, numa ordem fixa. A paleta passou no teste de daltonismo para
 // vizinhos na ordem. Alguns matizes lembram os das regiões. Por isso a linha destacada é mais
 // grossa, tem contorno branco e leva o nome na ponta, enquanto as linhas das regiões ficam apagadas.
 // No tema escuro, os mesmos matizes ganham tons próprios para o fundo escuro.
-export const PALETA_DESTAQUE = matchMedia("(prefers-color-scheme: dark)").matches
+export const PALETA_DESTAQUE = ESCURO
   ? ["#3987e5", "#d95926", "#199e70", "#c98500", "#d55181", "#9085e9"]
   : ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#6250d6"];
 
@@ -20,7 +22,8 @@ const normalizar = t => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
 // Sem a opção `cor`, ou quando ela devolve null, o país ganha uma cor da paleta de destaque quando
 // é escolhido e fica com ela até sair da lista, mesmo que outros países entrem ou saiam.
 export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar país", maximo = 6, cor = null,
-                                               substituir = false, indisponivel = () => null }) {
+                                               substituir = false, indisponivel = () => null,
+                                               compacto = false }) {
   const vaga = new Map();
   function corDe(iso3) {
     const fixa = cor?.(iso3);
@@ -38,15 +41,17 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
     .map(p => ({ iso3: p.iso3, pais: p.pais, chave: normalizar(p.pais) }));
 
   alvo.classList.add("escolha-paises");
+  // No modo compacto, o rótulo fica só para leitores de tela e o texto de ajuda sai, porque o
+  // título da seção já explica o campo.
   alvo.innerHTML = `
     <div class="busca">
-      <label for="${id}-entrada">${rotulo}</label>
+      <label for="${id}-entrada"${compacto ? ' class="so-leitor"' : ""}>${rotulo}</label>
       <input id="${id}-entrada" type="text" autocomplete="off" spellcheck="false"
         placeholder="Buscar país" role="combobox" aria-autocomplete="list"
-        aria-expanded="false" aria-controls="${id}-lista" aria-describedby="${id}-ajuda">
+        aria-expanded="false" aria-controls="${id}-lista"${compacto ? "" : ` aria-describedby="${id}-ajuda"`}>
       <ul id="${id}-lista" role="listbox" hidden></ul>
     </div>
-    <p class="ajuda ajuda-busca" id="${id}-ajuda">Digite um nome e escolha um país nas sugestões.</p>
+    ${compacto ? "" : `<p class="ajuda ajuda-busca" id="${id}-ajuda">Digite um nome e escolha um país nas sugestões.</p>`}
     <div class="chips" aria-live="polite"></div>`;
   const entrada = alvo.querySelector("input");
   const lista = alvo.querySelector("ul");
