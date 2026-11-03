@@ -51,30 +51,35 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
         aria-expanded="false" aria-controls="${id}-lista">
       <ul id="${id}-lista" role="listbox" hidden></ul>
     </div>
-    <div class="chips" aria-live="polite"></div>`;
+    <div class="chips" aria-live="polite"></div>
+    ${maximo > 1 ? `<p class="contagem-chips" id="${id}-contagem"></p>` : ""}`;
   const entrada = alvo.querySelector("input");
   const lista = alvo.querySelector("ul");
   const chips = d3.select(alvo.querySelector(".chips"));
   let sugestoes = [], ativa = -1;
 
   function fechar() {
+    aberta = false;
     lista.hidden = true;
     entrada.setAttribute("aria-expanded", "false");
     entrada.removeAttribute("aria-activedescendant");
     ativa = -1;
   }
+  // Com o campo vazio, a lista mostra todos os países em ordem alfabética, para o leitor poder
+  // escolher sem saber o nome. Com texto, mostra primeiro os nomes que começam com ele.
+  let aberta = false, semAbrir = false;
   function sugerir() {
     const termo = normalizar(entrada.value.trim());
     const escolhidos = new Set(obter());
-    // Primeiro os nomes que começam com o termo, depois os que só o contêm.
-    sugestoes = termo ? paises.filter(p => !escolhidos.has(p.iso3) && p.chave.includes(termo))
-      .sort((a, b) => d3.descending(a.chave.startsWith(termo), b.chave.startsWith(termo))).slice(0, 8)
-      .map(p => ({ ...p, motivo: indisponivel(p.iso3) })) : [];
+    const candidatos = paises.filter(p => !escolhidos.has(p.iso3) && (!termo || p.chave.includes(termo)));
+    if (termo) candidatos.sort((a, b) => d3.descending(a.chave.startsWith(termo), b.chave.startsWith(termo)));
+    sugestoes = candidatos.map(p => ({ ...p, motivo: indisponivel(p.iso3) }));
     ativa = sugestoes.findIndex(p => !p.motivo);
-    desenharLista(termo);
+    aberta = true;
+    desenharLista();
   }
-  function desenharLista(termo) {
-    if (!termo) return fechar();
+  function desenharLista() {
+    if (!aberta || entrada.disabled) return fechar();
     lista.hidden = false;
     entrada.setAttribute("aria-expanded", "true");
     d3.select(lista).selectAll("li").data(sugestoes.length ? sugestoes : [null]).join("li")
@@ -86,7 +91,10 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
       .html(d => !d ? "Nenhum país com esse nome"
         : d.motivo ? `${d.pais}<span class="motivo">${d.motivo}</span>` : d.pais)
       .on("mousedown", (ev, d) => { ev.preventDefault(); if (d && !d.motivo) escolher(d.iso3); });
-    if (ativa >= 0) entrada.setAttribute("aria-activedescendant", `${id}-op-${ativa}`);
+    if (ativa >= 0) {
+      entrada.setAttribute("aria-activedescendant", `${id}-op-${ativa}`);
+      lista.children[ativa]?.scrollIntoView({ block: "nearest" });
+    }
   }
   function escolher(iso3) {
     const atual = obter();
@@ -94,20 +102,28 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
     if (!atual.includes(iso3) && atual.length < maximo) mudar([...atual, iso3]);
     else if (!atual.includes(iso3) && substituir) mudar([...atual.slice(0, maximo - 1), iso3]);
     entrada.value = "";
-    fechar();
+    // O foco volta ao campo sem reabrir a lista, que acabou de ser usada.
+    semAbrir = true;
     entrada.focus();
+    semAbrir = false;
+    fechar();
   }
 
   entrada.addEventListener("input", sugerir);
+  entrada.addEventListener("focus", () => { if (!semAbrir) sugerir(); });
+  entrada.addEventListener("click", () => { if (!aberta) sugerir(); });
   entrada.addEventListener("blur", fechar);
   entrada.addEventListener("keydown", ev => {
-    if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
+    if ((ev.key === "ArrowDown" || ev.key === "ArrowUp") && !aberta) {
+      ev.preventDefault();
+      sugerir();
+    } else if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
       // As setas pulam os países desabilitados.
       if (!sugestoes.some(p => !p.motivo)) return;
       ev.preventDefault();
       do ativa = (ativa + (ev.key === "ArrowDown" ? 1 : -1) + sugestoes.length) % sugestoes.length;
       while (sugestoes[ativa].motivo);
-      desenharLista(normalizar(entrada.value.trim()));
+      desenharLista();
     } else if (ev.key === "Enter" && ativa >= 0) {
       ev.preventDefault();
       escolher(sugestoes[ativa].iso3);
@@ -132,6 +148,10 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
     chips.selectAll("button.limpar").data(ids.length > 1 ? [1] : []).join("button")
       .attr("class", "limpar").attr("type", "button").text("Limpar")
       .on("click", () => mudar([])).raise();
+    // Com muitos países, os chips rolam dentro de uma área de altura fixa, e o contador mostra
+    // quantos foram escolhidos e o máximo.
+    const contagem = alvo.querySelector(".contagem-chips");
+    if (contagem) contagem.textContent = ids.length ? `${ids.length} de ${maximo} países` : "";
     entrada.disabled = !substituir && ids.length >= maximo;
     entrada.placeholder = substituir && ids.length >= maximo ? "Trocar país"
       : ids.length < maximo ? "Buscar país" : `Até ${maximo} países`;

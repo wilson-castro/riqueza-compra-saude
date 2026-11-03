@@ -97,9 +97,10 @@
           <button id="repetir" class="botao-discreto" type="button" hidden>Repetir a animação</button>
         </div>
         <svg id="svgHistoria" role="img" aria-label="Gráfico de bolhas. Cada bolha é um país, e o tamanho mostra a população."></svg>
-        <div class="progresso" aria-hidden="true">
-          <span>1990</span>
-          <div class="progresso-trilho"><i id="barraProgresso"></i></div>
+        <div class="progresso">
+          <span aria-hidden="true">1990</span>
+          <input id="barraProgresso" class="progresso-controle" type="range" min="1990" max="2024" step="0.01" value="1990"
+            aria-label="Ano do gráfico. Arraste para mudar o ano.">
           <span id="anoHistoria">1990</span>
         </div>
         <figcaption>Cada bolha é um país, com área proporcional à população. A cor mostra a região ou,
@@ -306,12 +307,15 @@
         <p class="nota" id="contagem"></p>
         <div class="legenda" id="legenda"></div>
         <div class="legenda-estatica" id="legendaContinua" hidden></div>
-        <!-- O tempo fica junto do gráfico, para o leitor ver as bolhas enquanto usa os botões. -->
+        <svg id="svgBolhas" role="group" aria-labelledby="tituloBolhas"></svg>
+        <!-- O tempo fica logo abaixo do gráfico de bolhas. Quando o leitor rola para as outras visões,
+             que também dependem do ano, o controle fica preso ao pé da tela (js/ferramentas.js). -->
+        <div class="tocador-lugar" id="tocadorLugar">
         <div class="tocador" id="tocador" role="group" aria-label="Tempo">
           <button id="play" class="botao-principal" type="button" aria-pressed="false"><span aria-hidden="true">▶</span> <span>Tocar</span></button>
-          <button id="voltar" class="botao-discreto" type="button"><span aria-hidden="true">‹</span> Ano anterior</button>
+          <button id="voltar" class="botao-discreto" type="button" aria-label="Ano anterior"><span aria-hidden="true">‹</span> <span class="texto-botao">Ano anterior</span></button>
           <output id="anoTxt" for="tempo" aria-live="off">1990</output>
-          <button id="avancar" class="botao-discreto" type="button">Próximo ano <span aria-hidden="true">›</span></button>
+          <button id="avancar" class="botao-discreto" type="button" aria-label="Próximo ano"><span class="texto-botao">Próximo ano</span> <span aria-hidden="true">›</span></button>
           <label class="so-leitor" for="tempo">Ano</label>
           <input id="tempo" type="range" min="1990" max="2024" step="0.01" value="1990">
           <label class="tocador-vel">Velocidade
@@ -321,7 +325,7 @@
               <option value="4">4 anos por segundo</option>
             </select></label>
         </div>
-        <svg id="svgBolhas" role="group" aria-labelledby="tituloBolhas"></svg>
+        </div>
         <p class="nota">Clique numa bolha para acompanhar o país. Clique na legenda para destacar um
           grupo. Arraste o ano do fundo, ou use as setas do teclado, para andar no tempo.</p>
       </div>

@@ -204,8 +204,19 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 .grafico-fixo figcaption, .figura figcaption { font: 400 0.8125rem/1.25rem var(--fonte); letter-spacing: 0.015625rem; color: var(--md-on-surface-variant); }
 /* Progresso discreto do tempo no gráfico da história, como o indicador linear do M3. */
 .progresso { display: flex; align-items: center; gap: 10px; font: 500 0.75rem/1rem var(--fonte); color: var(--md-on-surface-variant); font-variant-numeric: tabular-nums; }
-.progresso-trilho { flex: 1; height: 4px; border-radius: 999px; background: var(--md-secondary-container); overflow: hidden; }
-.progresso-trilho i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--md-primary); }
+/* A barra de progresso também é um controle. O trecho já passado fica na cor primária, pela
+   variável --pct que o JavaScript atualiza. */
+.progresso-controle {
+  flex: 1; height: 24px; margin: 0; appearance: none; background: none; cursor: pointer; --pct: 0%;
+}
+.progresso-controle::-webkit-slider-runnable-track { height: 4px; border-radius: 999px;
+  background: linear-gradient(90deg, var(--md-primary) var(--pct), var(--md-secondary-container) var(--pct)); }
+.progresso-controle::-moz-range-track { height: 4px; border-radius: 999px; background: var(--md-secondary-container); }
+.progresso-controle::-moz-range-progress { height: 4px; border-radius: 999px; background: var(--md-primary); }
+.progresso-controle::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; margin-top: -6px; border-radius: 50%; background: var(--md-primary); border: 0; }
+.progresso-controle::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--md-primary); border: 0; }
+.progresso-controle:hover::-webkit-slider-thumb { box-shadow: 0 0 0 8px color-mix(in srgb, var(--md-primary) 12%, transparent); }
+.progresso-controle:hover::-moz-range-thumb { box-shadow: 0 0 0 8px color-mix(in srgb, var(--md-primary) 12%, transparent); }
 #anoHistoria { min-width: 2.6em; text-align: right; color: var(--md-on-surface); }
 
 /* Cada parte do texto fica solta na página. A parte ativa ganha opacidade cheia. */
@@ -634,7 +645,7 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .legenda-tamanho { width: auto; flex: none; }
 
 /* Tempo junto do gráfico de bolhas. */
-.tocador { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 4px 0 10px; }
+.tocador { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
 .tocador #play { min-width: 7rem; gap: 8px; }
 .tocador #anoTxt { font: 400 1.5rem/2rem var(--fonte); font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: center; color: var(--md-on-surface); }
 .tocador #tempo { flex: 1 1 200px; width: auto; }
@@ -666,3 +677,31 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 @media (max-width: 600px) { .tocador #voltar, .tocador #avancar { flex: 1 1 40%; } .barra.flutuante { bottom: 84px; } }
 .tocador .botao-discreto { gap: 6px; }
 .tocador-vel select { width: auto; min-width: 13rem; }
+
+/* Lista de sugestões com rolagem, porque com o campo vazio ela mostra todos os países. */
+.escolha-paises ul { max-height: 18rem; overflow-y: auto; }
+/* Os chips rolam dentro de uma área de até três linhas, para muitos países não empurrarem a página. */
+.chips { max-height: 7.5rem; overflow-y: auto; padding: 2px; }
+.contagem-chips { margin: 4px 0 0; font: 400 0.75rem/1rem var(--fonte); color: var(--md-on-surface-variant); width: 100%; }
+
+/* O botão de trocar eixos fica numa linha própria, embaixo dos dois campos. */
+#trocar { display: flex; width: fit-content; }
+
+/* Controle de tempo preso ao pé da tela, à esquerda do botão de controles. */
+.tocador-lugar { margin: 4px 0 10px; }
+.tocador.preso {
+  position: fixed; left: 16px; right: 196px; bottom: 16px; z-index: 29; margin: 0; flex-wrap: nowrap;
+  padding: 8px 12px; background: var(--md-surface-container); border: 1px solid var(--md-outline-variant);
+  border-radius: var(--md-forma-l); box-shadow: var(--md-elev-3);
+}
+.tocador.preso .tocador-vel { display: none; }
+@media (max-width: 760px) {
+  /* Em tela estreita, o botão de controles mostra só o ícone, e o controle de tempo preso fica com
+     o essencial, para os dois caberem lado a lado. */
+  .botao-ferramentas { padding: 0 16px; }
+  .botao-ferramentas span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .tocador.preso { right: 88px; left: 12px; gap: 6px; padding: 6px 8px; }
+  .tocador.preso #play { min-width: 0; }
+  .tocador.preso .texto-botao, .tocador.preso #tempo { display: none; }
+  .tocador.preso #anoTxt { font-size: 1.25rem; min-width: 2.6em; }
+}

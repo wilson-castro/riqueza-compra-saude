@@ -115,7 +115,9 @@ export function iniciarHistoria(D) {
     if (dur) redesenho = setTimeout(() => grafico.atualizar(estado), dur + 30);
     anoLegenda.textContent = Math.min(ANO_MAX, Math.floor(estado.t));
     // Barra fina que mostra em que ponto do período de 1990 a 2024 o gráfico está.
-    barra.style.width = `${(estado.t - ANO_MIN) / (ANO_MAX - ANO_MIN) * 100}%`;
+    barra.value = estado.t;
+    barra.style.setProperty("--pct", `${(estado.t - ANO_MIN) / (ANO_MAX - ANO_MIN) * 100}%`);
+    barra.setAttribute("aria-valuetext", String(Math.min(ANO_MAX, Math.floor(estado.t))));
   }
 
   // Leva o tempo de um ano a outro a 3 anos por segundo, cerca de 11 segundos de 1990 a 2024.
@@ -160,6 +162,15 @@ export function iniciarHistoria(D) {
       if (p.de != null) setTimeout(() => passoAtual === i && animar(p.de, p.t), reduzMovimento() ? 0 : 1500);
     }
   }
+  // Arrastar a barra de progresso para a animação e leva o gráfico ao ano escolhido. As notas do
+  // passo só aparecem quando o ano é o do passo, porque falam daquele ano.
+  barra.addEventListener("input", () => {
+    cancelAnimationFrame(quadro);
+    estado.t = +barra.value;
+    const p = PASSOS[passoAtual];
+    estado.notas = p && Math.floor(estado.t) === p.t ? (p.notas ?? []) : [];
+    mostrar();
+  });
   repetir.addEventListener("click", () => { const p = PASSOS[passoAtual]; if (p?.de != null) animar(p.de, p.t); });
 
   // Nomes de países e regiões no texto ganham a cor que têm no gráfico. Passar o mouse ou o foco
