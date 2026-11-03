@@ -319,7 +319,9 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
   function alternarEixos(fila, dur) {
     if (fila === filaVisivel) return;
     filaVisivel = fila;
-    const tr = s => dur ? s.transition().duration(dur) : s;
+    // A transição tem nome próprio. Sem ele, a transição dos eixos feita em montar() interrompe
+    // esta, e os eixos ficam presos meio apagados depois que a fila sai.
+    const tr = s => dur ? s.transition("opacidade").duration(dur) : s.interrupt("opacidade");
     for (const s of [gGradeX, gGradeY, gEixoX, gEixoY, rotX, rotY, textoR, anoFundo]) tr(s).attr("opacity", fila ? 0 : 1);
     tr(gFila).attr("opacity", fila ? 1 : 0);
   }

@@ -60,7 +60,7 @@ export function iniciarPainel(D) {
   const escolha = criarEscolhaPaises(document.getElementById("escolhaPainel"), D, {
     obter: () => [...estado.selecionados],
     mudar: lista => { estado.selecionados = new Set(lista); tudo(); },
-    rotulo: "Acompanhar países", cor: iso3 => corLinha(iso3),
+    rotulo: "Acompanhar países", cor: iso3 => corLinha(iso3), compacto: true,
   });
 
   $("selX").addEventListener("change", e => { estado.x = e.target.value; estado.foco = null; tudo(1000); });
@@ -454,9 +454,8 @@ export function iniciarPainel(D) {
       .on("click", (ev, f) => { if (f.id) { tip.esconder(); alternar(f.id); } })
       .order();
     const fora = D.info.size - new Set(mundo.features.map(f => f.id).filter(Boolean)).size;
-    $("notaMapa").textContent = "Cada país tem a cor do seu valor no indicador do eixo vertical. A hachura quer " +
-      `dizer sem dado naquele ano. Clique num país para acompanhá-lo. ${fora} países e territórios pequenos demais ` +
-      "para a escala do mapa, como Mônaco e muitas ilhas, aparecem só no ranking e na tabela.";
+    $("notaMapa").textContent = "A cor é o valor do indicador do eixo vertical, e a hachura quer dizer sem dado. " +
+      `Clique num país para acompanhá-lo. ${fora} países pequenos demais para o mapa aparecem só no ranking.`;
   }
 
   // ---------- Ranking ----------

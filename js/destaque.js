@@ -41,17 +41,16 @@ export function criarEscolhaPaises(alvo, D, { obter, mudar, rotulo = "Destacar p
     .map(p => ({ iso3: p.iso3, pais: p.pais, chave: normalizar(p.pais) }));
 
   alvo.classList.add("escolha-paises");
-  // No modo compacto, o rótulo fica só para leitores de tela e o texto de ajuda sai, porque o
-  // título da seção já explica o campo.
+  // No modo compacto, o rótulo fica só para leitores de tela, porque o título da seção já explica
+  // o campo. O placeholder e as sugestões bastam como ajuda, então não há texto de ajuda fixo.
   alvo.innerHTML = `
     <div class="busca">
       <label for="${id}-entrada"${compacto ? ' class="so-leitor"' : ""}>${rotulo}</label>
       <input id="${id}-entrada" type="text" autocomplete="off" spellcheck="false"
         placeholder="Buscar país" role="combobox" aria-autocomplete="list"
-        aria-expanded="false" aria-controls="${id}-lista"${compacto ? "" : ` aria-describedby="${id}-ajuda"`}>
+        aria-expanded="false" aria-controls="${id}-lista">
       <ul id="${id}-lista" role="listbox" hidden></ul>
     </div>
-    ${compacto ? "" : `<p class="ajuda ajuda-busca" id="${id}-ajuda">Digite um nome e escolha um país nas sugestões.</p>`}
     <div class="chips" aria-live="polite"></div>`;
   const entrada = alvo.querySelector("input");
   const lista = alvo.querySelector("ul");

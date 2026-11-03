@@ -56,26 +56,35 @@ export function iniciarHistoria(D) {
   let quadro = null, passoAtual = -1;
 
   let redesenho = null;
-  // Legenda de tamanho com três círculos de referência, na mesma escala de raio das bolhas.
+  // Legenda de tamanho com três círculos concêntricos, alinhados pela base, na mesma escala de raio
+  // das bolhas. Cada valor fica ao lado do topo do seu círculo, ligado por um traço curto.
   const svgTamanho = d3.select("#tamanhoHistoria");
+  let raioDesenhado = 0;
   function legendaTamanho() {
-    const refs = [[1e7, "10 mi"], [1e8, "100 mi"], [5e8, "500 mi"]];
+    const refs = [[5e8, "500 mi"], [1e8, "100 mi"], [1e7, "10 mi"]];
     const rMax = grafico.raio(5e8);
-    if (!rMax) return;
-    const H = 2 * rMax + 4;
-    let x = 0;
-    const pos = refs.map(([v, rot]) => { const r = grafico.raio(v); const p = { r, rot, cx: x + r }; x += 2 * r + 34; return p; });
-    svgTamanho.attr("width", x).attr("height", H).attr("viewBox", `0 0 ${x} ${H}`).style("width", x + "px");
+    if (!rMax || rMax === raioDesenhado) return;
+    raioDesenhado = rMax;
+    const H = 2 * rMax + 8, W = 2 * rMax + 52;
+    svgTamanho.attr("width", W).attr("height", H).attr("viewBox", `0 0 ${W} ${H}`);
+    const pos = refs.map(([v, rot]) => ({ r: grafico.raio(v), rot }));
     const g = svgTamanho.selectAll("g").data(pos).join(ent => {
       const s = ent.append("g");
-      s.append("circle"); s.append("text");
+      s.append("circle"); s.append("line"); s.append("text");
       return s;
     });
-    g.select("circle").attr("cx", p => p.cx).attr("cy", p => H - 2 - p.r).attr("r", p => p.r);
-    g.select("text").attr("x", p => p.cx + p.r + 4).attr("y", H - 4).text(p => p.rot);
+    const topo = p => H - 1 - 2 * p.r;
+    g.select("circle").attr("cx", rMax).attr("cy", p => H - 1 - p.r).attr("r", p => p.r);
+    g.select("line").attr("x1", rMax).attr("x2", 2 * rMax + 6).attr("y1", topo).attr("y2", topo);
+    g.select("text").attr("x", 2 * rMax + 9).attr("y", topo).attr("dy", "0.35em").text(p => p.rot);
   }
   // Metadados do gráfico, que mudam a cada passo e a cada ano.
   const sobre = document.getElementById("sobreHistoria");
+  const dialogoSobre = document.getElementById("dialogoSobre");
+  document.getElementById("abrirSobre").addEventListener("click", () => dialogoSobre.showModal());
+  document.getElementById("fecharSobre").addEventListener("click", () => dialogoSobre.close());
+  // Clicar fora da janela também fecha.
+  dialogoSobre.addEventListener("click", ev => { if (ev.target === dialogoSobre) dialogoSobre.close(); });
   let sobreDesenhado = "";
   function atualizarSobre(r) {
     const eixo = c => `${D.META[c].nome}, em ${D.META[c].unidade}. Escala ${D.ehLog(c) ? "logarítmica, em que cada marca vale dez vezes a anterior" : "linear"}.`;

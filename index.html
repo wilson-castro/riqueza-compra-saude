@@ -90,8 +90,10 @@
         <div class="cartao-grafico">
         <div class="grafico-topo">
           <div class="legenda-estatica" id="legendaHistoria" aria-hidden="true"></div>
+          <div class="legenda-pop">
           <span class="rotulo-tamanho" aria-hidden="true">População</span>
           <svg id="tamanhoHistoria" class="legenda-tamanho" role="img" aria-label="Tamanho das bolhas para 10 milhões, 100 milhões e 500 milhões de habitantes."></svg>
+          </div>
           <button id="repetir" class="botao-discreto" type="button" hidden>Repetir a animação</button>
         </div>
         <svg id="svgHistoria" role="img" aria-label="Gráfico de bolhas. Cada bolha é um país, e o tamanho mostra a população."></svg>
@@ -102,10 +104,7 @@
         </div>
         <figcaption>Cada bolha é um país, com área proporcional à população. A cor mostra a região ou,
           em duas partes, a distância até a linha tracejada.</figcaption>
-        <details class="sobre-grafico">
-          <summary>Sobre este gráfico</summary>
-          <dl id="sobreHistoria"></dl>
-        </details>
+        <button id="abrirSobre" class="link-discreto" type="button" aria-haspopup="dialog">Sobre este gráfico</button>
         </div>
       </figure>
     </div>
@@ -251,64 +250,55 @@
         <button id="abrirTutorial" class="botao-discreto" type="button" aria-haspopup="dialog" aria-controls="tutorialPainel">Ver como usar o painel</button>
         <span id="conviteTutorial" class="ajuda">Conheça os controles em sete passos.</span>
       </div>
-      <p>Escolha um indicador para cada eixo e use o botão Tocar para ver os anos passarem. Clique
-        numa bolha para acompanhar um país. Clique numa célula da matriz para levar aquele par de indicadores para as bolhas. Um novo clique na mesma célula volta ao par anterior.</p>
+      <p>Escolha os indicadores, toque o tempo e acompanhe países. Todas as visões abaixo andam juntas.</p>
     </div>
 
     <div class="barra">
-      <fieldset class="grupo-painel" id="grupoEixos">
+      <fieldset class="grupo-painel" id="grupoEixos" aria-describedby="ajuda-grupoEixos">
         <legend>O que comparar</legend>
+        <p class="ajuda" id="ajuda-grupoEixos">A altura e a posição para os lados de cada bolha mostram os indicadores escolhidos.</p>
         <label for="selY">Eixo vertical</label>
-        <select id="selY" aria-describedby="ajudaY"></select>
-        <p class="ajuda" id="ajudaY">Escolha o que a altura da bolha mostra.</p>
+        <select id="selY"></select>
         <label for="selX">Eixo horizontal</label>
-        <select id="selX" aria-describedby="ajudaX"></select>
-        <p class="ajuda" id="ajudaX">Escolha o que a posição para os lados mostra.</p>
-        <button id="trocar" class="botao-discreto" type="button" aria-describedby="ajudaTrocar">Trocar eixos</button>
-        <p class="ajuda" id="ajudaTrocar">Coloque um indicador no lugar do outro.</p>
+        <select id="selX"></select>
+        <button id="trocar" class="botao-discreto" type="button">Trocar eixos</button>
       </fieldset>
-      <fieldset class="grupo-painel" id="grupoDesenho">
+      <fieldset class="grupo-painel" id="grupoDesenho" aria-describedby="ajuda-grupoDesenho">
         <legend>Como desenhar as bolhas</legend>
+        <p class="ajuda" id="ajuda-grupoDesenho">A cor separa grupos ou mostra mais um indicador. O tamanho mostra outro.</p>
         <label for="selCor">Cor</label>
-        <select id="selCor" aria-describedby="ajudaCor">
+        <select id="selCor">
           <option value="regiao">Região</option>
           <option value="renda">Grupo de renda</option>
           <option value="residuo">Distância até a curva (só com PIB no eixo horizontal)</option>
           <optgroup label="Indicador" id="corIndicadores"></optgroup>
         </select>
-        <p class="ajuda" id="ajudaCor">Use cores para comparar grupos ou valores.</p>
         <label for="selTam">Tamanho</label>
-        <select id="selTam" aria-describedby="ajudaTam"></select>
-        <p class="ajuda" id="ajudaTam">Valores maiores fazem bolhas maiores.</p>
-        <label class="em-linha"><input id="chkRastro" type="checkbox" checked aria-describedby="ajudaRastro"> Rastro</label>
-        <p class="ajuda" id="ajudaRastro">Mostre o caminho dos países acompanhados.</p>
-        <label class="em-linha"><input id="chkCurva" type="checkbox" aria-describedby="ajudaCurva"> Linha de tendência</label>
-        <p class="ajuda" id="ajudaCurva">Veja a relação geral entre os dois indicadores.</p>
+        <select id="selTam"></select>
+        <label class="em-linha"><input id="chkRastro" type="checkbox" checked> Rastro</label>
+        <label class="em-linha"><input id="chkCurva" type="checkbox"> Linha de tendência</label>
       </fieldset>
-      <fieldset class="grupo-painel" id="grupoPaises">
+      <fieldset class="grupo-painel" id="grupoPaises" aria-describedby="ajuda-grupoPaises">
         <legend>Países acompanhados</legend>
+        <p class="ajuda" id="ajuda-grupoPaises">Busque pelo nome ou clique numa bolha. Os países escolhidos aparecem em todas as visões.</p>
         <div id="escolhaPainel"></div>
       </fieldset>
-      <fieldset class="grupo-painel" id="grupoTempo">
+      <fieldset class="grupo-painel" id="grupoTempo" aria-describedby="ajuda-grupoTempo">
         <legend>Tempo</legend>
+        <p class="ajuda" id="ajuda-grupoTempo">Toque para ver os anos passarem ou ande um ano por vez. A barra leva todas as visões para o ano.</p>
         <div class="botoes-tempo">
-          <button id="play" class="botao-principal" type="button" aria-pressed="false" aria-describedby="ajudaPlay"><span aria-hidden="true">▶</span> <span>Tocar</span></button>
-          <button id="voltar" class="botao-discreto" type="button" aria-label="Ano anterior" aria-describedby="ajudaVoltar">−1</button>
-          <button id="avancar" class="botao-discreto" type="button" aria-label="Próximo ano" aria-describedby="ajudaAvancar">+1</button>
+          <button id="play" class="botao-principal" type="button" aria-pressed="false"><span aria-hidden="true">▶</span> <span>Tocar</span></button>
+          <button id="voltar" class="botao-discreto" type="button" aria-label="Ano anterior" title="Ano anterior">−1</button>
+          <button id="avancar" class="botao-discreto" type="button" aria-label="Próximo ano" title="Próximo ano">+1</button>
         </div>
-        <p class="ajuda" id="ajudaPlay">Inicie ou pause a passagem dos anos.</p>
-        <p class="ajuda" id="ajudaVoltar">Volte um ano.</p>
-        <p class="ajuda" id="ajudaAvancar">Avance um ano.</p>
         <label for="tempo">Ano <output id="anoTxt" for="tempo">1990</output></label>
-        <input id="tempo" type="range" min="1990" max="2024" step="0.01" value="1990" aria-describedby="ajudaAno">
-        <p class="ajuda" id="ajudaAno">Arraste para escolher o ano das visões.</p>
+        <input id="tempo" type="range" min="1990" max="2024" step="0.01" value="1990">
         <label for="selVel">Velocidade</label>
-        <select id="selVel" aria-describedby="ajudaVel">
+        <select id="selVel">
           <option value="1">1 ano por segundo</option>
           <option value="2" selected>2 anos por segundo</option>
           <option value="4">4 anos por segundo</option>
         </select>
-        <p class="ajuda" id="ajudaVel">Escolha quantos anos passam a cada segundo.</p>
       </fieldset>
     </div>
 
@@ -420,6 +410,13 @@
     </div>
   </div>
 </footer>
+
+<!-- Metadados do gráfico da história. Abre numa janela para não mudar a altura do gráfico fixo. -->
+<dialog id="dialogoSobre" class="dialogo-sobre" aria-labelledby="tituloSobre">
+  <h2 id="tituloSobre">Sobre este gráfico</h2>
+  <dl id="sobreHistoria"></dl>
+  <button id="fecharSobre" class="botao-discreto" type="button">Fechar</button>
+</dialog>
 
 <dialog id="tutorialPainel" class="tutorial" role="dialog" aria-modal="true" aria-labelledby="tituloTutorial" aria-describedby="textoTutorial" tabindex="-1">
   <p class="ajuda" id="passoTutorial" aria-live="polite"></p>

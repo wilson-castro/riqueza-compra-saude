@@ -552,7 +552,9 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .grupo-painel { min-width: 0; margin: 0; padding: 0 0 0 20px; border: 0; border-left: 1px solid var(--md-outline-variant); }
 .grupo-painel:first-child { padding-left: 0; border-left: 0; }
 .grupo-painel legend { padding: 0; margin-bottom: 16px; font-weight: 500; }
-.grupo-painel > label { display: block; color: var(--md-on-surface-variant); font-size: 0.875rem; }
+.grupo-painel > label { display: block; color: var(--md-on-surface-variant); font-size: 0.875rem; margin: 14px 0 4px; }
+.grupo-painel > .ajuda { margin: 0 0 4px; }
+.grupo-painel > button, .grupo-painel > .em-linha { margin-top: 12px; }
 .grupo-painel select { width: 100%; min-width: 0; }
 .grupo-painel .em-linha { display: flex; min-height: 32px; }
 .grupo-painel input[type=checkbox] { width: 24px; height: 24px; flex-shrink: 0; }
@@ -614,9 +616,19 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .legenda-tamanho { overflow: visible; }
 .legenda-tamanho circle { fill: none; stroke: var(--md-on-surface-variant); stroke-width: 1; }
 .legenda-tamanho text { fill: var(--md-on-surface-variant); font: 500 11px var(--fonte); }
-.sobre-grafico { font: 400 0.8125rem/1.25rem var(--fonte); color: var(--md-on-surface-variant); }
-.sobre-grafico summary { padding: 6px 10px; }
-.sobre-grafico dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 6px 0 0; max-height: 30vh; overflow-y: auto; }
-.sobre-grafico dt { font-weight: 500; color: var(--md-on-surface); }
-.sobre-grafico dd { margin: 0; }
-.rotulo-tamanho { font: 500 0.75rem/1rem var(--fonte); color: var(--md-on-surface-variant); margin-left: auto; }
+.link-discreto { align-self: flex-start; min-height: 32px; padding: 4px 10px; border: 0; border-radius: 999px; background: none;
+  color: var(--md-primary); font: 500 0.8125rem/1.25rem var(--fonte); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.link-discreto:hover { background: color-mix(in srgb, var(--md-primary) 8%, transparent); }
+/* Janela com os metadados do gráfico da história. */
+.dialogo-sobre { width: min(40rem, calc(100% - 32px)); max-height: 80dvh; overflow-y: auto; padding: 24px 28px;
+  border: 1px solid var(--md-outline-variant); border-radius: var(--md-forma-l); background: var(--md-surface-lowest); color: var(--md-on-surface); }
+.dialogo-sobre::backdrop { background: rgba(0, 0, 0, 0.4); }
+.dialogo-sobre h2 { font-size: 1.375rem; margin-bottom: 12px; }
+.dialogo-sobre dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0 0 20px; font-size: 0.875rem; line-height: 1.25rem; }
+.dialogo-sobre dt { font-weight: 500; }
+.dialogo-sobre dd { margin: 0; color: var(--md-on-surface-variant); }
+@media (max-width: 600px) { .dialogo-sobre dl { grid-template-columns: 1fr; gap: 2px; } .dialogo-sobre dd { margin-bottom: 8px; } }
+.legenda-pop { display: flex; align-items: flex-end; gap: 8px; margin-left: auto; }
+.rotulo-tamanho { font: 500 0.75rem/1rem var(--fonte); color: var(--md-on-surface-variant); }
+.legenda-tamanho line { stroke: var(--md-on-surface-variant); stroke-width: 1; stroke-dasharray: 2 2; }
+.legenda-tamanho { width: auto; flex: none; }
