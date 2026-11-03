@@ -6,13 +6,14 @@ export function iniciarTutorial(parar) {
   const botao = $("abrirTutorial");
   const chave = "tutorial-painel-visto";
   const passos = [
-    ["grupoEixos", "Escolha os indicadores", "Escolha o indicador da altura e o da posição para os lados. Use Trocar eixos para inverter a comparação."],
-    ["grupoDesenho", "Leia as cores e os tamanhos", "A cor permite comparar grupos ou valores. O tamanho mostra quanto cada país tem do indicador escolhido."],
-    ["tocador", "Veja os anos passarem", "Use Tocar, logo acima do gráfico de bolhas, para ver as mudanças ao longo dos anos. Os botões ao lado andam um ano por vez, e a barra leva todas as visões para um ano."],
-    ["svgBolhas", "Acompanhe um país", "Clique numa bolha para acompanhar esse país nas outras visões. A busca em Países acompanhados também permite escolher países pelo nome."],
-    ["svgMatriz", "Compare as relações", "A matriz mostra quais indicadores sobem ou descem juntos. Clique numa célula para usar aquele par no gráfico de bolhas."],
-    ["svgCoord", "Filtre vários indicadores", "Escolha de 2 a 8 eixos nas coordenadas paralelas. Arraste sobre um eixo para filtrar uma faixa de valores também nas bolhas, no mapa e no ranking."],
-    ["svgMapa", "Explore o mapa e o ranking", "O mapa mostra onde estão os valores do eixo vertical. Logo abaixo, o ranking ordena os países pelo mesmo indicador e permite acompanhá-los com um clique."],
+    ["grupoEixos", "Escolha os indicadores", "Escolha o indicador da altura e o da posição para os lados. Trocar eixos inverte a comparação."],
+    ["grupoDesenho", "Leia as cores e os tamanhos", "A cor compara grupos ou mostra mais um indicador. O tamanho da bolha mostra outro."],
+    ["tocadorBolhas", "Cada gráfico tem o seu tempo", "Embaixo de cada gráfico há um controle de tempo. Tocar faz os anos passarem, e os botões ao lado andam um ano por vez. Mudar o ano de um gráfico não muda o dos outros."],
+    ["svgBolhas", "Acompanhe um país", "Clique numa bolha para acompanhar o país em todos os gráficos. A busca em Países acompanhados faz o mesmo pelo nome."],
+    ["svgMatriz", "Compare as relações", "A matriz mostra quais indicadores sobem ou descem juntos. Clique numa célula para levar o par para as bolhas, e clique de novo para voltar."],
+    ["svgCoord", "Filtre vários indicadores", "Arraste sobre um eixo das coordenadas paralelas para ficar só com os países naquela faixa. O filtro vale também para as bolhas, o mapa e o ranking."],
+    ["svgMapa", "Veja no mapa e no ranking", "O mapa e o ranking mostram o indicador do eixo vertical das bolhas, cada um no seu próprio ano."],
+    ["abrirTutorial", "Controles sempre à mão", "Quando você rolar para os gráficos, o botão Controles no canto inferior direito abre os mesmos controles do alto do painel."],
   ];
   let passo = 0, destacado = null;
   try { $("conviteTutorial").hidden = localStorage.getItem(chave) === "sim"; } catch {}

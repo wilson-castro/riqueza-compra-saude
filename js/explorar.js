@@ -8,6 +8,7 @@ import { RAMPA } from "./base.js";
 import { criarEscolhaPaises } from "./destaque.js";
 import { iniciarTutorial } from "./tutorial.js";
 import { iniciarFerramentas } from "./ferramentas.js";
+import { criarTocador, pararTodos } from "./tocador.js";
 import { meuPais, COR_MEU_PAIS } from "./meupais.js";
 
 // Cinza das barras do ranking que não são de países acompanhados. Fica claro, para as barras
@@ -18,11 +19,13 @@ export function iniciarPainel(D) {
   const estado = {
     x: "pib_pc_ppp", y: "expectativa_vida", cor: "regiao", tamanho: "populacao", t: 1990,
     selecionados: new Set(["BRA", "CHN", "IND", "NGA"]), foco: null,
-    rastro: true, curva: false, mostrarR: true, velocidade: 2,
+    rastro: true, curva: false, mostrarR: true,
   };
-  let quadro = null, anoDesenhado = null;
   const $ = id => document.getElementById(id);
   const anoInteiro = () => Math.min(ANO_MAX, Math.floor(estado.t + 1e-9));
+  // Cada visão tem o seu próprio ano, mudado pelo controle de tempo que fica embaixo dela. A tabela
+  // segue o ano das bolhas, porque é a versão em texto delas.
+  const anos = { matriz: 2023, linhas: 2023, coord: 2023, mapa: 2023, ranking: 2023 };
   // A cor de um país acompanhado é a da sua região. Quando dois países da mesma região estão na
   // lista, o segundo fica num tom mais escuro, para as linhas não se confundirem.
   function corLinha(iso3) {
@@ -36,7 +39,7 @@ export function iniciarPainel(D) {
 
   const bolhas = criarBolhas($("svgBolhas"), D, {
     aoClicar: alternar,
-    aoArrastarAno: t => { parar(); irPara(t); },
+    aoArrastarAno: t => { tempoBolhas.parar(); tempoBolhas.irPara(t); },
     // Se o leitor escolhe para um eixo o indicador que já está no outro, os dois trocam de lugar.
     aoEscolherEixo: (qual, c) => {
       const outro = qual === "x" ? "y" : "x";
@@ -47,7 +50,7 @@ export function iniciarPainel(D) {
     },
   });
 
-  iniciarTutorial(parar);
+  iniciarTutorial(pararTodos);
   iniciarFerramentas();
 
   // ---------- Controles ----------
@@ -70,58 +73,34 @@ export function iniciarPainel(D) {
   $("trocar").addEventListener("click", () => { [estado.x, estado.y] = [estado.y, estado.x]; tudo(1000); });
   $("selCor").addEventListener("change", e => { estado.cor = e.target.value; estado.foco = null; tudo(); });
   $("selTam").addEventListener("change", e => { estado.tamanho = e.target.value; tudo(600); });
-  $("selVel").addEventListener("change", e => { estado.velocidade = +e.target.value; });
   $("chkRastro").addEventListener("change", e => { estado.rastro = e.target.checked; desenharBolhas(); });
   $("chkCurva").addEventListener("change", e => { estado.curva = e.target.checked; desenharBolhas(); });
-  $("tempo").addEventListener("input", e => { parar(); irPara(+e.target.value); });
-  $("play").addEventListener("click", () => quadro ? parar() : tocar());
-  $("voltar").addEventListener("click", () => { parar(); irPara(Math.ceil(estado.t) - 1); });
-  $("avancar").addEventListener("click", () => { parar(); irPara(Math.floor(estado.t) + 1); });
-  // As setas e a barra de espaço controlam o tempo quando o foco está dentro do painel.
-  $("painel").addEventListener("keydown", e => {
-    if ($("tutorialPainel").open) return;
-    const alvo = e.target;
-    if (alvo.tagName === "SELECT" || (alvo.tagName === "INPUT" && alvo.type !== "range") || alvo.tagName === "BUTTON" && e.key === " ") return;
-    if (e.key === "ArrowLeft") { e.preventDefault(); parar(); irPara(Math.ceil(estado.t) - 1); }
-    if (e.key === "ArrowRight") { e.preventDefault(); parar(); irPara(Math.floor(estado.t) + 1); }
-    if (e.key === " ") { e.preventDefault(); quadro ? parar() : tocar(); }
-  });
 
-  // ---------- Tempo ----------
-  function irPara(t) {
-    estado.t = Math.max(ANO_MIN, Math.min(ANO_MAX, t));
-    $("tempo").value = estado.t;
-    $("tempo").setAttribute("aria-valuetext", String(anoInteiro()));
-    $("anoTxt").textContent = anoInteiro();
-    const anoNovo = anoInteiro() !== anoDesenhado;
-    // O filtro depende dos valores do ano, então é refeito antes de desenhar as bolhas.
-    if (anoNovo) atualizarFiltro();
-    desenharBolhas();
-    marcadorLinhas();
-    // A matriz, a tabela, o ranking, o mapa e as coordenadas usam só anos inteiros, então mudam
-    // só quando o ano muda.
-    if (anoNovo) { anoDesenhado = anoInteiro(); matriz(); tabela(); ranking(); mapa(); linhasCoord(); }
-  }
-  function tocar() {
-    if (estado.t >= ANO_MAX) estado.t = ANO_MIN;
-    $("play").innerHTML = '<span aria-hidden="true">Ⅱ</span> <span>Pausar</span>';
-    $("play").setAttribute("aria-pressed", "true");
-    let antes = null;
-    const passo = agora => {
-      if (antes != null) estado.t = Math.min(ANO_MAX, estado.t + (agora - antes) / 1000 * estado.velocidade);
-      antes = agora;
-      irPara(estado.t);
-      if (estado.t >= ANO_MAX) return parar();
-      quadro = requestAnimationFrame(passo);
-    };
-    quadro = requestAnimationFrame(passo);
-  }
-  function parar() {
-    cancelAnimationFrame(quadro);
-    quadro = null;
-    $("play").innerHTML = '<span aria-hidden="true">▶</span> <span>Tocar</span>';
-    $("play").setAttribute("aria-pressed", "false");
-  }
+  // ---------- Tempo de cada visão ----------
+  let anoTabela = null;
+  const tempoBolhas = criarTocador($("tocadorBolhas"), {
+    inicial: estado.t, continuo: true, nome: "gráfico de bolhas",
+    aoMudar: t => {
+      estado.t = t;
+      desenharBolhas();
+      if (anoInteiro() !== anoTabela) { anoTabela = anoInteiro(); tabela(); }
+    },
+  });
+  const tempoMatriz = criarTocador($("tocadorMatriz"), {
+    inicial: anos.matriz, nome: "gráfico de correlação", aoMudar: a => { anos.matriz = a; matriz(); },
+  });
+  const tempoLinhas = criarTocador($("tocadorLinhas"), {
+    inicial: anos.linhas, nome: "gráfico de linhas", aoMudar: a => { anos.linhas = a; marcadorLinhas(); },
+  });
+  criarTocador($("tocadorCoord"), {
+    inicial: anos.coord, nome: "gráfico de coordenadas paralelas", aoMudar: a => { anos.coord = a; aplicarFiltro(); },
+  });
+  criarTocador($("tocadorMapa"), {
+    inicial: anos.mapa, nome: "mapa", aoMudar: a => { anos.mapa = a; mapa(); },
+  });
+  criarTocador($("tocadorRanking"), {
+    inicial: anos.ranking, nome: "ranking", aoMudar: a => { anos.ranking = a; ranking(); },
+  });
 
   function alternar(iso3) {
     estado.selecionados.has(iso3) ? estado.selecionados.delete(iso3) : estado.selecionados.add(iso3);
@@ -176,7 +155,7 @@ export function iniciarPainel(D) {
     tudo(1000);
   }
   function matriz() {
-    const ano = anoInteiro(), E = D.eixos, n = E.length;
+    const ano = anos.matriz, E = D.eixos, n = E.length;
     const W = svgM.node().clientWidth;
     const esq = 140, base = 112;
     const lado = Math.max(14, Math.min(34, (W - esq) / (n - 1)));
@@ -280,10 +259,10 @@ export function iniciarPainel(D) {
         foco.attr("x1", x(ano)).attr("x2", x(ano)).attr("opacity", 0.6);
         tip.mostrar(ev, `<b>${ano}</b><dl>` + series.map(s =>
           `<dt>${s.nome}</dt><dd>${dif && s.pts.find(p => p.ano === ano)?.v > 0 ? "+" : ""}${fmt(s.pts.find(p => p.ano === ano)?.v)}</dd>`).join("") +
-          "</dl><i>Clique para ir a este ano</i>");
+          "</dl><i>Clique para marcar este ano</i>");
       })
       // Clicar na linha do tempo leva todas as visões para aquele ano.
-      .on("click", ev => { parar(); irPara(Math.round(x.invert(d3.pointer(ev)[0]))); })
+      .on("click", ev => { tempoLinhas.parar(); tempoLinhas.irPara(Math.round(x.invert(d3.pointer(ev)[0]))); })
       .on("mouseleave", () => { foco.attr("opacity", 0); tip.esconder(); });
     $("tituloLinhas").textContent = dif
       ? `${D.META[c].nome}, diferença para o mundo (${D.META[c].unidade}), de 1990 a 2024`
@@ -291,7 +270,7 @@ export function iniciarPainel(D) {
     marcadorLinhas();
   }
   function marcadorLinhas() {
-    if (geoL) geoL.marcador.attr("x1", geoL.x(estado.t)).attr("x2", geoL.x(estado.t));
+    if (geoL) geoL.marcador.attr("x1", geoL.x(anos.linhas)).attr("x2", geoL.x(anos.linhas));
   }
 
   // ---------- Coordenadas paralelas ----------
@@ -360,7 +339,7 @@ export function iniciarPainel(D) {
   }
   function linhasCoord() {
     if (!geoC) return;
-    const ano = anoInteiro(), meu = meuPais.obter();
+    const ano = anos.coord, meu = meuPais.obter();
     const { x, y, gLinhas } = geoC;
     const doAno = [...D.linhaDe.values()].map(mp => mp.get(ano)).filter(Boolean);
     const linha = d3.line().defined(p => p[1] != null).x(p => p[0]).y(p => p[1]);
@@ -385,9 +364,10 @@ export function iniciarPainel(D) {
       ? `${n} de ${doAno.length} países passam no filtro em ${ano}.` : "Nenhum filtro ativo.";
     $("tituloCoord").textContent = `Vários indicadores ao mesmo tempo, em ${ano}`;
   }
-  // Recalcula quem passa no filtro no ano do painel.
+  // Recalcula quem passa no filtro, no ano das coordenadas paralelas. O conjunto de países que passa
+  // vale para as bolhas, o mapa e o ranking, mesmo que eles estejam em outro ano.
   function atualizarFiltro() {
-    const ano = anoInteiro();
+    const ano = anos.coord;
     estado.filtro = faixas.size ? new Set([...D.linhaDe.values()].map(mp => mp.get(ano)).filter(d => d && passaFiltro(d)).map(d => d.iso3)) : null;
   }
   // Depois de mexer numa faixa, redesenha as visões que usam o filtro.
@@ -421,7 +401,7 @@ export function iniciarPainel(D) {
     return escalasMapa.get(c);
   }
   function mapa() {
-    const c = estado.y, ano = anoInteiro();
+    const c = estado.y, ano = anos.mapa;
     $("tituloMapa").textContent = `${D.META[c].nome} em ${ano}, no mapa`;
     $("legendaMapa").innerHTML = legendaIndicador(D, c) +
       `<span class="item"><i class="bola sem-dado-mapa"></i>Sem dado</span>`;
@@ -476,7 +456,7 @@ export function iniciarPainel(D) {
     return { vals, posicao: new Map(vals.map((d, i) => [d.iso3, i + 1])) };
   }
   function ranking() {
-    const c = estado.y, ano = anoInteiro();
+    const c = estado.y, ano = anos.ranking;
     const { vals } = ordenar(c, ano);
     const em1990 = ordenar(c, ANO_MIN).posicao;
     const meu = meuPais.obter();
@@ -593,9 +573,13 @@ export function iniciarPainel(D) {
     desenharBolhas(dur);
     linhas();
     coordenadas();
-    anoDesenhado = null;
-    if (!dur) irPara(estado.t);
-    else { atualizarFiltro(); matriz(); tabela(); ranking(); mapa(); linhasCoord(); anoDesenhado = anoInteiro(); }
+    atualizarFiltro();
+    linhasCoord();
+    matriz();
+    anoTabela = anoInteiro();
+    tabela();
+    ranking();
+    mapa();
   }
   addEventListener("resize", () => { bolhas.redimensionar(); tudo(); });
   meuPais.aoMudar(() => tudo());

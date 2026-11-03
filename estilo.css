@@ -140,15 +140,22 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 .linha-fina { font-size: clamp(1.125rem, 1.8vw, 1.375rem); line-height: 1.5; margin: 0; color: var(--md-on-surface-variant); }
 
 /* Convite para rolar, como um link simples no pé da primeira tela. */
+/* Convite para começar a história, em destaque no fim da abertura. */
 .convite {
-  display: flex; align-items: center; gap: 16px; width: fit-content; max-width: 36rem;
-  margin: 8vh 0 5vh; color: var(--md-on-surface-variant); text-decoration: none;
-  font: 400 0.875rem/1.25rem var(--fonte); letter-spacing: 0.015625rem;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px 20px; margin: 6vh 0 5vh; padding: 20px 24px;
+  background: var(--md-primary-container); color: var(--md-on-primary-container); border-radius: var(--md-forma-l);
 }
-.convite:hover strong { text-decoration: underline; text-underline-offset: 4px; }
-.convite strong { color: var(--md-primary); }
-.convite strong { display: block; font-weight: 500; font-size: 1rem; line-height: 1.5rem; }
-.convite-texto span { opacity: 0.85; }
+.convite-texto { margin: 0; flex: 1 1 18rem; font-size: 1rem; line-height: 1.5rem; }
+.convite-texto strong { font-weight: 500; }
+.convite .botao-principal { text-decoration: none; height: 48px; padding: 0 28px; font-size: 1rem; }
+/* Guia de uso em três passos, logo abaixo do texto de abertura. */
+.como-usar { list-style: none; counter-reset: passo; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 16px 32px; margin: 2.5rem 0 0; padding: 0; max-width: 60rem; }
+.como-usar li { counter-increment: passo; position: relative; padding-left: 3rem; display: flex; flex-direction: column; gap: 2px; }
+.como-usar li::before { content: counter(passo); position: absolute; left: 0; top: 0; width: 2.25rem; height: 2.25rem; border-radius: 50%;
+  display: grid; place-items: center; background: var(--md-primary); color: var(--md-on-primary); font: 500 1rem/1 var(--fonte); }
+.como-usar strong { font-weight: 500; color: var(--md-on-surface); }
+.como-usar span { color: var(--md-on-surface-variant); font-size: 0.9375rem; line-height: 1.375rem; }
 .convite-roda {
   flex: none; width: 24px; height: 38px; border: 2px solid currentColor; border-radius: 14px;
   display: flex; justify-content: center; padding-top: 6px;
@@ -343,17 +350,6 @@ input[type=checkbox], input[type=radio] { accent-color: var(--md-primary); width
 .em-linha { display: flex; align-items: center; gap: 8px; font: 400 0.875rem/1.25rem var(--fonte); color: var(--md-on-surface-variant); }
 .barra .chip { background: var(--md-surface-lowest); }
 .tempo select { flex: none; min-width: 14rem; }
-
-/* Controle deslizante do M3: trilho ativo na cor primária, trilho inativo claro e alça redonda. */
-#tempo { flex: 1 1 260px; min-width: 180px; height: 32px; appearance: none; background: none; cursor: pointer; }
-#tempo::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: var(--md-secondary-container); }
-#tempo::-moz-range-track { height: 4px; border-radius: 999px; background: var(--md-secondary-container); }
-#tempo::-moz-range-progress { height: 4px; border-radius: 999px; background: var(--md-primary); }
-#tempo::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; margin-top: -8px; border-radius: 50%; background: var(--md-primary); border: 0; }
-#tempo::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--md-primary); border: 0; }
-#tempo:hover::-moz-range-thumb { box-shadow: 0 0 0 10px color-mix(in srgb, var(--md-primary) 8%, transparent); }
-#tempo:hover::-webkit-slider-thumb { box-shadow: 0 0 0 10px color-mix(in srgb, var(--md-primary) 8%, transparent); }
-#anoTxt { font: 400 2rem/2.5rem var(--fonte); font-variant-numeric: tabular-nums; min-width: 4.5rem; color: var(--md-on-surface); }
 
 /* As visões ficam direto na faixa do painel, separadas por uma linha fina no alto de cada uma. */
 .visoes { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 56px 48px; }
@@ -571,8 +567,6 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .grupo-painel input[type=checkbox] { width: 24px; height: 24px; flex-shrink: 0; }
 .ajuda { color: var(--md-on-surface-variant); font-size: 0.875rem; line-height: 1.25rem; margin: 6px 0 14px; }
 .botoes-tempo { display: flex; flex-wrap: wrap; gap: 8px; }
-#tempo { width: 100%; min-width: 0; }
-#anoTxt { margin-left: 8px; }
 .escolha-paises .busca { flex-wrap: wrap; min-width: 0; }
 .escolha-paises input { min-width: 12rem; max-width: 100%; }
 .ajuda-busca { flex-basis: 100%; margin-bottom: 0; }
@@ -603,8 +597,6 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
   .escolha-paises ul { width: 100%; max-width: 100%; }
 }
 
-/* Ícone e texto do botão Tocar. */
-#play { gap: 8px; }
 
 /* Seletor de tema, no alto da abertura. Cada opção tem 44 px de altura, o tamanho mínimo de alvo
    recomendado para toque. */
@@ -644,13 +636,24 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .legenda-tamanho line { stroke: var(--md-on-surface-variant); stroke-width: 1; stroke-dasharray: 2 2; }
 .legenda-tamanho { width: auto; flex: none; }
 
-/* Tempo junto do gráfico de bolhas. */
-.tocador { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
-.tocador #play { min-width: 7rem; gap: 8px; }
-.tocador #anoTxt { font: 400 1.5rem/2rem var(--fonte); font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: center; color: var(--md-on-surface); }
-.tocador #tempo { flex: 1 1 200px; width: auto; }
+/* Controle de tempo, um embaixo de cada visão do painel (js/tocador.js). */
+.tocador { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 12px 0 4px;
+  padding-top: 12px; border-top: 1px dashed var(--md-outline-variant); }
+.tocador .tocar { min-width: 7rem; gap: 8px; }
+.tocador .botao-discreto { gap: 6px; }
+.ano-tocador { font: 400 1.5rem/2rem var(--fonte); font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: center; color: var(--md-on-surface); }
+.barra-tocador { flex: 1 1 160px; min-width: 120px; height: 28px; margin: 0; appearance: none; background: none; cursor: pointer; --pct: 0%; }
+.barra-tocador::-webkit-slider-runnable-track { height: 4px; border-radius: 999px;
+  background: linear-gradient(90deg, var(--md-primary) var(--pct), var(--md-secondary-container) var(--pct)); }
+.barra-tocador::-moz-range-track { height: 4px; border-radius: 999px; background: var(--md-secondary-container); }
+.barra-tocador::-moz-range-progress { height: 4px; border-radius: 999px; background: var(--md-primary); }
+.barra-tocador::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 50%; background: var(--md-primary); border: 0; }
+.barra-tocador::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--md-primary); border: 0; }
 .tocador-vel { display: inline-flex; align-items: center; gap: 8px; font: 500 0.75rem/1rem var(--fonte); color: var(--md-on-surface-variant); }
-.tocador-vel select { height: 40px; min-width: 0; }
+.tocador-vel select { height: 40px; width: auto; min-width: 14.5rem; }
+/* Em visões estreitas, os botões mostram só o símbolo, e o nome continua para leitores de tela. */
+.visao:not(.visao-larga) .tocador .texto-botao { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 600px) { .tocador .texto-botao { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
 
 /* Caixa de controles. Fora do modo flutuante, o cabeçalho dela fica escondido. */
 .barra-cabeca { grid-column: 1 / -1; display: none; }
@@ -675,8 +678,6 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .botao-ferramentas:hover { background: color-mix(in srgb, var(--md-on-primary-container) 8%, var(--md-primary-container)); }
 .botao-ferramentas[aria-expanded=true] { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
 @media (max-width: 600px) { .tocador #voltar, .tocador #avancar { flex: 1 1 40%; } .barra.flutuante { bottom: 84px; } }
-.tocador .botao-discreto { gap: 6px; }
-.tocador-vel select { width: auto; min-width: 13rem; }
 
 /* Lista de sugestões com rolagem, porque com o campo vazio ela mostra todos os países. */
 .escolha-paises ul { max-height: 18rem; overflow-y: auto; }
@@ -687,21 +688,9 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 /* O botão de trocar eixos fica numa linha própria, embaixo dos dois campos. */
 #trocar { display: flex; width: fit-content; }
 
-/* Controle de tempo preso ao pé da tela, à esquerda do botão de controles. */
-.tocador-lugar { margin: 4px 0 10px; }
-.tocador.preso {
-  position: fixed; left: 16px; right: 196px; bottom: 16px; z-index: 29; margin: 0; flex-wrap: nowrap;
-  padding: 8px 12px; background: var(--md-surface-container); border: 1px solid var(--md-outline-variant);
-  border-radius: var(--md-forma-l); box-shadow: var(--md-elev-3);
-}
-.tocador.preso .tocador-vel { display: none; }
+
+/* Em tela estreita, o botão de controles mostra só o ícone. O nome continua para leitores de tela. */
 @media (max-width: 760px) {
-  /* Em tela estreita, o botão de controles mostra só o ícone, e o controle de tempo preso fica com
-     o essencial, para os dois caberem lado a lado. */
   .botao-ferramentas { padding: 0 16px; }
   .botao-ferramentas span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .tocador.preso { right: 88px; left: 12px; gap: 6px; padding: 6px 8px; }
-  .tocador.preso #play { min-width: 0; }
-  .tocador.preso .texto-botao, .tocador.preso #tempo { display: none; }
-  .tocador.preso #anoTxt { font-size: 1.25rem; min-width: 2.6em; }
 }

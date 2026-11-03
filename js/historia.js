@@ -53,7 +53,7 @@ export function iniciarHistoria(D) {
   // A altura livre desconta as legendas e as margens do cartão.
   const fixo = svgNo.closest(".grafico-fixo");
   const grafico = criarBolhas(svgNo, D, { alturaMax: 620, alturaLivre: () => fixo.clientHeight - 150 });
-  let quadro = null, passoAtual = -1;
+  let quadro = null, passoAtual = -1, esperaAnimar = null;
 
   let redesenho = null;
   // Legenda de tamanho com três círculos concêntricos, alinhados pela base, na mesma escala de raio
@@ -159,13 +159,16 @@ export function iniciarHistoria(D) {
     } else {
       estado.t = p.de ?? p.t;
       mostrar(reduzMovimento() ? 0 : 1400);
-      if (p.de != null) setTimeout(() => passoAtual === i && animar(p.de, p.t), reduzMovimento() ? 0 : 1500);
+      if (p.de != null) esperaAnimar = setTimeout(() => passoAtual === i && animar(p.de, p.t), reduzMovimento() ? 0 : 1500);
     }
   }
   // Arrastar a barra de progresso para a animação e leva o gráfico ao ano escolhido. As notas do
   // passo só aparecem quando o ano é o do passo, porque falam daquele ano.
   barra.addEventListener("input", () => {
+    // Para a animação em curso e a que estava agendada para começar depois da troca de passo.
     cancelAnimationFrame(quadro);
+    clearTimeout(esperaAnimar);
+    clearTimeout(redesenho);
     estado.t = +barra.value;
     const p = PASSOS[passoAtual];
     estado.notas = p && Math.floor(estado.t) === p.t ? (p.notas ?? []) : [];

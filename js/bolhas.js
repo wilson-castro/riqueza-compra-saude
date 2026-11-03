@@ -375,7 +375,9 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
       .on("mouseleave", () => { sobre = null; tip.esconder(); desenhar(); })
       .on("click", (ev, d) => aoClicar(d.iso3))
       .order();
-    (dur ? circ.transition().duration(dur).ease(d3.easeCubicInOut) : circ)
+    // Um desenho sem animação interrompe a animação em curso. Sem isso, a animação de uma troca de
+    // passo continuaria levando as bolhas para o ano antigo enquanto o leitor arrasta a barra.
+    (dur ? circ.transition().duration(dur).ease(d3.easeCubicInOut) : circ.interrupt())
       .attr("cx", d => pos(d)[0]).attr("cy", d => pos(d)[1]).attr("r", raioDe)
       .attr("fill", cor).attr("fill-opacity", opacidade);
 
@@ -406,7 +408,7 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
     const nomes = pts.filter(realce);
     const rot = gRotulos.selectAll("text").data(nomes, d => d.iso3).join("text").attr("class", "rotulo-pais")
       .classed("rotulo-meu-pais", d => d.iso3 === meu).text(d => d.pais);
-    (dur ? rot.transition().duration(dur).ease(d3.easeCubicInOut) : rot)
+    (dur ? rot.transition().duration(dur).ease(d3.easeCubicInOut) : rot.interrupt())
       .attr("x", d => pos(d)[0] + raioDe(d) + 4).attr("y", d => pos(d)[1] + 4);
 
     // Notas curtas perto do país que explicam, com um traço fino até a bolha. A nota vai para o
@@ -442,7 +444,7 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
       upd => upd,
       sai => dur ? sai.transition().duration(dur / 3).attr("opacity", 0).remove() : sai.remove(),
     );
-    const trN = s => dur ? s.transition().duration(dur).ease(d3.easeCubicInOut) : s;
+    const trN = s => dur ? s.transition().duration(dur).ease(d3.easeCubicInOut) : s.interrupt();
     trN(gn).attr("opacity", 1);
     trN(gn.select("line")).attr("x1", n => n.px).attr("y1", n => n.py).attr("x2", n => n.tx).attr("y2", n => n.ty > n.py ? n.ty - 2 : n.ty + 2);
     trN(gn.select("text")).attr("x", n => n.tx).attr("y", n => n.ty + (n.ty > n.py ? 10 : -4))

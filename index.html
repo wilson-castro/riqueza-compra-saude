@@ -59,6 +59,12 @@
       <p class="linha-fina">A expectativa de vida ao nascer no mundo passou de 65 anos em 1990 para
         73 anos em 2024. Esta página usa dados do Banco Mundial sobre 217 países para ver onde esse
         ganho aconteceu e quanto ele acompanha a renda.</p>
+      <!-- Guia de uso logo na abertura, para o leitor saber desde o começo como a página funciona. -->
+      <ol class="como-usar" aria-label="Como usar esta página">
+        <li><strong>Escolha um país</strong><span>No mapa logo abaixo. Ele fica destacado em todos os gráficos.</span></li>
+        <li><strong>Role a página</strong><span>O gráfico fica parado e muda a cada parte do texto. Arraste a barra embaixo dele para ver outro ano.</span></li>
+        <li><strong>Explore os dados</strong><span>No fim, um painel deixa você escolher indicadores, anos e países.</span></li>
+      </ol>
     </div>
     <section class="meu-pais" aria-labelledby="tMeuPais">
       <h2 id="tMeuPais">Escolha um país para acompanhar</h2>
@@ -72,14 +78,12 @@
       </details>
     </section>
   </div>
-  <a class="convite" href="#historia">
+  <div class="convite">
     <span class="convite-roda" aria-hidden="true"><i></i></span>
-    <span class="convite-texto">
-      <strong>Role para seguir a linha do tempo</strong>
-      <span>O gráfico muda a cada parte do texto. No fim, um painel deixa você escolher os
-        indicadores e os países.</span>
-    </span>
-  </a>
+    <p class="convite-texto"><strong>Role para seguir a linha do tempo.</strong> O gráfico muda a cada
+      parte do texto.</p>
+    <a class="botao-principal" href="#historia">Começar a história</a>
+  </div>
 </header>
 
 <main>
@@ -249,7 +253,7 @@
       <h2 id="tPainel">Explore os dados</h2>
       <div class="convite-tutorial">
         <button id="abrirTutorial" class="botao-discreto" type="button" aria-haspopup="dialog" aria-controls="tutorialPainel">Ver como usar o painel</button>
-        <span id="conviteTutorial" class="ajuda">Conheça os controles em sete passos.</span>
+        <span id="conviteTutorial" class="ajuda">Conheça os controles em oito passos.</span>
       </div>
       <p>Escolha os indicadores, toque o tempo e acompanhe países. Todas as visões abaixo andam juntas.</p>
     </div>
@@ -308,26 +312,10 @@
         <div class="legenda" id="legenda"></div>
         <div class="legenda-estatica" id="legendaContinua" hidden></div>
         <svg id="svgBolhas" role="group" aria-labelledby="tituloBolhas"></svg>
-        <!-- O tempo fica logo abaixo do gráfico de bolhas. Quando o leitor rola para as outras visões,
-             que também dependem do ano, o controle fica preso ao pé da tela (js/ferramentas.js). -->
-        <div class="tocador-lugar" id="tocadorLugar">
-        <div class="tocador" id="tocador" role="group" aria-label="Tempo">
-          <button id="play" class="botao-principal" type="button" aria-pressed="false"><span aria-hidden="true">▶</span> <span>Tocar</span></button>
-          <button id="voltar" class="botao-discreto" type="button" aria-label="Ano anterior"><span aria-hidden="true">‹</span> <span class="texto-botao">Ano anterior</span></button>
-          <output id="anoTxt" for="tempo" aria-live="off">1990</output>
-          <button id="avancar" class="botao-discreto" type="button" aria-label="Próximo ano"><span class="texto-botao">Próximo ano</span> <span aria-hidden="true">›</span></button>
-          <label class="so-leitor" for="tempo">Ano</label>
-          <input id="tempo" type="range" min="1990" max="2024" step="0.01" value="1990">
-          <label class="tocador-vel">Velocidade
-            <select id="selVel">
-              <option value="1">1 ano por segundo</option>
-              <option value="2" selected>2 anos por segundo</option>
-              <option value="4">4 anos por segundo</option>
-            </select></label>
-        </div>
-        </div>
+        <!-- Cada visão do painel tem o seu controle de tempo, logo abaixo dela (js/tocador.js). -->
+        <div id="tocadorBolhas"></div>
         <p class="nota">Clique numa bolha para acompanhar o país. Clique na legenda para destacar um
-          grupo. Arraste o ano do fundo, ou use as setas do teclado, para andar no tempo.</p>
+          grupo. Arraste o ano do fundo para andar no tempo.</p>
       </div>
       <div class="visao">
         <h3>Correlação entre os indicadores em <span id="anoMatriz"></span></h3>
@@ -335,17 +323,18 @@
           mortalidade infantil entram em log.</p>
         <svg id="svgMatriz" role="group" aria-label="Matriz de correlação"></svg>
         <div class="escala-div" aria-hidden="true"><span>−1</span><i></i><span>+1</span></div>
+        <div id="tocadorMatriz"></div>
       </div>
       <div class="visao visao-larga">
         <h3 id="tituloLinhas"></h3>
-        <p class="nota">Países acompanhados e o mundo. Clique no gráfico para levar as outras visões
-          àquele ano.</p>
+        <p class="nota">Países acompanhados e o mundo. Clique no gráfico para marcar um ano.</p>
         <fieldset class="alternador">
           <legend>Mostrar</legend>
           <label><input type="radio" name="modoLinhas" value="valor" checked> Valor do indicador</label>
           <label><input type="radio" name="modoLinhas" value="diferenca"> Diferença para o mundo</label>
         </fieldset>
         <svg id="svgLinhas" role="img" aria-labelledby="tituloLinhas"></svg>
+        <div id="tocadorLinhas"></div>
       </div>
       <div class="visao visao-larga">
         <h3 id="tituloCoord"></h3>
@@ -361,6 +350,7 @@
         <div class="rolagem-coord">
           <svg id="svgCoord" role="group" aria-labelledby="tituloCoord"></svg>
         </div>
+        <div id="tocadorCoord"></div>
       </div>
       <div class="visao visao-larga">
         <h3 id="tituloMapa"></h3>
@@ -368,6 +358,7 @@
           quer dizer sem dado naquele ano. Clique num país para acompanhá-lo.</p>
         <div class="legenda-estatica" id="legendaMapa"></div>
         <svg id="svgMapa" role="img" aria-labelledby="tituloMapa"></svg>
+        <div id="tocadorMapa"></div>
       </div>
       <div class="visao visao-larga">
         <h3 id="tituloRanking"></h3>
@@ -381,6 +372,7 @@
         <div class="rolagem-ranking">
           <svg id="svgRanking" role="img" aria-labelledby="tituloRanking"></svg>
         </div>
+        <div id="tocadorRanking"></div>
       </div>
     </div>
 

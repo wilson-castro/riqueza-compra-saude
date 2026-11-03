@@ -61,8 +61,9 @@ Jekyll, o gerador de sites que ele usa por padrão.
   da página. O script pequeno no começo de `index.html` aplica o tema antes de a página aparecer.
 - `favicon.svg` é o ícone da aba do navegador.
 - `js/ferramentas.js` mostra o botão flutuante de controles no canto inferior direito e abre a
-  barra de controles do painel por cima dos gráficos. Ele também prende o controle de tempo ao pé
-  da tela quando o leitor rola para longe do gráfico de bolhas.
+  barra de controles do painel por cima dos gráficos.
+- `js/tocador.js` é o controle de tempo que fica embaixo de cada gráfico do painel. Cada gráfico
+  tem o seu ano, e mudar um não muda os outros.
 - `js/tutorial.js` guia o leitor pelos controles e visões do painel, com foco e destaque a cada passo.
 - `js/base.js` lê os dados e guarda cores, formatos e contas comuns. As cores dos dados têm uma
   versão para o tema claro e outra para o escuro. O site segue o tema do sistema do leitor, e as
