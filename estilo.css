@@ -548,7 +548,7 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .escolha-paises .motivo { font-size: 0.75rem; line-height: 1rem; }
 
 /* Grupos abertos mantêm a leitura contínua da página. */
-.barra { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.barra { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 .grupo-painel { min-width: 0; margin: 0; padding: 0 0 0 20px; border: 0; border-left: 1px solid var(--md-outline-variant); }
 .grupo-painel:first-child { padding-left: 0; border-left: 0; }
 .grupo-painel legend { padding: 0; margin-bottom: 16px; font-weight: 500; }
@@ -632,3 +632,37 @@ svg { display: block; width: 100%; overflow: visible; user-select: none; font-fa
 .rotulo-tamanho { font: 500 0.75rem/1rem var(--fonte); color: var(--md-on-surface-variant); }
 .legenda-tamanho line { stroke: var(--md-on-surface-variant); stroke-width: 1; stroke-dasharray: 2 2; }
 .legenda-tamanho { width: auto; flex: none; }
+
+/* Tempo junto do gráfico de bolhas. */
+.tocador { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 4px 0 10px; }
+.tocador #play { min-width: 7rem; gap: 8px; }
+.tocador #anoTxt { font: 400 1.5rem/2rem var(--fonte); font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: center; color: var(--md-on-surface); }
+.tocador #tempo { flex: 1 1 200px; width: auto; }
+.tocador-vel { display: inline-flex; align-items: center; gap: 8px; font: 500 0.75rem/1rem var(--fonte); color: var(--md-on-surface-variant); }
+.tocador-vel select { height: 40px; min-width: 0; }
+
+/* Caixa de controles. Fora do modo flutuante, o cabeçalho dela fica escondido. */
+.barra-cabeca { grid-column: 1 / -1; display: none; }
+.barra.flutuante {
+  position: fixed; right: 16px; bottom: 88px; z-index: 30; margin: 0;
+  width: min(26rem, calc(100vw - 32px)); max-height: calc(100dvh - 120px); overflow-y: auto;
+  grid-template-columns: 1fr; gap: 16px; padding: 16px 20px 20px;
+  background: var(--md-surface-container); border: 1px solid var(--md-outline-variant);
+  border-radius: var(--md-forma-l); box-shadow: var(--md-elev-3);
+}
+.barra.flutuante .barra-cabeca { display: flex; justify-content: space-between; align-items: center; }
+.barra.flutuante #tituloControles { position: static; width: auto; height: auto; margin: 0; clip: auto; overflow: visible;
+  white-space: normal; font-size: 1.125rem; font-weight: 500; }
+.barra.flutuante .grupo-painel { padding: 12px 0 0; border-left: 0; border-top: 1px solid var(--md-outline-variant); }
+/* Botão flutuante, no formato do botão de ação estendido do M3. */
+.botao-ferramentas {
+  position: fixed; right: 16px; bottom: 16px; z-index: 31; min-height: 56px; padding: 0 20px;
+  display: inline-flex; align-items: center; gap: 10px; border: 0; border-radius: var(--md-forma-l);
+  background: var(--md-primary-container); color: var(--md-on-primary-container); box-shadow: var(--md-elev-3);
+  font: 500 0.9375rem/1.25rem var(--fonte); cursor: pointer;
+}
+.botao-ferramentas:hover { background: color-mix(in srgb, var(--md-on-primary-container) 8%, var(--md-primary-container)); }
+.botao-ferramentas[aria-expanded=true] { background: var(--md-secondary-container); color: var(--md-on-secondary-container); }
+@media (max-width: 600px) { .tocador #voltar, .tocador #avancar { flex: 1 1 40%; } .barra.flutuante { bottom: 84px; } }
+.tocador .botao-discreto { gap: 6px; }
+.tocador-vel select { width: auto; min-width: 13rem; }

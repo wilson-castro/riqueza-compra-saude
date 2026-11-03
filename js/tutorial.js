@@ -8,7 +8,7 @@ export function iniciarTutorial(parar) {
   const passos = [
     ["grupoEixos", "Escolha os indicadores", "Escolha o indicador da altura e o da posição para os lados. Use Trocar eixos para inverter a comparação."],
     ["grupoDesenho", "Leia as cores e os tamanhos", "A cor permite comparar grupos ou valores. O tamanho mostra quanto cada país tem do indicador escolhido."],
-    ["grupoTempo", "Veja os anos passarem", "Use Tocar para ver as mudanças ao longo dos anos. Você também pode escolher um ano na barra e ajustar a velocidade."],
+    ["tocador", "Veja os anos passarem", "Use Tocar, logo acima do gráfico de bolhas, para ver as mudanças ao longo dos anos. Os botões ao lado andam um ano por vez, e a barra leva todas as visões para um ano."],
     ["svgBolhas", "Acompanhe um país", "Clique numa bolha para acompanhar esse país nas outras visões. A busca em Países acompanhados também permite escolher países pelo nome."],
     ["svgMatriz", "Compare as relações", "A matriz mostra quais indicadores sobem ou descem juntos. Clique numa célula para usar aquele par no gráfico de bolhas."],
     ["svgCoord", "Filtre vários indicadores", "Escolha de 2 a 8 eixos nas coordenadas paralelas. Arraste sobre um eixo para filtrar uma faixa de valores também nas bolhas, no mapa e no ranking."],

@@ -60,6 +60,8 @@ Jekyll, o gerador de sites que ele usa por padrão.
 - `js/tema.js` guarda a escolha do tema (claro, escuro ou do sistema) e monta o seletor no alto
   da página. O script pequeno no começo de `index.html` aplica o tema antes de a página aparecer.
 - `favicon.svg` é o ícone da aba do navegador.
+- `js/ferramentas.js` mostra o botão flutuante de controles no canto inferior direito e abre a
+  barra de controles do painel por cima dos gráficos.
 - `js/tutorial.js` guia o leitor pelos controles e visões do painel, com foco e destaque a cada passo.
 - `js/base.js` lê os dados e guarda cores, formatos e contas comuns. As cores dos dados têm uma
   versão para o tema claro e outra para o escuro. O site segue o tema do sistema do leitor, e as

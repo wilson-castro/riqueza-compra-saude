@@ -7,6 +7,7 @@ import { criarBolhas, modoCor, legendaResiduo, legendaIndicador } from "./bolhas
 import { RAMPA } from "./base.js";
 import { criarEscolhaPaises } from "./destaque.js";
 import { iniciarTutorial } from "./tutorial.js";
+import { iniciarFerramentas } from "./ferramentas.js";
 import { meuPais, COR_MEU_PAIS } from "./meupais.js";
 
 // Cinza das barras do ranking que não são de países acompanhados. Fica claro, para as barras
@@ -47,6 +48,7 @@ export function iniciarPainel(D) {
   });
 
   iniciarTutorial(parar);
+  iniciarFerramentas();
 
   // ---------- Controles ----------
   for (const id of ["selX", "selY"]) {

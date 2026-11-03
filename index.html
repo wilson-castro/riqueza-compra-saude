@@ -253,7 +253,14 @@
       <p>Escolha os indicadores, toque o tempo e acompanhe países. Todas as visões abaixo andam juntas.</p>
     </div>
 
-    <div class="barra">
+    <!-- Os controles ficam neste lugar da página. Quando o leitor abre a caixa de ferramentas pelo
+         botão flutuante, a mesma barra vira um painel lateral, sem duplicar os controles. -->
+    <div class="barra-lugar" id="barraLugar">
+    <div class="barra" id="barraControles" aria-label="Controles do painel">
+      <div class="barra-cabeca">
+        <h3 class="so-leitor" id="tituloControles">Controles do painel</h3>
+        <button id="fecharFerramentas" class="botao-discreto" type="button" hidden>Fechar</button>
+      </div>
       <fieldset class="grupo-painel" id="grupoEixos" aria-describedby="ajuda-grupoEixos">
         <legend>O que comparar</legend>
         <p class="ajuda" id="ajuda-grupoEixos">A altura e a posição para os lados de cada bolha mostram os indicadores escolhidos.</p>
@@ -283,23 +290,7 @@
         <p class="ajuda" id="ajuda-grupoPaises">Busque pelo nome ou clique numa bolha. Os países escolhidos aparecem em todas as visões.</p>
         <div id="escolhaPainel"></div>
       </fieldset>
-      <fieldset class="grupo-painel" id="grupoTempo" aria-describedby="ajuda-grupoTempo">
-        <legend>Tempo</legend>
-        <p class="ajuda" id="ajuda-grupoTempo">Toque para ver os anos passarem ou ande um ano por vez. A barra leva todas as visões para o ano.</p>
-        <div class="botoes-tempo">
-          <button id="play" class="botao-principal" type="button" aria-pressed="false"><span aria-hidden="true">▶</span> <span>Tocar</span></button>
-          <button id="voltar" class="botao-discreto" type="button" aria-label="Ano anterior" title="Ano anterior">−1</button>
-          <button id="avancar" class="botao-discreto" type="button" aria-label="Próximo ano" title="Próximo ano">+1</button>
-        </div>
-        <label for="tempo">Ano <output id="anoTxt" for="tempo">1990</output></label>
-        <input id="tempo" type="range" min="1990" max="2024" step="0.01" value="1990">
-        <label for="selVel">Velocidade</label>
-        <select id="selVel">
-          <option value="1">1 ano por segundo</option>
-          <option value="2" selected>2 anos por segundo</option>
-          <option value="4">4 anos por segundo</option>
-        </select>
-      </fieldset>
+    </div>
     </div>
 
     <!-- Explicação dos dois indicadores escolhidos. Muda junto com os eixos. -->
@@ -315,6 +306,21 @@
         <p class="nota" id="contagem"></p>
         <div class="legenda" id="legenda"></div>
         <div class="legenda-estatica" id="legendaContinua" hidden></div>
+        <!-- O tempo fica junto do gráfico, para o leitor ver as bolhas enquanto usa os botões. -->
+        <div class="tocador" id="tocador" role="group" aria-label="Tempo">
+          <button id="play" class="botao-principal" type="button" aria-pressed="false"><span aria-hidden="true">▶</span> <span>Tocar</span></button>
+          <button id="voltar" class="botao-discreto" type="button"><span aria-hidden="true">‹</span> Ano anterior</button>
+          <output id="anoTxt" for="tempo" aria-live="off">1990</output>
+          <button id="avancar" class="botao-discreto" type="button">Próximo ano <span aria-hidden="true">›</span></button>
+          <label class="so-leitor" for="tempo">Ano</label>
+          <input id="tempo" type="range" min="1990" max="2024" step="0.01" value="1990">
+          <label class="tocador-vel">Velocidade
+            <select id="selVel">
+              <option value="1">1 ano por segundo</option>
+              <option value="2" selected>2 anos por segundo</option>
+              <option value="4">4 anos por segundo</option>
+            </select></label>
+        </div>
         <svg id="svgBolhas" role="group" aria-labelledby="tituloBolhas"></svg>
         <p class="nota">Clique numa bolha para acompanhar o país. Clique na legenda para destacar um
           grupo. Arraste o ano do fundo, ou use as setas do teclado, para andar no tempo.</p>
@@ -410,6 +416,13 @@
     </div>
   </div>
 </footer>
+
+<!-- Botão flutuante que abre os controles do painel enquanto o leitor olha os gráficos. Ele só
+     aparece quando o painel está na tela e a barra de controles já saiu da vista. -->
+<button id="abrirFerramentas" class="botao-ferramentas" type="button" aria-controls="barraControles" aria-expanded="false" hidden>
+  <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+  <span>Controles</span>
+</button>
 
 <!-- Metadados do gráfico da história. Abre numa janela para não mudar a altura do gráfico fixo. -->
 <dialog id="dialogoSobre" class="dialogo-sobre" aria-labelledby="tituloSobre">
