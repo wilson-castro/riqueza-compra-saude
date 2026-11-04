@@ -183,7 +183,7 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
     const W = svgNo.clientWidth || 600;
     // Em tela estreita o gráfico fica mais alto que largo, para as bolhas não se amontoarem.
     const proporcao = W < 600 ? 1.05 : 0.66;
-    const H = Math.max(260, Math.min(alturaMax, W * proporcao, alturaLivre()));
+    const H = Math.max(100, Math.min(alturaMax, Math.max(260, W * proporcao), alturaLivre()));
     const m = { t: 14, r: 14, b: 50, l: 50 };
     svg.attr("height", H).attr("viewBox", `0 0 ${W} ${H}`);
     const x = escala(estado.x, [m.l, W - m.r]), y = escala(estado.y, [H - m.b, m.t]);
@@ -418,8 +418,10 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
       const d = pts.find(p => p.iso3 === n.iso3);
       if (!d) return null;
       const [px, py] = pos(d), rr = raioDe(d);
-      const paraDireita = px < (m.l + W - m.r) / 2, paraBaixo = py < (m.t + H - m.b) / 2;
-      const largura = n.texto.length * 6.4;
+      let paraDireita = px < (m.l + W - m.r) / 2, paraBaixo = py < (m.t + H - m.b) / 2;
+      const medida = gNotas.append("text").attr("class", "nota-bolha").text(n.texto);
+      const largura = medida.node().getComputedTextLength();
+      medida.remove();
       // Na fila, as notas ficam logo acima ou logo abaixo do país, alternando, para duas notas não
       // se encontrarem no meio da faixa, onde as bolhas se juntam.
       if (fila) {
@@ -429,8 +431,10 @@ export function criarBolhas(svgNo, D, { aoClicar = () => {}, aoArrastarAno = nul
         return { chave: n.iso3 + n.texto, texto: n.texto, px, py: acima ? py - rr : py + rr, tx, ty,
                  ancora: paraDireita ? "start" : "end" };
       }
+      if (n.lado) paraDireita = n.lado === "direita";
       let tx = px + (paraDireita ? rr + 28 : -rr - 28);
-      tx = paraDireita ? Math.min(tx, W - m.r - largura) : Math.max(tx, m.l + largura);
+      tx = paraDireita ? Math.max(m.l, Math.min(tx, W - m.r - largura))
+        : Math.min(W - m.r, Math.max(tx, m.l + largura));
       const ty = Math.max(m.t + 14, Math.min(H - m.b - 6, py + (paraBaixo ? rr + 30 : -rr - 24)));
       return { chave: n.iso3 + n.texto, texto: n.texto, px, py: py + (paraBaixo ? rr : -rr), tx, ty, ancora: paraDireita ? "start" : "end" };
     }).filter(Boolean);

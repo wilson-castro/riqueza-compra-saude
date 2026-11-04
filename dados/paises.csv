@@ -7,9 +7,9 @@ AND,AD,Andorra,ECS,HIC,europe
 ARE,AE,United Arab Emirates,MEA,HIC,asia
 ARG,AR,Argentina,LCN,UMC,americas
 ARM,AM,Armenia,ECS,UMC,europe
-ASM,AS,American Samoa,EAS,HIC,asia
+ASM,AS,American Samoa,EAS,HIC,oceania
 ATG,AG,Antigua and Barbuda,LCN,HIC,americas
-AUS,AU,Australia,EAS,HIC,asia
+AUS,AU,Australia,EAS,HIC,oceania
 AUT,AT,Austria,ECS,HIC,europe
 AZE,AZ,Azerbaijan,ECS,UMC,europe
 BDI,BI,Burundi,SSF,LIC,africa
@@ -62,10 +62,10 @@ ESP,ES,Spain,ECS,HIC,europe
 EST,EE,Estonia,ECS,HIC,europe
 ETH,ET,Ethiopia,SSF,LIC,africa
 FIN,FI,Finland,ECS,HIC,europe
-FJI,FJ,Fiji,EAS,UMC,asia
+FJI,FJ,Fiji,EAS,UMC,oceania
 FRA,FR,France,ECS,HIC,europe
 FRO,FO,Faroe Islands,ECS,HIC,europe
-FSM,FM,"Micronesia, Fed. Sts.",EAS,UMC,asia
+FSM,FM,"Micronesia, Fed. Sts.",EAS,UMC,oceania
 GAB,GA,Gabon,SSF,UMC,africa
 GBR,GB,United Kingdom,ECS,HIC,europe
 GEO,GE,Georgia,ECS,UMC,europe
@@ -79,7 +79,7 @@ GRC,GR,Greece,ECS,HIC,europe
 GRD,GD,Grenada,LCN,UMC,americas
 GRL,GL,Greenland,ECS,HIC,europe
 GTM,GT,Guatemala,LCN,UMC,americas
-GUM,GU,Guam,EAS,HIC,asia
+GUM,GU,Guam,EAS,HIC,oceania
 GUY,GY,Guyana,LCN,HIC,americas
 HKG,HK,"Hong Kong SAR, China",EAS,HIC,asia
 HND,HN,Honduras,LCN,LMC,americas
@@ -102,7 +102,7 @@ KAZ,KZ,Kazakhstan,ECS,UMC,asia
 KEN,KE,Kenya,SSF,LMC,africa
 KGZ,KG,Kyrgyz Republic,ECS,LMC,asia
 KHM,KH,Cambodia,EAS,LMC,asia
-KIR,KI,Kiribati,EAS,LMC,asia
+KIR,KI,Kiribati,EAS,LMC,oceania
 KNA,KN,St. Kitts and Nevis,LCN,HIC,americas
 KOR,KR,"Korea, Rep.",EAS,HIC,asia
 KWT,KW,Kuwait,MEA,HIC,asia
@@ -125,43 +125,43 @@ MDA,MD,Moldova,ECS,UMC,europe
 MDG,MG,Madagascar,SSF,LIC,africa
 MDV,MV,Maldives,SAS,UMC,asia
 MEX,MX,Mexico,LCN,UMC,americas
-MHL,MH,Marshall Islands,EAS,UMC,asia
+MHL,MH,Marshall Islands,EAS,UMC,oceania
 MKD,MK,North Macedonia,ECS,UMC,europe
 MLI,ML,Mali,SSF,LIC,africa
 MLT,MT,Malta,MEA,HIC,europe
 MMR,MM,Myanmar,EAS,LMC,asia
 MNE,ME,Montenegro,ECS,UMC,europe
 MNG,MN,Mongolia,EAS,UMC,asia
-MNP,MP,Northern Mariana Islands,EAS,HIC,asia
+MNP,MP,Northern Mariana Islands,EAS,HIC,oceania
 MOZ,MZ,Mozambique,SSF,LIC,africa
 MRT,MR,Mauritania,SSF,LMC,africa
 MUS,MU,Mauritius,SSF,UMC,africa
 MWI,MW,Malawi,SSF,LIC,africa
 MYS,MY,Malaysia,EAS,UMC,asia
 NAM,NA,Namibia,SSF,LMC,africa
-NCL,NC,New Caledonia,EAS,HIC,asia
+NCL,NC,New Caledonia,EAS,HIC,oceania
 NER,NE,Niger,SSF,LIC,africa
 NGA,NG,Nigeria,SSF,LMC,africa
 NIC,NI,Nicaragua,LCN,LMC,americas
 NLD,NL,Netherlands,ECS,HIC,europe
 NOR,NO,Norway,ECS,HIC,europe
 NPL,NP,Nepal,SAS,LMC,asia
-NRU,NR,Naoero,EAS,HIC,asia
-NZL,NZ,New Zealand,EAS,HIC,asia
+NRU,NR,Naoero,EAS,HIC,oceania
+NZL,NZ,New Zealand,EAS,HIC,oceania
 OMN,OM,Oman,MEA,HIC,asia
 PAK,PK,Pakistan,MEA,LMC,asia
 PAN,PA,Panama,LCN,HIC,americas
 PER,PE,Peru,LCN,UMC,americas
 PHL,PH,Philippines,EAS,UMC,asia
-PLW,PW,Palau,EAS,HIC,asia
-PNG,PG,Papua New Guinea,EAS,LMC,asia
+PLW,PW,Palau,EAS,HIC,oceania
+PNG,PG,Papua New Guinea,EAS,LMC,oceania
 POL,PL,Poland,ECS,HIC,europe
 PRI,PR,Puerto Rico (US),LCN,HIC,americas
 PRK,KP,"Korea, Dem. People's Rep.",EAS,LIC,asia
 PRT,PT,Portugal,ECS,HIC,europe
 PRY,PY,Paraguay,LCN,UMC,americas
 PSE,PS,West Bank and Gaza,MEA,LMC,asia
-PYF,PF,French Polynesia,EAS,HIC,asia
+PYF,PF,French Polynesia,EAS,HIC,oceania
 QAT,QA,Qatar,MEA,HIC,asia
 ROU,RO,Romania,ECS,HIC,europe
 RUS,RU,Russian Federation,ECS,HIC,europe
@@ -170,7 +170,7 @@ SAU,SA,Saudi Arabia,MEA,HIC,asia
 SDN,SD,Sudan,SSF,LIC,africa
 SEN,SN,Senegal,SSF,LMC,africa
 SGP,SG,Singapore,EAS,HIC,asia
-SLB,SB,Solomon Islands,EAS,LMC,asia
+SLB,SB,Solomon Islands,EAS,LMC,oceania
 SLE,SL,Sierra Leone,SSF,LIC,africa
 SLV,SV,El Salvador,LCN,UMC,americas
 SMR,SM,San Marino,ECS,HIC,europe
@@ -193,11 +193,11 @@ THA,TH,Thailand,EAS,UMC,asia
 TJK,TJ,Tajikistan,ECS,LMC,asia
 TKM,TM,Turkmenistan,ECS,UMC,asia
 TLS,TL,Timor-Leste,EAS,LMC,asia
-TON,TO,Tonga,EAS,UMC,asia
+TON,TO,Tonga,EAS,UMC,oceania
 TTO,TT,Trinidad and Tobago,LCN,HIC,americas
 TUN,TN,Tunisia,MEA,LMC,africa
 TUR,TR,Türkiye,ECS,UMC,europe
-TUV,TV,Tuvalu,EAS,UMC,asia
+TUV,TV,Tuvalu,EAS,UMC,oceania
 TZA,TZ,Tanzania,SSF,LMC,africa
 UGA,UG,Uganda,SSF,LIC,africa
 UKR,UA,Ukraine,ECS,UMC,europe
@@ -209,8 +209,8 @@ VEN,VE,"Venezuela, RB",LCN,LMC,americas
 VGB,VG,British Virgin Islands,LCN,HIC,americas
 VIR,VI,Virgin Islands (US),LCN,HIC,americas
 VNM,VN,Viet Nam,EAS,UMC,asia
-VUT,VU,Vanuatu,EAS,LMC,asia
-WSM,WS,Samoa,EAS,UMC,asia
+VUT,VU,Vanuatu,EAS,LMC,oceania
+WSM,WS,Samoa,EAS,UMC,oceania
 XKX,XK,Kosovo,ECS,UMC,europe
 YEM,YE,"Yemen, Rep.",MEA,LIC,asia
 ZAF,ZA,South Africa,SSF,UMC,africa

@@ -4,6 +4,12 @@ export function iniciarTutorial(parar) {
   const $ = id => document.getElementById(id);
   const dialogo = $("tutorialPainel");
   const botao = $("abrirTutorial");
+  const fundo = document.createElement("div");
+  fundo.className = "fundo-tutorial";
+  fundo.hidden = true;
+  fundo.setAttribute("aria-hidden", "true");
+  document.body.append(fundo);
+  fundo.addEventListener("click", () => dialogo.close());
   const chave = "tutorial-painel-visto";
   const passos = [
     ["grupoEixos", "Escolha os indicadores", "Escolha o indicador da altura e o da posição para os lados. Trocar eixos inverte a comparação."],
@@ -36,7 +42,8 @@ export function iniciarTutorial(parar) {
   botao.addEventListener("click", () => {
     parar();
     passo = 0;
-    dialogo.showModal();
+    fundo.hidden = false;
+    dialogo.show();
     mostrar();
     dialogo.focus({ preventScroll: true });
     $("conviteTutorial").hidden = true;
@@ -50,11 +57,25 @@ export function iniciarTutorial(parar) {
     if (passo < passos.length - 1) { passo++; mostrar(); dialogo.focus({ preventScroll: true }); }
   });
   $("tutorialFechar").addEventListener("click", () => dialogo.close());
+  document.addEventListener("focusin", ev => {
+    if (dialogo.open && !dialogo.contains(ev.target)) dialogo.focus({ preventScroll: true });
+  });
   dialogo.addEventListener("keydown", ev => {
     // As teclas do tutorial não devem chegar aos atalhos do painel.
     ev.stopPropagation();
+    if (ev.key === "Escape") { ev.preventDefault(); dialogo.close(); }
+    if (ev.key === "Tab") {
+      const botoes = [...dialogo.querySelectorAll("button:not(:disabled)")];
+      const primeiro = botoes[0], ultimo = botoes.at(-1);
+      if (ev.shiftKey && (document.activeElement === primeiro || document.activeElement === dialogo)) {
+        ev.preventDefault(); ultimo.focus();
+      } else if (!ev.shiftKey && document.activeElement === ultimo) {
+        ev.preventDefault(); primeiro.focus();
+      }
+    }
   });
   dialogo.addEventListener("close", () => {
+    fundo.hidden = true;
     destacado?.classList.remove("destaque-tutorial");
     botao.focus({ preventScroll: true });
     botao.scrollIntoView({ behavior: reduzMovimento() ? "instant" : "smooth", block: "nearest" });

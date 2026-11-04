@@ -157,7 +157,7 @@ export function iniciarPainel(D) {
   function matriz() {
     const ano = anos.matriz, E = D.eixos, n = E.length;
     const W = svgM.node().clientWidth;
-    const esq = 140, base = 112;
+    const esq = 158, base = 140;
     const lado = Math.max(14, Math.min(34, (W - esq) / (n - 1)));
     svgM.attr("height", lado * (n - 1) + base);
     const celulas = [];
@@ -284,11 +284,12 @@ export function iniciarPainel(D) {
   let geoC = null;
   function botoesEixos() {
     const motivo = eixosC.length >= 8
-      ? "Já há 8 eixos, o máximo. Tire um indicador para escolher outro."
-      : eixosC.length <= 2 ? "São precisos pelo menos 2 eixos." : "Escolha de 2 a 8 indicadores.";
+      ? "Limite de indicadores atingido. Remova um indicador para adicionar outro."
+      : eixosC.length <= 2 ? "Mantenha pelo menos 2 indicadores. Adicione outro para remover um dos selecionados." : "Selecione de 2 a 8 indicadores. Clique num indicador para adicionar ou remover.";
     $("ajudaEixosCoord").textContent = motivo;
     d3.select("#eixosCoord").selectAll("button").data(D.eixos).join("button").attr("type", "button")
-      .attr("class", "chip-eixo").text(c => CURTO[c])
+      .attr("class", "chip-eixo").html(c =>
+        `<span class="visto-chip" aria-hidden="true"></span><span>${CURTO[c]}</span>`)
       .attr("aria-describedby", "ajudaEixosCoord")
       .attr("title", c => (!eixosC.includes(c) && eixosC.length >= 8) || (eixosC.includes(c) && eixosC.length <= 2) ? motivo : null)
       .attr("aria-pressed", c => String(eixosC.includes(c)))
@@ -303,9 +304,9 @@ export function iniciarPainel(D) {
   }
   function coordenadas() {
     botoesEixos();
-    const W = Math.max(svgC.node().parentNode.clientWidth, eixosC.length * 110), H = 360;
+    const W = Math.max(svgC.node().parentNode.clientWidth, eixosC.length * 170), H = 360;
     // As margens laterais deixam espaço para os números do primeiro eixo e para o nome do último.
-    const m = { t: 34, r: 84, b: 16, l: 64 };
+    const m = { t: 34, r: 96, b: 16, l: 96 };
     svgC.attr("width", W).attr("height", H).style("width", W + "px").selectAll("*").remove();
     const x = d3.scalePoint().domain(eixosC).range([m.l, W - m.r]);
     const y = new Map(eixosC.map(c => {
@@ -437,7 +438,8 @@ export function iniciarPainel(D) {
       .order();
     const fora = D.info.size - new Set(mundo.features.map(f => f.id).filter(Boolean)).size;
     $("notaMapa").textContent = "A cor é o valor do indicador do eixo vertical, e a hachura quer dizer sem dado. " +
-      `Clique num país para acompanhá-lo. ${fora} países pequenos demais para o mapa aparecem só no ranking.`;
+      `Clique num país para acompanhá-lo. ${fora} países pequenos demais para o mapa aparecem só no ranking. ` +
+      "O mapa usa a projeção Equal Earth, que mantém a proporção entre as áreas dos países.";
   }
 
   // ---------- Ranking ----------

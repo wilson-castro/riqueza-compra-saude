@@ -20,15 +20,15 @@ import { ESCURO } from "./tema.js";
 export { ESCURO };
 const tema = (claro, escuro) => ESCURO ? escuro : claro;
 
-// A cor das bolhas segue as quatro regiões do Gapminder, mas com uma paleta própria do site
-// (terracota, verde-água, violeta e ocre). As duas versões passaram no teste de daltonismo para
-// todos os pares, porque num gráfico de bolhas qualquer região pode ficar ao lado de qualquer outra.
-const corRegiao = tema(["#a83a2a", "#2aa198", "#6a55c8", "#c99a1a"], ["#c8483e", "#1f9990", "#8a78e0", "#a8961e"]);
+// As cinco regiões usam vermelho, verde-água, violeta, ocre e ameixa no tema claro.
+// No tema escuro, a quinta cor é lilás. A Oceania fica separada da Ásia.
+const corRegiao = tema(["#a83a2a", "#2aa198", "#6a55c8", "#c99a1a", "#683878"], ["#c8483e", "#1f9990", "#8a78e0", "#a8961e", "#e0b0e8"]);
 export const REGIOES4 = {
   africa: { nome: "África", cor: corRegiao[0] },
   americas: { nome: "Américas", cor: corRegiao[1] },
   asia: { nome: "Ásia", cor: corRegiao[2] },
   europe: { nome: "Europa", cor: corRegiao[3] },
+  oceania: { nome: "Oceania", cor: corRegiao[4] },
 };
 // O grupo de renda tem ordem, então usa uma rampa de um só matiz. No fundo claro, mais renda é
 // mais escuro. No fundo escuro, mais renda é mais claro.
@@ -52,8 +52,7 @@ export const DIVERGENTE = d3.piecewise(d3.interpolateLab, ["#fc6b38", tema("#f2f
 // acima. O meio é um cinza médio, e não a cor do fundo, para as bolhas perto da curva não sumirem.
 export const RESIDUO_CORES = tema(["#c4512b", "#c3c9cc", "#23808f"], ["#d9643c", "#7d878b", "#3aa3b5"]);
 export const RESIDUO = d3.piecewise(d3.interpolateLab, RESIDUO_CORES);
-// Rampa de um só matiz para a cor por indicador, como pedem as regras de cor de 26/10. É o mesmo
-// matiz do grupo de renda e segue a mesma regra de claro e escuro.
+// A cor por indicador usa o mesmo matiz do grupo de renda e segue a mesma regra de claro e escuro.
 export const RAMPA_CORES = tema(["#cfe7ec", "#1f4f5a"], ["#2c6573", "#cfe7ec"]);
 export const RAMPA = d3.interpolateLab(...RAMPA_CORES);
 
@@ -61,7 +60,7 @@ export const RAMPA = d3.interpolateLab(...RAMPA_CORES);
 export const CURTO = {
   pib_pc_ppp: "PIB por pessoa", expectativa_vida: "Expectativa de vida",
   mortalidade_infantil: "Mortalidade infantil", fecundidade: "Fecundidade",
-  acesso_eletricidade: "Eletricidade", uso_internet: "Internet", populacao_urbana: "População urbana",
+  acesso_eletricidade: "Acesso à eletricidade", uso_internet: "Uso de internet", populacao_urbana: "População urbana",
   agropecuaria_pib: "Agropecuária no PIB", agua_potavel: "Água potável",
   populacao_65_mais: "65 anos ou mais", mulheres_trabalho: "Mulheres no trabalho",
   fecundidade_adolescente: "Fecundidade adolescente", diferenca_vida_genero: "Diferença de vida (M − H)",

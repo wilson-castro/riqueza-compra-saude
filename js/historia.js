@@ -5,7 +5,7 @@
 import { HALO, ANO_MIN, ANO_MAX, REGIOES, REGIOES4, RENDA, CINZA, TINTA, TINTA_2, CURTO, pt, fmt, tip,
          reduzMovimento } from "./base.js";
 import { criarBolhas, modoCor, legendaResiduo } from "./bolhas.js";
-import { criarEscolhaPaises } from "./destaque.js";
+import { criarEscolhaPaises, PALETA_DESTAQUE } from "./destaque.js";
 import { meuPais, COR_MEU_PAIS } from "./meupais.js";
 
 // Estado do gráfico em cada passo. O índice segue a ordem dos elementos .passo no HTML.
@@ -18,13 +18,13 @@ const PASSOS = [
   { x: "pib_pc_ppp", y: "expectativa_vida", t: 1990, sel: [] },
   { x: "pib_pc_ppp", y: "expectativa_vida", t: 2024, de: 1990, sel: [] },
   { x: "pib_pc_ppp", y: "expectativa_vida", t: 2024, de: 1990, sel: ["CHN", "IND"],
-    notas: [{ iso3: "CHN", texto: "Renda 13,6 vezes maior" }, { iso3: "IND", texto: "De 58,6 para 72,0 anos" }] },
+    notas: [{ iso3: "CHN", texto: "China: renda 13,6 vezes maior", lado: "direita" }, { iso3: "IND", texto: "Índia: de 58,6 para 72,0 anos", lado: "esquerda" }] },
   { x: "pib_pc_ppp", y: "expectativa_vida", t: 2023, sel: ["NGA", "ETH"], cor: "residuo", r: true,
     notas: [{ iso3: "NGA", texto: "15 anos abaixo da linha" }, { iso3: "ETH", texto: "Renda menor, vida mais longa" }] },
   { x: "pib_pc_ppp", y: "expectativa_vida", t: 2023, sel: ["NGA", "SLB", "BRA"], cor: "residuo", layout: "fila",
     notas: [{ iso3: "NGA", texto: "15,3 anos abaixo" }, { iso3: "SLB", texto: "7,1 anos acima" }] },
   { x: "pib_pc_ppp", y: "fecundidade", t: 2024, de: 1990, sel: ["KOR", "NGA", "BGD"],
-    notas: [{ iso3: "KOR", texto: "0,75 filho por mulher" }, { iso3: "BGD", texto: "De 4,5 para 2,1" }] },
+    notas: [{ iso3: "KOR", texto: "0,75 filho por mulher" }, { iso3: "BGD", texto: "De 4,5 para 2,1 filhos" }] },
   { x: "pib_pc_ppp", y: "populacao_65_mais", t: 2024, sel: ["JPN", "CHN"], foco: null,
     notas: [{ iso3: "JPN", texto: "29,8% com 65 anos ou mais" }] },
   { x: "pib_pc_ppp", y: "diferenca_vida_genero", t: 2023, sel: ["UKR", "TGO", "BRA"], r: true,
@@ -52,7 +52,20 @@ export function iniciarHistoria(D) {
                    selecionados: new Set(), foco: null, rastro: true, curva: false, mostrarR: false };
   // A altura livre desconta as legendas e as margens do cartão.
   const fixo = svgNo.closest(".grafico-fixo");
-  const grafico = criarBolhas(svgNo, D, { alturaMax: 620, alturaLivre: () => fixo.clientHeight - 150 });
+  const cartao = svgNo.parentElement;
+  const numero = v => parseFloat(v) || 0;
+  function alturaLivre() {
+    const estiloFixo = getComputedStyle(fixo), estiloCartao = getComputedStyle(cartao);
+    const outros = [...cartao.children].filter(no => no !== svgNo && !no.hidden);
+    const ocupado = outros.reduce((soma, no) => {
+      const estilo = getComputedStyle(no);
+      return soma + no.getBoundingClientRect().height + numero(estilo.marginTop) + numero(estilo.marginBottom);
+    }, 0);
+    return fixo.clientHeight - numero(estiloFixo.paddingTop) - numero(estiloFixo.paddingBottom)
+      - numero(estiloCartao.paddingTop) - numero(estiloCartao.paddingBottom)
+      - ocupado - outros.length * numero(estiloCartao.rowGap);
+  }
+  const grafico = criarBolhas(svgNo, D, { alturaMax: 560, alturaLivre });
   let quadro = null, passoAtual = -1, esperaAnimar = null;
 
   let redesenho = null;
@@ -90,7 +103,7 @@ export function iniciarHistoria(D) {
     const eixo = c => `${D.META[c].nome}, em ${D.META[c].unidade}. Escala ${D.ehLog(c) ? "logarítmica, em que cada marca vale dez vezes a anterior" : "linear"}.`;
     const corTexto = modoCor(estado) === "residuo"
       ? "Distância até a linha tracejada, que é a reta de tendência do ano. Laranja fica abaixo e azul-petróleo fica acima."
-      : "Região do país, em quatro grupos.";
+      : "Região do país, em cinco grupos.";
     const linhas = [
       ["Fonte", "World Development Indicators, do Banco Mundial, versão de 08/10/2026."],
       ["Ano", String(r.ano)],
@@ -232,6 +245,10 @@ export function iniciarHistoria(D) {
   addEventListener("scroll", () => { if (!agendado) { agendado = true; requestAnimationFrame(encherTrilho); } }, { passive: true });
   encherTrilho();
   mostrar();
+  const observarAltura = new ResizeObserver(() => requestAnimationFrame(() => grafico.redimensionar()));
+  observarAltura.observe(fixo);
+  [...cartao.children].filter(no => no !== svgNo).forEach(no => observarAltura.observe(no));
+  document.fonts.ready.then(() => grafico.redimensionar());
   addEventListener("resize", () => grafico.redimensionar());
   meuPais.aoMudar(() => mostrar());
 
@@ -405,6 +422,10 @@ function brasil(D) {
     const meu = meuPais.obter();
     const lista = meu && !destacados.includes(meu) ? [...destacados, meu] : destacados;
     const corDe = iso3 => iso3 === meu ? COR_MEU_PAIS : escolha.cor(iso3);
+    const corBrasil = corDe("BRA");
+    const nomesCores = ["azul", "laranja", "verde", "amarelo", "rosa", "violeta"];
+    document.getElementById("corBrasil").textContent = corBrasil === COR_MEU_PAIS
+      ? "rosa" : nomesCores[PALETA_DESTAQUE.indexOf(corBrasil)];
     const W = svg.node().clientWidth;
     const estreito = W < 620;
     // A coluna da direita tem um valor por país destacado, então cresce com a lista.

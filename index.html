@@ -56,19 +56,17 @@
   <div class="abertura-texto">
     <h1>Riqueza compra saúde?</h1>
     <div class="abertura-pe">
-      <p class="linha-fina">A expectativa de vida ao nascer no mundo passou de 65 anos em 1990 para
-        73 anos em 2024. Esta página usa dados do Banco Mundial sobre 217 países para ver onde esse
-        ganho aconteceu e quanto ele acompanha a renda.</p>
+      <p class="linha-fina">A expectativa de vida ao nascer no mundo passou de 65 anos em 1990 para 73 anos em 2024. Esta página usa dados do Banco Mundial sobre 217 países para ver onde esse ganho acontece e como ele se relaciona com a renda.</p>
       <!-- Guia de uso logo na abertura, para o leitor saber desde o começo como a página funciona. -->
       <ol class="como-usar" aria-label="Como usar esta página">
-        <li><strong>Escolha um país</strong><span>No mapa logo abaixo. Ele fica destacado em todos os gráficos.</span></li>
-        <li><strong>Role a página</strong><span>O gráfico fica parado e muda a cada parte do texto. Arraste a barra embaixo dele para ver outro ano.</span></li>
-        <li><strong>Explore os dados</strong><span>No fim, um painel deixa você escolher indicadores, anos e países.</span></li>
+        <li><strong>Escolha o país</strong><span>O país definido no mapa abaixo fica destacado durante toda a história.</span></li>
+        <li><strong>Role a página</strong><span>O gráfico fica parado e muda junto com o texto durante a rolagem. Arraste a barra embaixo dele para escolher um ano.</span></li>
+        <li><strong>Explore os dados</strong><span>No fim, um painel permite escolher indicadores, anos e países para analisar o cenário que você quiser.</span></li>
       </ol>
     </div>
     <section class="meu-pais" aria-labelledby="tMeuPais">
       <h2 id="tMeuPais">Escolha um país para acompanhar</h2>
-      <p class="nota">Clique no mapa ou busque pelo nome. O país fica destacado em todos os gráficos.</p>
+      <p class="nota">Clique no mapa ou busque pelo nome. O país fica destacado em todos os gráficos. O mapa usa a projeção Equal Earth, que mantém a proporção entre as áreas dos países.</p>
       <div id="escolhaMeuPais"></div>
       <div class="legenda-estatica" id="legendaMeuPais"></div>
       <svg id="mapaMeuPais" role="img" aria-label="Mapa do mundo para escolher o país. Use a busca acima para escolher pelo teclado."></svg>
@@ -107,8 +105,7 @@
             aria-label="Ano do gráfico. Arraste para mudar o ano.">
           <span id="anoHistoria">1990</span>
         </div>
-        <figcaption>Cada bolha é um país, com área proporcional à população. A cor mostra a região ou,
-          em duas partes, a distância até a linha tracejada.</figcaption>
+        <figcaption>Cada bolha é um país, com área proporcional à população.</figcaption>
         <button id="abrirSobre" class="link-discreto" type="button" aria-haspopup="dialog">Sobre este gráfico</button>
         </div>
       </figure>
@@ -122,7 +119,7 @@
         <p>Cada bolha é um país, e o tamanho dela mostra a população. O eixo horizontal é a renda por
           pessoa, corrigida pela diferença de preços entre países. O eixo vertical é a expectativa de
           vida ao nascer.</p>
-        <p>Em 1990, a maior parte dos <span class="ref" data-regiao="africa" tabindex="0">países africanos</span>, em terracota, fica no canto de baixo à
+        <p>Em 1990, a maior parte dos <span class="ref" data-regiao="africa" tabindex="0">países africanos</span>, em vermelho, fica no canto de baixo à
           esquerda. A expectativa de vida média na África Subsaariana era de 50 anos.</p>
       </article>
 
@@ -148,7 +145,8 @@
         <p class="marco">2023</p>
         <h2>Quem fica longe da linha</h2>
         <p>A linha tracejada mostra a expectativa de vida esperada para cada nível de renda em 2023. A
-          correlação entre as duas medidas é de 0,86. Agora a cor mostra a distância até essa linha.
+          correlação entre as duas medidas é de 0,86.</p>
+        <p>Agora a cor mostra a distância até essa linha.
           Os países em azul-petróleo vivem mais do que a renda prevê, e os em laranja vivem menos.</p>
         <p>A <span class="ref" data-iso3="NGA" tabindex="0">Nigéria</span> tem renda maior que a <span class="ref" data-iso3="ETH" tabindex="0">Etiópia</span> e vive menos. A expectativa de vida é de 54,5 anos
           na Nigéria e de 67,3 anos na Etiópia. A Nigéria fica 15 anos abaixo do que a linha prevê
@@ -161,26 +159,26 @@
         <p>Agora cada país sai do lugar e entra numa fila. A posição na fila é a distância até a linha
           tracejada. À esquerda ficam os países que vivem menos do que a renda prevê, e à direita os
           que vivem mais.</p>
-        <p>Dos 197 países com os dois dados em 2023, 106 ficam acima da linha e 91 abaixo. A <span class="ref" data-iso3="NGA" tabindex="0">Nigéria</span> é
+        <p>Dos 197 países com dados de renda e de expectativa de vida em 2023, 106 ficam acima da linha e 91 abaixo. A <span class="ref" data-iso3="NGA" tabindex="0">Nigéria</span> é
           o mais distante, 15,3 anos abaixo. Do outro lado, as <span class="ref" data-iso3="SLB" tabindex="0">Ilhas Salomão</span> ficam 7,1 anos acima. O
           <span class="ref" data-iso3="BRA" tabindex="0">Brasil</span> fica perto do meio, 1,4 ano acima.</p>
       </article>
 
       <article class="passo" data-passo="5">
         <p class="marco">De 1990 a 2024</p>
-        <h2>Filhos por mulher</h2>
+        <h2>Fecundidade</h2>
         <p>Aqui o eixo vertical passa a mostrar a fecundidade, que é o número médio de filhos por
           mulher. No mundo, ela caiu de 3,3 em 1990 para 2,2 em 2024.</p>
-        <p>Em <span class="ref" data-iso3="BGD" tabindex="0">Bangladesh</span>, a queda foi de 4,5 para 2,1. A <span class="ref" data-iso3="KOR" tabindex="0">Coreia do Sul</span> chegou a 0,75, um dos valores
+        <p>Em <span class="ref" data-iso3="BGD" tabindex="0">Bangladesh</span>, a queda foi de 4,5 para 2,1 filhos. A <span class="ref" data-iso3="KOR" tabindex="0">Coreia do Sul</span> chegou a 0,75, um dos valores
           mais baixos do mundo. A <span class="ref" data-iso3="NGA" tabindex="0">Nigéria</span> ainda tem 4,4 filhos por mulher.</p>
       </article>
 
       <article class="passo" data-passo="6">
         <p class="marco">2024</p>
-        <h2>Pessoas com 65 anos ou mais</h2>
-        <p>Com menos nascimentos e vidas mais longas, aumenta a parte da população com 65 anos ou mais.
+        <h2>População idosa</h2>
+        <p>Com menos nascimentos e vidas mais longas, aumenta a parcela da população com 65 anos ou mais.
           No mundo, ela foi de 6,1% para 10,2% entre 1990 e 2024.</p>
-        <p>No <span class="ref" data-iso3="JPN" tabindex="0">Japão</span>, essa parte chegou a 29,8%. Na <span class="ref" data-iso3="CHN" tabindex="0">China</span>, foi de 5,4% para 14,7% no mesmo período.</p>
+        <p>No <span class="ref" data-iso3="JPN" tabindex="0">Japão</span>, essa parcela chegou a 29,8% em 2024. Na <span class="ref" data-iso3="CHN" tabindex="0">China</span>, foi de 5,4% para 14,7% no mesmo período.</p>
       </article>
 
       <article class="passo" data-passo="7">
@@ -196,7 +194,7 @@
         <p class="marco">2023</p>
         <h2>Gravidez na adolescência</h2>
         <p>Este indicador conta os nascimentos por mil mulheres de 15 a 19 anos. Entre os indicadores
-          ligados a gênero, é o único que cai de forma clara quando a renda sobe.</p>
+          ligados a gênero, é o único que cai de forma clara quando a renda cresce.</p>
         <p>O <span class="ref" data-iso3="NER" tabindex="0">Níger</span> tem 145 nascimentos por mil, e a <span class="ref" data-iso3="KOR" tabindex="0">Coreia do Sul</span> tem menos de 1. O <span class="ref" data-iso3="BRA" tabindex="0">Brasil</span> tem 42,7,
           quase o dobro do grupo de países de renda média-alta, que tem 24,1.</p>
       </article>
@@ -208,7 +206,7 @@
       <h2 id="tCovid">COVID-19 e expectativa de vida</h2>
       <p>Entre 2019 e 2021, a expectativa de vida caiu em 182 dos 217 países. A queda foi de 1,7 ano
         no mundo, de 2,8 anos no Brasil e de 3,5 anos na Índia.</p>
-      <p>Em 2023, 186 países já tinham voltado ao valor de 2019 ou passado dele.</p>
+      <p>Em 2023, 186 países já tinham recuperado a expectativa de vida de 2019 ou superado esse valor.</p>
       <p>Cada linha é um país, na cor da sua região. O Brasil começa destacado. Digite o nome de
         outros países para destacá-los também, ou clique numa linha. Um novo clique tira o destaque. Os botões de região deixam só os países daquela região em evidência, e um novo clique mostra todas de novo.</p>
     </div>
@@ -228,8 +226,7 @@
   <section class="capitulo" aria-labelledby="tBrasil">
     <div class="texto">
       <h2 id="tBrasil">O Brasil comparado com outros países</h2>
-      <p>Cada linha é um indicador em 2023, e cada ponto é um país. O Brasil é o ponto grande
-        colorido. Os pontos cinza-escuros são os países do grupo escolhido, e o traço vertical marca
+      <p>Cada linha é um indicador em 2023, e cada ponto é um país. O Brasil é o ponto grande em <span id="corBrasil">azul</span>. Os pontos cinza-escuros são os países do grupo escolhido, e o traço vertical marca
         a mediana desse grupo.</p>
       <p>Digite o nome de outros países para compará-los com o Brasil. À direita estão o valor de
         cada país destacado e a posição dele, contada do maior valor para o menor.</p>
@@ -313,9 +310,9 @@
         <div class="legenda-estatica" id="legendaContinua" hidden></div>
         <svg id="svgBolhas" role="group" aria-labelledby="tituloBolhas"></svg>
         <!-- Cada visão do painel tem o seu controle de tempo, logo abaixo dela (js/tocador.js). -->
-        <div id="tocadorBolhas"></div>
         <p class="nota">Clique numa bolha para acompanhar o país. Clique na legenda para destacar um
           grupo. Arraste o ano do fundo para andar no tempo.</p>
+        <div id="tocadorBolhas"></div>
       </div>
       <div class="visao">
         <h3>Correlação entre os indicadores em <span id="anoMatriz"></span></h3>
@@ -342,7 +339,7 @@
           para ficar só com os países naquela faixa de valores. O filtro vale também para as bolhas, o
           mapa e o ranking. Clique fora da faixa para desfazer o filtro daquele eixo.</p>
         <fieldset class="escolha-eixos">
-          <legend>Indicadores nos eixos, de 2 a 8</legend>
+          <legend>Selecione de 2 a 8 indicadores.</legend>
           <div id="eixosCoord" aria-describedby="ajudaEixosCoord"></div>
           <p class="ajuda" id="ajudaEixosCoord" aria-live="polite"></p>
         </fieldset>
@@ -355,7 +352,7 @@
       <div class="visao visao-larga">
         <h3 id="tituloMapa"></h3>
         <p class="nota" id="notaMapa">Cada país tem a cor do seu valor no indicador do eixo vertical. A hachura
-          quer dizer sem dado naquele ano. Clique num país para acompanhá-lo.</p>
+          quer dizer sem dado naquele ano. Clique num país para acompanhá-lo. O mapa usa a projeção Equal Earth, que mantém a proporção entre as áreas dos países.</p>
         <div class="legenda-estatica" id="legendaMapa"></div>
         <svg id="svgMapa" role="img" aria-labelledby="tituloMapa"></svg>
         <div id="tocadorMapa"></div>
@@ -401,7 +398,7 @@
     <div>
       <h2>Como foi feito</h2>
       <p>Gráficos feitos com D3.js. A animação das bolhas segue o Gapminder Tools e o exemplo
-        "The Wealth &amp; Health of Nations", de Mike Bostock. As quatro regiões seguem o Gapminder Tools, com cores próprias.
+        "The Wealth &amp; Health of Nations", de Mike Bostock. As regiões seguem o Gapminder Tools, com a Oceania separada da Ásia e cores próprias.
         Os componentes, as cores da página e a fonte Roboto seguem o Material Design 3. A correlação é a de Pearson, com PIB e
         mortalidade infantil em log.</p>
       <p>Dois sites serviram de inspiração. O <a href="https://www.gapminder.org/tools/">Gapminder Tools</a>
