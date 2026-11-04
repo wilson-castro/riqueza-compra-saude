@@ -143,17 +143,92 @@ export function iniciarPainel(D) {
   // Clicar numa célula leva o par para as bolhas. Clicar de novo na célula escolhida devolve o par
   // que estava antes, para o leitor poder desfazer a escolha.
   let parAnterior = null;
-  function escolherPar(c, par) {
-    if (par(c) && parAnterior) {
+  const aviso = $("avisoPar");
+  let desfazer = null, celulaToque = null, temporizador = null;
+  let restante = 8000, inicioAviso = 0, mouseNoAviso = false;
+  function pausarAviso() {
+    if (temporizador !== null) {
+      clearTimeout(temporizador);
+      temporizador = null;
+      restante = Math.max(0, restante - (performance.now() - inicioAviso));
+    }
+  }
+  function fecharAviso() {
+    pausarAviso();
+    if (aviso.contains(document.activeElement)) $("tituloBolhas").focus({ preventScroll: true });
+    aviso.hidden = true;
+    $("textoAvisoPar").textContent = "";
+  }
+  function retomarAviso() {
+    pausarAviso();
+    if (aviso.hidden || mouseNoAviso || aviso.contains(document.activeElement)) return;
+    inicioAviso = performance.now();
+    temporizador = setTimeout(fecharAviso, restante);
+  }
+  function mostrarAviso(anterior) {
+    pausarAviso();
+    desfazer = anterior;
+    restante = 8000;
+    aviso.hidden = false;
+    $("textoAvisoPar").textContent = `O gráfico de bolhas agora compara ${CURTO[estado.y]} e ${CURTO[estado.x]}. As linhas, o mapa e o ranking também mudaram.`;
+    retomarAviso();
+  }
+  aviso.addEventListener("mouseenter", () => { mouseNoAviso = true; pausarAviso(); });
+  aviso.addEventListener("mouseleave", () => { mouseNoAviso = false; retomarAviso(); });
+  aviso.addEventListener("focusin", pausarAviso);
+  aviso.addEventListener("focusout", () => queueMicrotask(retomarAviso));
+  aviso.addEventListener("keydown", ev => {
+    if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); fecharAviso(); }
+  });
+  $("fecharAvisoPar").addEventListener("click", fecharAviso);
+  $("verGrafico").addEventListener("click", () => {
+    $("tituloBolhas").focus({ preventScroll: true });
+    $("svgBolhas").closest(".visao").scrollIntoView({ behavior: reduzMovimento() ? "instant" : "smooth", block: "start" });
+  });
+  function realcarVisoes() {
+    if (reduzMovimento()) return;
+    for (const id of ["svgBolhas", "svgLinhas", "svgMapa", "svgRanking"]) {
+      const no = $(id).closest(".visao");
+      no.classList.remove("mudou-par");
+      void no.offsetWidth;
+      no.classList.add("mudou-par");
+      no.addEventListener("animationend", () => no.classList.remove("mudou-par"), { once: true });
+    }
+  }
+  $("desfazerPar").addEventListener("click", () => {
+    if (!desfazer) return;
+    [estado.x, estado.y] = desfazer;
+    parAnterior = null;
+    estado.foco = null;
+    fecharAviso();
+    tudo(reduzMovimento() ? 0 : 1000);
+    realcarVisoes();
+  });
+  const parAtual = c => (c.a === estado.y && c.b === estado.x) || (c.a === estado.x && c.b === estado.y);
+  function escolherPar(c) {
+    const anterior = [estado.x, estado.y];
+    if (parAtual(c) && parAnterior) {
       [estado.x, estado.y] = parAnterior;
       parAnterior = null;
-    } else if (!par(c)) {
-      parAnterior = [estado.x, estado.y];
+    } else if (!parAtual(c)) {
+      parAnterior = anterior;
       estado.y = c.a; estado.x = c.b;
     } else return;
     estado.foco = null;
-    tudo(1000);
+    $("compararMatriz").hidden = true;
+    celulaToque = null;
+    tudo(reduzMovimento() ? 0 : 1000);
+    realcarVisoes();
+    mostrarAviso(anterior);
   }
+  $("confirmarPar").addEventListener("click", () => {
+    if (!celulaToque) return;
+    const c = celulaToque;
+    $("compararMatriz").hidden = true;
+    celulaToque = null;
+    escolherPar(c);
+    svgM.selectAll("g.celula").filter(d => d.a === c.a && d.b === c.b).node()?.focus();
+  });
   function matriz() {
     const ano = anos.matriz, E = D.eixos, n = E.length;
     const W = svgM.node().clientWidth;
@@ -164,7 +239,11 @@ export function iniciarPainel(D) {
     for (let i = 1; i < n; i++) for (let j = 0; j < i; j++) {
       celulas.push({ i, j, a: E[i], b: E[j], ...D.correlacao(E[i], E[j], ano) });
     }
-    const par = c => (c.a === estado.y && c.b === estado.x) || (c.a === estado.x && c.b === estado.y);
+    if (celulaToque) {
+      celulaToque = celulas.find(c => c.a === celulaToque.a && c.b === celulaToque.b);
+      $("parMatriz").textContent = `${CURTO[celulaToque.a]} e ${CURTO[celulaToque.b]}, r = ${fmtR(celulaToque.r)} (${ano}).`;
+    }
+    const par = parAtual;
     svgM.selectAll("g.celula").data(celulas, c => c.a + c.b).join(ent => {
       const g = ent.append("g").attr("class", "celula").attr("tabindex", 0).attr("role", "button");
       g.append("rect"); g.append("text").attr("text-anchor", "middle").attr("dy", "0.35em");
@@ -173,19 +252,33 @@ export function iniciarPainel(D) {
       .attr("transform", c => `translate(${esq + c.j * lado},${(c.i - 1) * lado})`)
       .attr("aria-pressed", c => String(par(c)))
       .attr("aria-label", c => `${D.META[c.a].nome} e ${D.META[c.b].nome}, r ${fmtR(c.r)}. ` +
-        (par(c) ? (parAnterior ? "Voltar ao par anterior." : "Par que está nas bolhas.") : "Levar o par para as bolhas."))
+        (par(c) ? "Par mostrado no gráfico de bolhas. " + (parAnterior ? "Clique para voltar ao par anterior." : "") : "Clique para ver no gráfico de bolhas."))
       .on("mousemove", (ev, c) => tip.mostrar(ev, `<b>${CURTO[c.a]} e ${CURTO[c.b]}</b>` +
         `<span class="tip-sub">r = ${fmtR(c.r)} em ${c.n} países (${ano})</span>` +
-        `<i>${par(c) ? (parAnterior ? "Clique de novo para voltar ao par anterior" : "Este par já está nas bolhas") : "Clique para ver nas bolhas"}</i>`))
+        `<i>${par(c) ? (parAnterior ? "Este par está no gráfico de bolhas. Clique para voltar ao par anterior" : "Este par está no gráfico de bolhas") : "Clique para ver no gráfico de bolhas"}</i>`))
       .on("mouseleave", () => tip.esconder())
-      .on("click", (ev, c) => { tip.esconder(); escolherPar(c, par); })
-      .on("keydown", (ev, c) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); escolherPar(c, par); } })
+      .on("click", (ev, c) => {
+        tip.esconder();
+        if (matchMedia("(pointer: coarse)").matches && ev.detail !== 0 && ev.pointerType !== "mouse") {
+          celulaToque = c;
+          $("parMatriz").textContent = `${CURTO[c.a]} e ${CURTO[c.b]}, r = ${fmtR(c.r)} (${ano}).`;
+          $("compararMatriz").hidden = false;
+        } else escolherPar(c);
+      })
+      .on("keydown", (ev, c) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); escolherPar(c); } })
       .call(g => g.select("rect").attr("width", lado - 3).attr("height", lado - 3).attr("rx", 6)
         .attr("fill", c => c.r == null ? SEM_DADO : DIVERGENTE((c.r + 1) / 2))
-        .attr("stroke", c => par(c) ? TINTA : null).attr("stroke-width", c => par(c) ? 2 : null))
+        .attr("stroke", null).attr("stroke-width", null))
       .call(g => g.select("text").attr("x", (lado - 2) / 2).attr("y", (lado - 2) / 2)
         .attr("class", "valor-celula").attr("fill", c => c.r != null && Math.abs(c.r) > 0.6 ? "#fff" : TINTA)
         .text(c => lado >= 28 && c.r != null ? pt.format(".1f")(c.r) : ""));
+    const atual = celulas.find(par);
+    // O espaço à direita da diagonal fica livre de células e dos nomes dos indicadores.
+    const cabeRotulo = atual && W - (esq + atual.i * lado + 6) >= 70;
+    svgM.selectAll("text.par-no-grafico").data(cabeRotulo ? [atual] : []).join("text")
+      .attr("class", "par-no-grafico").attr("aria-hidden", "true")
+      .attr("x", c => esq + c.i * lado + 6).attr("y", c => (c.i - 0.5) * lado)
+      .attr("dy", "0.35em").text("no gráfico");
     const forte = d => d === estado.y || d === estado.x ? "700" : null;
     svgM.selectAll("text.lin").data(E.slice(1)).join("text").attr("class", "lin rotulo-matriz")
       .attr("x", esq - 6).attr("y", (d, i) => i * lado + lado / 2).attr("dy", "0.35em")

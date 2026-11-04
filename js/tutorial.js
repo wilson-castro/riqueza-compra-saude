@@ -16,21 +16,23 @@ export function iniciarTutorial(parar) {
     ["grupoDesenho", "Leia as cores e os tamanhos", "A cor compara grupos ou mostra mais um indicador. O tamanho da bolha mostra outro."],
     ["tocadorBolhas", "Cada gráfico tem o seu tempo", "Embaixo de cada gráfico há um controle de tempo. Tocar faz os anos passarem, e os botões ao lado andam um ano por vez. Mudar o ano de um gráfico não muda o dos outros."],
     ["svgBolhas", "Acompanhe um país", "Clique numa bolha para acompanhar o país em todos os gráficos. A busca em Países acompanhados faz o mesmo pelo nome."],
-    ["svgMatriz", "Compare as relações", "A matriz mostra quais indicadores sobem ou descem juntos. Clique numa célula para levar o par para as bolhas, e clique de novo para voltar."],
+    ["svgMatriz", "Compare as relações", "A matriz mostra quais indicadores sobem ou descem juntos. Clique numa célula para levar o par para o gráfico de bolhas, destacado também. Um aviso no pé da tela permite desfazer."],
     ["svgCoord", "Filtre vários indicadores", "Arraste sobre um eixo das coordenadas paralelas para ficar só com os países naquela faixa. O filtro vale também para as bolhas, o mapa e o ranking."],
     ["svgMapa", "Veja no mapa e no ranking", "O mapa e o ranking mostram o indicador do eixo vertical das bolhas, cada um no seu próprio ano."],
     ["abrirTutorial", "Controles sempre à mão", "Quando você rolar para os gráficos, o botão Controles no canto inferior direito abre os mesmos controles do alto do painel."],
   ];
-  let passo = 0, destacado = null;
+  let passo = 0, destacados = [];
   try { $("conviteTutorial").hidden = localStorage.getItem(chave) === "sim"; } catch {}
 
   function mostrar() {
-    destacado?.classList.remove("destaque-tutorial");
+    destacados.forEach(no => no.classList.remove("destaque-tutorial"));
     const [id, titulo, texto] = passos[passo];
     const alvo = $(id);
     // A visão inteira inclui as instruções que ajudam a entender o gráfico destacado.
-    destacado = alvo.closest(".visao") || alvo;
-    destacado.classList.add("destaque-tutorial");
+    const destacado = alvo.closest(".visao") || alvo;
+    destacados = [destacado];
+    if (id === "svgMatriz") destacados.push($("svgBolhas").closest(".visao"));
+    destacados.forEach(no => no.classList.add("destaque-tutorial"));
     $("passoTutorial").textContent = `Passo ${passo + 1} de ${passos.length}`;
     $("tituloTutorial").textContent = titulo;
     $("textoTutorial").textContent = texto;
@@ -76,7 +78,7 @@ export function iniciarTutorial(parar) {
   });
   dialogo.addEventListener("close", () => {
     fundo.hidden = true;
-    destacado?.classList.remove("destaque-tutorial");
+    destacados.forEach(no => no.classList.remove("destaque-tutorial"));
     botao.focus({ preventScroll: true });
     botao.scrollIntoView({ behavior: reduzMovimento() ? "instant" : "smooth", block: "nearest" });
   });

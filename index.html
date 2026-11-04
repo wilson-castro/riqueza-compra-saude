@@ -248,11 +248,14 @@
   <section id="painel" class="painel" aria-labelledby="tPainel" tabindex="-1">
     <div class="texto">
       <h2 id="tPainel">Explore os dados</h2>
+      <p>Agora é sua vez de explorar os mesmos dados da história, com os 13 indicadores e todos os
+        anos de 1990 a 2024.</p>
+      <p>Escolha os indicadores, toque o tempo e acompanhe países. Todas as visões abaixo andam juntas.</p>
+      <p>As visões são ligadas. Escolher um par na matriz, clicar num país ou filtrar um eixo nas coordenadas paralelas muda as outras visões.</p>
       <div class="convite-tutorial">
         <button id="abrirTutorial" class="botao-discreto" type="button" aria-haspopup="dialog" aria-controls="tutorialPainel">Ver como usar o painel</button>
         <span id="conviteTutorial" class="ajuda">Conheça os controles em oito passos.</span>
       </div>
-      <p>Escolha os indicadores, toque o tempo e acompanhe países. Todas as visões abaixo andam juntas.</p>
     </div>
 
     <!-- Os controles ficam neste lugar da página. Quando o leitor abre a caixa de ferramentas pelo
@@ -304,7 +307,8 @@
 
     <div class="visoes">
       <div class="visao visao-bolhas">
-        <h3 id="tituloBolhas"></h3>
+        <h3 id="tituloBolhas" tabindex="-1"></h3>
+        <p class="sobre-eixo ligacao-visao"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 8H7a4 4 0 0 0 0 8h3m4-8h3a4 4 0 0 1 0 8h-3M8 12h8"/></svg>Usa os eixos escolhidos</p>
         <p class="nota" id="contagem"></p>
         <div class="legenda" id="legenda"></div>
         <div class="legenda-estatica" id="legendaContinua" hidden></div>
@@ -316,14 +320,19 @@
       </div>
       <div class="visao">
         <h3>Correlação entre os indicadores em <span id="anoMatriz"></span></h3>
-        <p class="nota">Verde-azulado quando os dois sobem juntos, laranja quando um sobe e o outro desce. PIB e
-          mortalidade infantil entram em log.</p>
+        <p class="sobre-eixo ligacao-visao"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 8H7a4 4 0 0 0 0 8h3m4-8h3a4 4 0 0 1 0 8h-3M8 12h8"/></svg>Clique para escolher os eixos</p>
+        <p class="nota">Verde-azulado quando os dois sobem juntos, laranja quando um sobe e o outro desce. PIB e mortalidade infantil entram em log. Clique numa célula para comparar esse par no gráfico de bolhas.</p>
         <svg id="svgMatriz" role="group" aria-label="Matriz de correlação"></svg>
+        <div id="compararMatriz" class="comparar-matriz" hidden>
+          <p id="parMatriz"></p>
+          <button id="confirmarPar" class="botao-principal" type="button">Comparar no gráfico</button>
+        </div>
         <div class="escala-div" aria-hidden="true"><span>−1</span><i></i><span>+1</span></div>
         <div id="tocadorMatriz"></div>
       </div>
       <div class="visao visao-larga">
         <h3 id="tituloLinhas"></h3>
+        <p class="sobre-eixo ligacao-visao"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 8H7a4 4 0 0 0 0 8h3m4-8h3a4 4 0 0 1 0 8h-3M8 12h8"/></svg>Usa o eixo vertical</p>
         <p class="nota">Países acompanhados e o mundo. Clique no gráfico para marcar um ano.</p>
         <fieldset class="alternador">
           <legend>Mostrar</legend>
@@ -335,6 +344,7 @@
       </div>
       <div class="visao visao-larga">
         <h3 id="tituloCoord"></h3>
+        <p class="sobre-eixo ligacao-visao"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 8H7a4 4 0 0 0 0 8h3m4-8h3a4 4 0 0 1 0 8h-3M8 12h8"/></svg>Indicadores próprios. O filtro vale para bolhas, mapa e ranking</p>
         <p class="nota">Cada linha é um país, e cada eixo vertical é um indicador. Arraste sobre um eixo
           para ficar só com os países naquela faixa de valores. O filtro vale também para as bolhas, o
           mapa e o ranking. Clique fora da faixa para desfazer o filtro daquele eixo.</p>
@@ -351,6 +361,7 @@
       </div>
       <div class="visao visao-larga">
         <h3 id="tituloMapa"></h3>
+        <p class="sobre-eixo ligacao-visao"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 8H7a4 4 0 0 0 0 8h3m4-8h3a4 4 0 0 1 0 8h-3M8 12h8"/></svg>Usa o eixo vertical</p>
         <p class="nota" id="notaMapa">Cada país tem a cor do seu valor no indicador do eixo vertical. A hachura
           quer dizer sem dado naquele ano. Clique num país para acompanhá-lo. O mapa usa a projeção Equal Earth, que mantém a proporção entre as áreas dos países.</p>
         <div class="legenda-estatica" id="legendaMapa"></div>
@@ -359,6 +370,7 @@
       </div>
       <div class="visao visao-larga">
         <h3 id="tituloRanking"></h3>
+        <p class="sobre-eixo ligacao-visao"><svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 8H7a4 4 0 0 0 0 8h3m4-8h3a4 4 0 0 1 0 8h-3M8 12h8"/></svg>Usa o eixo vertical</p>
         <p class="nota">Países ordenados do maior para o menor valor do indicador do eixo vertical. À
           direita está a posição que o país tinha em 1990. Clique numa barra para acompanhar o país.</p>
         <fieldset class="alternador">
@@ -434,6 +446,15 @@
     <button id="tutorialFechar" class="botao-discreto" type="button">Fechar</button>
   </div>
 </dialog>
+
+<div id="avisoPar" class="aviso-par" hidden>
+  <p id="textoAvisoPar" role="status" aria-live="polite" aria-atomic="true"></p>
+  <div class="acoes-aviso">
+    <button id="verGrafico" class="botao-discreto" type="button">Ver gráfico</button>
+    <button id="desfazerPar" class="botao-discreto" type="button">Desfazer</button>
+    <button id="fecharAvisoPar" class="botao-discreto" type="button" aria-label="Fechar aviso">×</button>
+  </div>
+</div>
 
 <div class="tip" id="tip" role="tooltip"></div>
 <p class="erro" id="erro" role="alert"></p>
