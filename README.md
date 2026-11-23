@@ -20,6 +20,14 @@ python3 -m http.server 8000
 
 Depois abra http://localhost:8000 no navegador.
 
+## Como refazer os dados
+
+O notebook baixa os dados de origem e refaz os arquivos do site. Abra o [notebook no Google Colaboratory (Colab)](https://colab.research.google.com/github/wilson-castro/riqueza-compra-saude/blob/main/processamento/processamento.ipynb) ou rode este comando na raiz do repositório, com Jupyter e matplotlib instalados.
+
+```bash
+jupyter notebook processamento/processamento.ipynb
+```
+
 ## Como publicar no GitHub Pages
 
 O site está publicado em https://wilson-castro.github.io/riqueza-compra-saude/. O GitHub Pages
@@ -69,10 +77,12 @@ Jekyll, o gerador de sites que ele usa por padrão.
   versão para o tema claro e outra para o escuro. O site segue o tema do sistema do leitor, e as
   cores da página para o tema escuro ficam no começo de `estilo.css`.
 - `dados/` tem os CSV que a página lê. Eles são gerados por `exploracao/gerar_dados_site.py` a
-  partir dos dados completos em `exploracao/dados/`.
+  partir dos dados completos em `exploracao/dados/`. O notebook `processamento/processamento.ipynb`
+  também gera esses arquivos.
 - `dados/mundo.json` tem o contorno dos países para o mapa. Ele vem do Natural Earth, um conjunto
   de mapas de domínio público, e é gerado por `exploracao/gerar_mapa_site.py`. O começo desse
-  script explica como baixar o arquivo de origem.
+  script explica como baixar o arquivo de origem. O notebook `processamento/processamento.ipynb`
+  também gera o mapa.
 - `vendor/d3.min.js` é uma cópia local do D3 7.9.0, para o site não depender de outro servidor.
 
 O visual segue o Material Design 3. A fonte Roboto vem do Google Fonts. Sem internet, a página usa as fontes do
